@@ -143,12 +143,20 @@ Outcomes pinned in `tests/integration/test_demo.py`. App boots and serves
 
 ## Immediate priorities
 
-1. Track C/D, M3 follow-up: verify `agent.py`'s live LLM round trip once
-   Anthropic API credentials are available in this environment
+M0-M4 are done, committed, and pushed. GitHub Actions CI is green as of
+2026-08-29 (it had failed on every run since the initial commit — two
+latent bugs: ruff isort not resolving `metis` as first-party in a clean
+checkout, and `.gitignore`'s unanchored `data/` rule silently excluding
+the whole `src/metis/data/` package; both fixed, see git history).
+
+1. Track C/D, M5 (packaging) — the active next milestone: README with
+   architecture diagram, short write-up linking the module to Pub 4/5,
+   demo GIF/video, clean repo structure.
+2. Track C/D, M3 follow-up (blocked, not actionable here): verify
+   `agent.py`'s live LLM round trip once Anthropic API credentials are
+   available in this environment
    (`tests/integration/test_agent.py::test_ask_end_to_end_live_llm_call`
    currently skips).
-2. Track C/D, M5 (packaging): README with architecture diagram, write-up
-   linking the module to Pub 4/5, demo GIF, clean repo structure.
 3. Track A/B: no active priority — regime discovery reached a settled,
    documented stopping point (`FINDINGS.md` §1-4). Defer
    MLflow/baselines/advanced ML/deployment (roadmap v2 §38 "do now" list)
