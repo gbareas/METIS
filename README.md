@@ -49,5 +49,13 @@ src/metis/
 
 ## Status
 
-Ingestion layer built and tested against synthetic mock DNS data.
-Not yet wired to the group's real DNS output — see `PROJECT_CONTEXT.md`.
+Ingestion (`HDF5Reader` for 3D snapshots, `SliceReader` for time-resolved
+2D planes) is wired to, and cross-checked against, the group's real DNS
+output — not just the synthetic mock data used in tests. The standard
+physics layer (bulk dimensionless groups, spectra, POD) is built and
+validated bit-for-bit against published Pub 4 results. The
+regime-discovery reference task has been run end-to-end with a full
+findings trail.
+
+See `PROJECT_CONTEXT.md` for current priorities and `FINDINGS.md` for
+results.
