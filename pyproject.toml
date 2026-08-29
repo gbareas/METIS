@@ -47,3 +47,14 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+# Pin first-party resolution to the src/ layout explicitly. Without this,
+# ruff's isort only recognises `metis` as first-party when src/metis.egg-info
+# happens to exist (i.e. after `pip install -e .`), so a clean CI checkout
+# sorts `import metis...` as third-party and fails I001. See CI history
+# 2026-08-29.
+src = ["src"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["metis"]
