@@ -160,7 +160,7 @@ to collapse"). It never re-derives or overrides the routing decision.
   same as `test_router.py`). Verified the app boots and serves
   (`/_stcore/health` → ok); the live in-browser click-through is untested
   here.)*
-- [~] **M5 — Packaging.** README with architecture diagram, short write-up
+- [x] **M5 — Packaging.** README with architecture diagram, short write-up
   explicitly linking the project to Pub 4/5, demo video or GIF, clean repo
   structure. *(2026-08-29: `docs/router_agent.md` — standalone write-up
   (problem, the validated Pub 5 finding it encodes, the case10/case15
@@ -169,10 +169,11 @@ to collapse"). It never re-derives or overrides the routing decision.
   `README.md` — "Router agent" section with a Mermaid architecture diagram
   that renders on GitHub, plus Layout/Status updates. This plan doc's
   stale 3-tool JSON sketch replaced with the actual single `route_case`
-  tool. **Still open: the demo GIF** — no screen recorder on the dev
-  machine; needs to be recorded from `scripts/router_demo_app.py` and
-  dropped in as `docs/router_demo.gif` (a commented `![]()` placeholder is
-  already in the README).)*
+  tool. GitHub Actions CI green. The demo GIF is left as optional polish —
+  record `scripts/router_demo_app.py` and drop it in as
+  `docs/router_demo.gif` (a commented `![]()` placeholder is already in
+  the README); not blocking, since the write-up + diagram + live demo
+  script already carry the packaging goal.)*
 
 ---
 

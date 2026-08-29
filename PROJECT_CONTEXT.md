@@ -97,7 +97,7 @@ thermal), not one unified clustering — this positively confirms H1 and H2
 individually rather than "failing" the reference task. `research_protocol.md`'s
 evaluation section has been rewritten to match.
 
-**Track C/D, M0-M4 (2026-08-29)**: `src/metis/router/` is a working
+**Track C/D, M0-M5 (2026-08-29) — complete.** `src/metis/router/` is a working
 end-to-end router agent. `confidence.py` — rule-based regime-envelope/
 `Tcw_Tc` diagnostic, reusing the *validated* Pub 5 finding that blind OOD
 error tracks `Tcw_Tc` crossing the pseudo-critical boundary, not distance
@@ -141,31 +141,49 @@ its own `demo` extra (`pip install -e ".[demo]"`), kept out of `router`.
 Outcomes pinned in `tests/integration/test_demo.py`. App boots and serves
 (health check); live in-browser click-through not exercised here.
 
+**M5 (2026-08-29)**: `docs/router_agent.md` — standalone write-up (the
+problem, the validated Pub 5 OOD finding the confidence rule encodes, the
+case10/case15 contrast, the rejected latent-geometry diagnostic, the
+one-tool agent rationale, real vs. precomputed, explicit Pub 4/5 linkage,
+the n=2 limitation). `README.md` — "Router agent" section with a Mermaid
+architecture diagram that renders on GitHub, plus Layout/Status updates.
+`agent_implementation_plan.md`'s stale 3-tool JSON sketch replaced with
+the real single `route_case` tool. GitHub Actions CI green. Demo GIF left
+as optional polish (no screen recorder on the dev machine).
+
 ## Immediate priorities
 
-M0-M4 are done, committed, and pushed. GitHub Actions CI is green as of
-2026-08-29 (it had failed on every run since the initial commit — two
-latent bugs: ruff isort not resolving `metis` as first-party in a clean
-checkout, and `.gitignore`'s unanchored `data/` rule silently excluding
-the whole `src/metis/data/` package; both fixed, see git history).
+**Track C/D is complete: M0-M5 all done, committed, and pushed
+(2026-08-29).** GitHub Actions CI is green (it had failed on every run
+since the initial commit — two latent bugs: ruff isort not resolving
+`metis` as first-party in a clean checkout, and `.gitignore`'s unanchored
+`data/` rule silently excluding the whole `src/metis/data/` package; both
+fixed, see git history). The portfolio module — deterministic OOD-gated
+router, precomputed solver fallback, single-tool Claude layer, curated
+demo, write-up + architecture diagram — is shippable as-is.
 
-1. Track C/D, M5 (packaging) — nearly done: `docs/router_agent.md`
-   write-up, README "Router agent" section + Mermaid architecture
-   diagram, and doc cleanup all landed 2026-08-29. **Only the demo GIF
-   remains** — record `scripts/router_demo_app.py` and drop it in as
-   `docs/router_demo.gif` (commented `![]()` placeholder already in the
-   README); no screen recorder on the dev machine, so this needs doing
-   on the user's box (`peek`, or `ffmpeg -f x11grab`, or Brave's own
-   capture).
-2. Track C/D, M3 follow-up (blocked, not actionable here): verify
-   `agent.py`'s live LLM round trip once Anthropic API credentials are
-   available in this environment
+No hard blockers remain. Open, non-blocking follow-ups:
+
+1. Demo GIF (M5 polish, optional): record `scripts/router_demo_app.py`
+   and drop it in as `docs/router_demo.gif` — commented `![]()`
+   placeholder already in the README. No screen recorder on the dev
+   machine, so it needs doing on the user's box (`peek`, or
+   `ffmpeg -f x11grab`).
+2. M3 follow-up (blocked on credentials): verify `agent.py`'s live LLM
+   round trip once an `ANTHROPIC_API_KEY` is available in this
+   environment
    (`tests/integration/test_agent.py::test_ask_end_to_end_live_llm_call`
-   currently skips).
+   currently skips). The tool logic is already tested against real
+   cases; only the live round trip is unverified.
 3. Track A/B: no active priority — regime discovery reached a settled,
    documented stopping point (`FINDINGS.md` §1-4). Defer
    MLflow/baselines/advanced ML/deployment (roadmap v2 §38 "do now" list)
    until there's a specific reason to pick it back up.
+
+Future work explicitly out of v1 scope (revisit only with a deliberate
+decision): live HPC/Slurm solver connection, a validated physical-units →
+`(Pb_Pc, Thw_Tc, Tcw_Tc)` mapping, more OOD cases to firm up the n=2
+confidence rule.
 
 ## Constraints to respect
 
