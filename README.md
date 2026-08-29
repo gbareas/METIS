@@ -16,6 +16,59 @@ and data-driven analysis of what it produces.
 See `PROJECT_CONTEXT.md` for current status and active priorities, and
 `docs/` for the full roadmap documents this repo implements.
 
+## Router agent — OOD-gated surrogate/solver routing
+
+A self-contained module (`src/metis/router/`) that answers a
+transcritical channel-flow query by routing it to **either** a fast
+neural-operator surrogate **or** the group's full-solver (DNS) database,
+based on a *validated* out-of-distribution confidence signal, and
+explains the decision in plain language.
+
+```mermaid
+flowchart TD
+    Q["Natural-language query"] --> LLM["LLM orchestrator (Claude)<br/>parse → Pb_Pc, Thw_Tc, Tcw_Tc"]
+    LLM -->|"single tool: route_case"| ROUTE
+
+    subgraph ROUTE["route() — deterministic, no LLM in the loop"]
+        direction TB
+        C["confidence_score()<br/>rule-based OOD diagnostic"]
+        C -->|"high"| S["surrogate_infer()<br/>frozen U-Net checkpoint"]
+        C -->|"medium / low"| F["solver_lookup()<br/>precomputed DNS fields"]
+    end
+
+    S --> R["result + confidence"]
+    F --> R
+    R --> LLM
+    LLM --> A["Explanation: which source, and why"]
+```
+
+The confidence rule is not a new metric — it encodes a validated finding
+from the group's neural-operator study: blind surrogate error is
+architecture-independent and tracks the **cold-wall temperature ratio
+`Tcw_Tc`** crossing the pseudo-critical boundary, not distance in the
+surrogate's own `(Pb_Pc, Thw_Tc)` conditioning:
+
+| Case   | `Tcw_Tc` | Regime                              | Blind surrogate `T'` error |
+|--------|----------|-------------------------------------|----------------------------|
+| case15 | 0.982    | mild excursion, still subcritical   | ~0.37 (≈ in-distribution)  |
+| case10 | 1.035    | **crosses `T/T_c = 1`**             | ~0.92 (collapse)           |
+
+The LLM never makes the routing decision — `route()` decides
+deterministically in Python and the LLM only explains the result. Full
+rationale, the rejected alternative diagnostic, and the link to the
+group's Pub 4 / Pub 5 work: **[`docs/router_agent.md`](docs/router_agent.md)**.
+
+```bash
+pip install -e ".[router,demo]"
+pip install -e ../pub5_neural_operators     # see pyproject.toml for why
+streamlit run scripts/router_demo_app.py    # 8 curated scenarios, both branches
+```
+
+<!-- Demo GIF: record scripts/router_demo_app.py and drop it in as
+     docs/router_demo.gif, then uncomment:
+![Router demo](docs/router_demo.gif)
+-->
+
 ## Quickstart
 
 ```bash
@@ -58,12 +111,17 @@ src/metis/
     models/             # baselines, classical_ml, lstm, fno, wno, deeponet
     training/
     evaluation/         # regime.py: PCA, clustering, ARI/LOCO, MFA combination
+    router/             # OOD-gated surrogate/solver routing + LLM explanation
+                        # layer (Track C/D) — see docs/router_agent.md
     registry/
     inference/
     monitoring/
     api/
     testing/            # mock DNS + mock slice generators, shared test fixtures
 ```
+
+`scripts/router_demo_app.py` is the Streamlit demo front end for the
+router module.
 
 ## Status
 
@@ -74,6 +132,11 @@ physics layer (bulk dimensionless groups, spectra, POD) is built and
 validated bit-for-bit against published Pub 4 results. The
 regime-discovery reference task has been run end-to-end with a full
 findings trail.
+
+The router module (Track C/D) is feature-complete end-to-end: the
+deterministic core, the precomputed solver fallback, the single-tool LLM
+layer, and a curated demo. The live LLM round trip is unverified pending
+Anthropic credentials in the dev environment.
 
 See `PROJECT_CONTEXT.md` for current priorities and `FINDINGS.md` for
 results.

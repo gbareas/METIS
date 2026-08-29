@@ -149,9 +149,14 @@ latent bugs: ruff isort not resolving `metis` as first-party in a clean
 checkout, and `.gitignore`'s unanchored `data/` rule silently excluding
 the whole `src/metis/data/` package; both fixed, see git history).
 
-1. Track C/D, M5 (packaging) — the active next milestone: README with
-   architecture diagram, short write-up linking the module to Pub 4/5,
-   demo GIF/video, clean repo structure.
+1. Track C/D, M5 (packaging) — nearly done: `docs/router_agent.md`
+   write-up, README "Router agent" section + Mermaid architecture
+   diagram, and doc cleanup all landed 2026-08-29. **Only the demo GIF
+   remains** — record `scripts/router_demo_app.py` and drop it in as
+   `docs/router_demo.gif` (commented `![]()` placeholder already in the
+   README); no screen recorder on the dev machine, so this needs doing
+   on the user's box (`peek`, or `ffmpeg -f x11grab`, or Brave's own
+   capture).
 2. Track C/D, M3 follow-up (blocked, not actionable here): verify
    `agent.py`'s live LLM round trip once Anthropic API credentials are
    available in this environment

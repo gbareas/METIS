@@ -48,73 +48,51 @@ def route(case_params: dict) -> dict:
         }
 ```
 
-### Agent layer — wraps the router as tools for an LLM orchestrator
+### Agent layer — wraps the router as a single tool for an LLM orchestrator
 
-**Schema update (M1, 2026-08-29):** the `inlet_pressure`/`inlet_temperature`/
-`mass_flow_rate`/`geometry_id` schema below is superseded. There's no
-validated mapping anywhere in Pub 4/5 from continuous physical units to the
-`(Pb_Pc, Thw_Tc, Tcw_Tc)` ratios the surrogate and confidence diagnostic
-actually operate on — inventing one would be exactly the kind of new
-unvalidated claim this project is meant to avoid. `route()`/`confidence_score`/
-`surrogate_infer` (`src/metis/router/`) take `{"Pb_Pc": float, "Thw_Tc": float,
-"Tcw_Tc": float}` directly instead. Update this JSON block when M3 (agent
-layer) is actually built, so it matches `src/metis/router/` rather than the
-original aspiration.
+**As built (M3, updated 2026-08-29).** Two design decisions moved this
+away from the original sketch:
+
+1. **One tool, not three.** The original sketch exposed `surrogate_infer`,
+   `confidence_score`, and `solver_lookup` separately and let the LLM
+   sequence them. That would make the LLM enact the routing policy — the
+   "new unvalidated policy on top of the validated one" this project's
+   design principle rules out (see "The claim being made"). `route()`
+   runs deterministically in Python; the LLM gets one tool, `route_case`,
+   and only parses the query and explains the (already-decided) result.
+2. **Ratios, not physical units.** There is no validated mapping anywhere
+   in Pub 4/5 from continuous physical units (`inlet_pressure`,
+   `inlet_temperature`, `mass_flow_rate`, `geometry_id`) to the `(Pb_Pc,
+   Thw_Tc, Tcw_Tc)` ratios the surrogate and confidence diagnostic
+   operate on. Inventing one would be exactly the kind of unvalidated
+   claim to avoid, so the tool takes the ratios directly.
 
 ```json
 {
   "tools": [
     {
-      "name": "surrogate_infer",
-      "description": "Fast neural-operator prediction for a transcritical channel-flow case.",
+      "name": "route_case",
+      "description": "Route a transcritical channel-flow case to the fast surrogate or the full solver, based on a validated confidence diagnostic, and return the result.",
       "input_schema": {
         "type": "object",
         "properties": {
-          "inlet_pressure": {"type": "number"},
-          "inlet_temperature": {"type": "number"},
-          "mass_flow_rate": {"type": "number"},
-          "geometry_id": {"type": "string"}
+          "Pb_Pc":  {"type": "number", "description": "Bulk pressure / CO2 critical pressure."},
+          "Thw_Tc": {"type": "number", "description": "Hot-wall temperature / CO2 critical temperature."},
+          "Tcw_Tc": {"type": "number", "description": "Cold-wall temperature / CO2 critical temperature."}
         },
-        "required": ["inlet_pressure", "inlet_temperature", "mass_flow_rate", "geometry_id"]
-      }
-    },
-    {
-      "name": "confidence_score",
-      "description": "OOD/confidence diagnostic for a case, reusing the Pub 5 LOO/OOD methodology.",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "inlet_pressure": {"type": "number"},
-          "inlet_temperature": {"type": "number"},
-          "mass_flow_rate": {"type": "number"},
-          "geometry_id": {"type": "string"}
-        },
-        "required": ["inlet_pressure", "inlet_temperature", "mass_flow_rate", "geometry_id"]
-      }
-    },
-    {
-      "name": "solver_lookup",
-      "description": "Retrieve a precomputed full-solver (RHEA) result for a case, used as fallback when confidence is low.",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "inlet_pressure": {"type": "number"},
-          "inlet_temperature": {"type": "number"},
-          "mass_flow_rate": {"type": "number"},
-          "geometry_id": {"type": "string"}
-        },
-        "required": ["inlet_pressure", "inlet_temperature", "mass_flow_rate", "geometry_id"]
+        "required": ["Pb_Pc", "Thw_Tc", "Tcw_Tc"]
       }
     }
   ]
 }
 ```
 
-The LLM orchestrator's job is narrow: parse a natural-language query into the
-structured params above, call the tools in order, and turn the router's output
-into a short plain-language explanation ("used the surrogate — confidence
-0.91, well inside training range" / "routed to full solver — case sits near
-the pseudo-critical point where the surrogate is known to degrade").
+The LLM orchestrator's job is narrow: parse a natural-language query into
+the three ratios above, call `route_case` once, and turn the router's
+output into a short plain-language explanation ("used the surrogate —
+confidence high, well inside training range" / "routed to full solver —
+`Tcw_Tc` crosses the pseudo-critical point where the surrogate is known
+to collapse"). It never re-derives or overrides the routing decision.
 
 ---
 
@@ -182,9 +160,19 @@ the pseudo-critical point where the surrogate is known to degrade").
   same as `test_router.py`). Verified the app boots and serves
   (`/_stcore/health` → ok); the live in-browser click-through is untested
   here.)*
-- [ ] **M5 — Packaging.** README with architecture diagram, short write-up
+- [~] **M5 — Packaging.** README with architecture diagram, short write-up
   explicitly linking the project to Pub 4/5, demo video or GIF, clean repo
-  structure.
+  structure. *(2026-08-29: `docs/router_agent.md` — standalone write-up
+  (problem, the validated Pub 5 finding it encodes, the case10/case15
+  contrast, the rejected latent-geometry diagnostic, single-tool agent
+  rationale, real vs. precomputed, explicit Pub 4/5 linkage, limitations).
+  `README.md` — "Router agent" section with a Mermaid architecture diagram
+  that renders on GitHub, plus Layout/Status updates. This plan doc's
+  stale 3-tool JSON sketch replaced with the actual single `route_case`
+  tool. **Still open: the demo GIF** — no screen recorder on the dev
+  machine; needs to be recorded from `scripts/router_demo_app.py` and
+  dropped in as `docs/router_demo.gif` (a commented `![]()` placeholder is
+  already in the README).)*
 
 ---
 
