@@ -94,16 +94,35 @@ PCA/k-means/ARI/LOCO/MFA all numpy+scipy only, no new deps). **See
 **Revised framing (§4)**: recover the two regime axes via two
 axis-specific diagnostics (`bulk` for pressure, `rms_profile` for
 thermal), not one unified clustering — this positively confirms H1 and H2
-individually rather than "failing" the reference task.
+individually rather than "failing" the reference task. `research_protocol.md`'s
+evaluation section has been rewritten to match.
+
+**Track C/D, M0+M1 (2026-08-29)**: `src/metis/router/` — `confidence.py`
+(rule-based regime-envelope/`Tcw_Tc` diagnostic, reusing the *validated*
+Pub 5 finding that blind OOD error tracks `Tcw_Tc` crossing the
+pseudo-critical boundary, not distance in the surrogate's own
+`(Pb_Pc, Thw_Tc)` conditioning — a different latent-geometry diagnostic
+was tried in Pub 5 and explicitly failed, and is deliberately not reused
+here); `surrogate.py` (wraps the frozen `unet_raw_ood` checkpoint,
+reproduces its recorded blind-OOD errors for case10/case15 to ~3e-4
+relative); `core.py` (`route()`, with `solver_lookup` an explicit
+`NotImplementedError` stub for M2). Needs the new `router` extra
+(`pip install -e ".[router]"` then `pip install -e ../pub5_neural_operators`
+— see pyproject.toml for why the second step is required). Real design
+deviation from the original plan doc: `route()` takes
+`{"Pb_Pc", "Thw_Tc", "Tcw_Tc"}` directly, not the plan's original
+`inlet_pressure`/`inlet_temperature`/`mass_flow_rate` schema — there's no
+validated mapping from physical units to these ratios anywhere in Pub 4/5
+(see `docs/agent_implementation_plan.md`'s "Schema update" note).
 
 ## Immediate priorities
 
-1. Update `research_protocol.md`'s evaluation section to reflect
-   axis-specific diagnostics (§4) as the primary regime-discovery method,
-   keeping the combined/MFA view only as a secondary "blends sensibly"
-   check.
-2. Defer MLflow/baselines/advanced ML/deployment until that update lands
-   (roadmap v2 §38 "do now" list).
+1. Track C/D, M2: build the precomputed `solver_lookup` fallback (the 15
+   already-simulated cases only — never a live solve).
+2. Track A/B: no active priority — regime discovery reached a settled,
+   documented stopping point (`FINDINGS.md` §1-4). Defer
+   MLflow/baselines/advanced ML/deployment (roadmap v2 §38 "do now" list)
+   until there's a specific reason to pick it back up.
 
 ## Constraints to respect
 

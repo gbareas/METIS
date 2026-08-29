@@ -20,6 +20,23 @@ dev = ["pytest>=8.0", "ruff>=0.4"]
 # Pulled in once we reach Phase 3/4 (training, experiment tracking) —
 # deliberately not installed on day one to keep the environment light.
 ml = ["torch>=2.2", "scikit-learn>=1.4", "mlflow>=2.10"]
+# Track C/D (personal router-agent module, docs/agent_implementation_plan.md)
+# — wraps pub5_neural_operators' trained checkpoint directly, decoupled
+# from Track A/B, so it gets its own extra rather than sharing `ml`
+# (no scikit-learn/mlflow needed here).
+#
+# `pip install -e ".[router]"` alone installs neuralop_bench as a regular
+# (non-editable) wheel copy, which breaks its internal `_PROJECT_ROOT`
+# path resolution (neuralop_bench/data.py locates pub4_grassmann_rom's
+# case_descriptors.json via `Path(__file__).resolve().parents[3]`, which
+# only lands on PostDoc_phase/ if __file__ still points into the real
+# pub5_neural_operators/src/ tree). After installing this extra, also run:
+#     pip install -e ../pub5_neural_operators
+# to force an editable install that preserves that path.
+router = [
+    "torch>=2.2",
+    "neuralop_bench @ file:///home/brinkman/Documents/PostDoc_phase/pub5_neural_operators",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
