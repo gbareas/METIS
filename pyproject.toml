@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "metis"
+version = "0.1.0"
+description = "Reusable ML analysis & physical-discovery framework for high-pressure transcritical DNS"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26",
+    "h5py>=3.10",
+    "pyyaml>=6.0",
+    "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.4"]
+# Pulled in once we reach Phase 3/4 (training, experiment tracking) —
+# deliberately not installed on day one to keep the environment light.
+ml = ["torch>=2.2", "scikit-learn>=1.4", "mlflow>=2.10"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
