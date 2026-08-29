@@ -41,9 +41,10 @@ made deterministically before you see it. Your job is to explain it, not
 to re-decide it."""
 
 
-def _route_case(Pb_Pc: float, Thw_Tc: float, Tcw_Tc: float) -> dict:
-    """Undecorated core logic — the thing `route_case` calls, and what
-    tests call directly without going through the LLM/tool-runner."""
+def route_case_payload(Pb_Pc: float, Thw_Tc: float, Tcw_Tc: float) -> dict:
+    """Undecorated core logic, shared by the `route_case` tool and the M4
+    demo (`metis.router.demo`) — the thing tests call directly too,
+    without going through the LLM/tool-runner."""
     try:
         result = route({"Pb_Pc": Pb_Pc, "Thw_Tc": Thw_Tc, "Tcw_Tc": Tcw_Tc})
     except KeyError as e:
@@ -72,7 +73,7 @@ def route_case(Pb_Pc: float, Thw_Tc: float, Tcw_Tc: float) -> dict:
         Thw_Tc: Hot-wall temperature over the CO2 critical temperature.
         Tcw_Tc: Cold-wall temperature over the CO2 critical temperature.
     """
-    return _route_case(Pb_Pc, Thw_Tc, Tcw_Tc)
+    return route_case_payload(Pb_Pc, Thw_Tc, Tcw_Tc)
 
 
 def ask(query: str, client: Anthropic | None = None) -> str:

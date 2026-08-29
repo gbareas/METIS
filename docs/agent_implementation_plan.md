@@ -164,9 +164,24 @@ the pseudo-critical point where the surrogate is known to degrade").
   `ANTHROPIC_API_KEY` or `ant auth login` profile configured here, so
   that test skips. Needs live credentials to verify before relying on
   it.)*
-- [ ] **M4 — Interface + demo.** Minimal Streamlit or CLI front end. 5–10
+- [x] **M4 — Interface + demo.** Minimal Streamlit or CLI front end. 5–10
   curated scenarios that clearly exercise both branches (confident surrogate
-  case, routed-to-solver case).
+  case, routed-to-solver case). *(2026-08-29: `src/metis/router/demo.py` —
+  8 curated `SCENARIOS`, every ratio a real cross-checked value (case01-09/
+  10/15 descriptors + the novel point already used as a router test case),
+  nothing invented for the demo. Coverage: 5 training-grid cases → surrogate/
+  "high", case10 → solver/"low", case15 → solver/"medium", novel point →
+  loud `error` (no fabricated answer). `run_scenarios()` routes them through
+  the real `route_case_payload` (frozen checkpoint + confidence diagnostic +
+  precomputed DNS lookup). `scripts/router_demo_app.py` — Streamlit front
+  end over `run_scenarios()`; deliberately does **not** call the M3 LLM
+  layer, so the demo runs without Anthropic credentials. Streamlit lives in
+  its own `demo` extra (`pip install -e ".[demo]"`), kept out of `router` so
+  the router's own tests don't pull in a UI framework. Outcomes pinned in
+  `tests/integration/test_demo.py` (10 tests, skip without the checkpoint,
+  same as `test_router.py`). Verified the app boots and serves
+  (`/_stcore/health` → ok); the live in-browser click-through is untested
+  here.)*
 - [ ] **M5 — Packaging.** README with architecture diagram, short write-up
   explicitly linking the project to Pub 4/5, demo video or GIF, clean repo
   structure.

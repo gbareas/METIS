@@ -1,10 +1,11 @@
 """Tests for the Track C/D agent layer (M3).
 
-`_route_case` (the tool's undecorated core logic) is tested directly
-against the real checkpoint/DNS data, same as the rest of the router —
-no LLM call involved. `ask()` (the actual LLM round trip) is exercised
-only if `ANTHROPIC_API_KEY` is set, since it costs real API credits and
-needs live credentials this environment doesn't have configured.
+`route_case_payload` (the tool's undecorated core logic) is tested
+directly against the real checkpoint/DNS data, same as the rest of the
+router — no LLM call involved. `ask()` (the actual LLM round trip) is
+exercised only if `ANTHROPIC_API_KEY` is set, since it costs real API
+credits and needs live credentials this environment doesn't have
+configured.
 """
 import os
 
@@ -16,7 +17,7 @@ anthropic = pytest.importorskip("anthropic")
 
 from neuralop_bench.data import load_descriptors
 
-from metis.router.agent import _route_case, ask
+from metis.router.agent import ask, route_case_payload
 from metis.router.surrogate import CHECKPOINT_PATH
 
 if not CHECKPOINT_PATH.exists():
@@ -31,14 +32,14 @@ def _case_params(case: int) -> dict:
 
 
 def test_route_case_reports_surrogate_for_in_distribution_case():
-    payload = _route_case(*_case_params(1))
+    payload = route_case_payload(*_case_params(1))
     assert payload["source"] == "surrogate"
     assert payload["confidence_level"] == "high"
     assert "field_means" in payload
 
 
 def test_route_case_reports_full_solver_for_case10():
-    payload = _route_case(*_case_params(10))
+    payload = route_case_payload(*_case_params(10))
     assert payload["source"] == "full_solver"
     assert payload["confidence_level"] == "low"
     assert payload["case"] == 10
@@ -49,7 +50,7 @@ def test_route_case_returns_error_dict_for_novel_point_instead_of_raising():
     # Tcw_Tc >= 1.0 crosses the pseudo-critical boundary, so confidence_score
     # flags this "low" and route() falls back to solver_lookup — which has
     # no case matching this exact (Pb_Pc, Thw_Tc, Tcw_Tc) combination.
-    payload = _route_case(2.5, 1.15, 1.05)
+    payload = route_case_payload(2.5, 1.15, 1.05)
     assert "error" in payload
     assert "No precomputed DNS case matches" in payload["error"]
 

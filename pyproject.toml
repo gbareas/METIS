@@ -38,6 +38,9 @@ router = [
     "neuralop_bench @ file:///home/brinkman/Documents/PostDoc_phase/pub5_neural_operators",
     "anthropic>=0.68",
 ]
+# M4 demo front end only — kept separate from `router` so the router's own
+# logic/tests don't pull in a UI framework.
+demo = ["streamlit>=1.30"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

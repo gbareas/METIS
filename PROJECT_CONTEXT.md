@@ -97,7 +97,7 @@ thermal), not one unified clustering — this positively confirms H1 and H2
 individually rather than "failing" the reference task. `research_protocol.md`'s
 evaluation section has been rewritten to match.
 
-**Track C/D, M0-M3 (2026-08-29)**: `src/metis/router/` is a working
+**Track C/D, M0-M4 (2026-08-29)**: `src/metis/router/` is a working
 end-to-end router agent. `confidence.py` — rule-based regime-envelope/
 `Tcw_Tc` diagnostic, reusing the *validated* Pub 5 finding that blind OOD
 error tracks `Tcw_Tc` crossing the pseudo-critical boundary, not distance
@@ -130,14 +130,25 @@ schema — there's no validated mapping from physical units to these ratios
 anywhere in Pub 4/5 (see `docs/agent_implementation_plan.md`'s "Schema
 update" note).
 
+**M4 (2026-08-29)**: `src/metis/router/demo.py` — 8 curated `SCENARIOS`
+(real cross-checked ratios only), `run_scenarios()` routes them through
+the real `route_case_payload`. Branch coverage: 5 training-grid cases →
+surrogate/"high", case10 → solver/"low", case15 → solver/"medium", one
+novel point → loud `error` (no fabricated answer).
+`scripts/router_demo_app.py` — Streamlit front end; deliberately skips
+the M3 LLM layer so it runs with no Anthropic credentials. Streamlit is
+its own `demo` extra (`pip install -e ".[demo]"`), kept out of `router`.
+Outcomes pinned in `tests/integration/test_demo.py`. App boots and serves
+(health check); live in-browser click-through not exercised here.
+
 ## Immediate priorities
 
 1. Track C/D, M3 follow-up: verify `agent.py`'s live LLM round trip once
    Anthropic API credentials are available in this environment
    (`tests/integration/test_agent.py::test_ask_end_to_end_live_llm_call`
    currently skips).
-2. Track C/D, M4: minimal Streamlit/CLI demo front end, 5-10 curated
-   scenarios exercising both branches.
+2. Track C/D, M5 (packaging): README with architecture diagram, write-up
+   linking the module to Pub 4/5, demo GIF, clean repo structure.
 3. Track A/B: no active priority — regime discovery reached a settled,
    documented stopping point (`FINDINGS.md` §1-4). Defer
    MLflow/baselines/advanced ML/deployment (roadmap v2 §38 "do now" list)
