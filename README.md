@@ -1,5 +1,7 @@
 # METIS — High-Pressure Transcritical ML Analysis & Discovery Framework
 
+[![CI](https://github.com/gbareas/METIS/actions/workflows/ci.yml/badge.svg)](https://github.com/gbareas/METIS/actions/workflows/ci.yml)
+
 **M**achine-learning **E**ngine for **T**ranscritical **I**nsight & **S**tatistics.
 
 Named to sit alongside the group's DNS solver, **RHEA** (*Reproducible
