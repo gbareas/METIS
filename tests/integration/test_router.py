@@ -1,5 +1,5 @@
-"""Integration tests for the Track C/D router (M1) against the real,
-frozen pub5_neural_operators checkpoint.
+"""Integration tests for the Track C/D router (M1+M2) against the real,
+frozen pub5_neural_operators checkpoint and DNS-derived RMS fields.
 
 Skipped whenever the `router` extra isn't installed or the checkpoint
 isn't reachable — these deliberately depend on this machine's local
@@ -17,7 +17,8 @@ from neuralop_bench.data import SliceCase, load_descriptors
 from neuralop_bench.metrics import rel_l2_rms
 
 from metis.router.confidence import confidence_score
-from metis.router.core import route, solver_lookup
+from metis.router.core import route
+from metis.router.solver import solver_lookup
 from metis.router.surrogate import CHECKPOINT_PATH, surrogate_infer
 
 if not CHECKPOINT_PATH.exists():
@@ -57,21 +58,35 @@ def test_route_trusts_surrogate_for_in_distribution_training_case():
     assert "fields" in result["result"]
 
 
-def test_route_falls_back_for_case10_and_m2_is_not_yet_built():
+def test_route_falls_back_to_precomputed_solver_for_case10():
     # confidence_score correctly flags case10 as unreliable (validated
     # against the recorded T' collapse in test_router_confidence.py); M2
-    # (the precomputed solver fallback) isn't built, so route() should
-    # surface that gap loudly rather than silently return something wrong.
-    with pytest.raises(NotImplementedError):
-        route(_case_params(10))
+    # now serves the real precomputed DNS RMS fields for it instead.
+    result = route(_case_params(10))
+    assert result["source"] == "full_solver"
+    assert result["confidence"].level == "low"
+    assert result["result"]["case"] == 10
+    assert "fields" in result["result"]
+
+
+def test_solver_lookup_matches_the_dns_ground_truth_exactly():
+    # solver_lookup IS the DNS ground truth (not an approximation of it),
+    # so this should be an exact match, not just "close".
+    sc = SliceCase.load(10, "xy_slice_1", None, DESCRIPTORS)
+    looked_up = solver_lookup(_case_params(10))
+    for i, field in enumerate(("u", "T", "cp")):
+        np.testing.assert_array_equal(looked_up["fields"][field], sc.conv_rms[i])
+
+
+def test_solver_lookup_rejects_a_novel_operating_point():
+    novel = {"Pb_Pc": 3.3, "Thw_Tc": 1.25, "Tcw_Tc": 0.87}
+    with pytest.raises(KeyError, match="No precomputed DNS case matches"):
+        solver_lookup(novel)
 
 
 def test_confidence_score_matches_route_decision():
     for case in (1, 10, 15):
         conf = confidence_score(_case_params(case))
-        if conf.trusts_surrogate():
-            result = route(_case_params(case))
-            assert result["source"] == "surrogate"
-        else:
-            with pytest.raises(NotImplementedError):
-                solver_lookup(_case_params(case))
+        result = route(_case_params(case))
+        expected_source = "surrogate" if conf.trusts_surrogate() else "full_solver"
+        assert result["source"] == expected_source

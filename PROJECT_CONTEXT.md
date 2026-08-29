@@ -97,28 +97,36 @@ thermal), not one unified clustering — this positively confirms H1 and H2
 individually rather than "failing" the reference task. `research_protocol.md`'s
 evaluation section has been rewritten to match.
 
-**Track C/D, M0+M1 (2026-08-29)**: `src/metis/router/` — `confidence.py`
-(rule-based regime-envelope/`Tcw_Tc` diagnostic, reusing the *validated*
-Pub 5 finding that blind OOD error tracks `Tcw_Tc` crossing the
-pseudo-critical boundary, not distance in the surrogate's own
-`(Pb_Pc, Thw_Tc)` conditioning — a different latent-geometry diagnostic
-was tried in Pub 5 and explicitly failed, and is deliberately not reused
-here); `surrogate.py` (wraps the frozen `unet_raw_ood` checkpoint,
-reproduces its recorded blind-OOD errors for case10/case15 to ~3e-4
-relative); `core.py` (`route()`, with `solver_lookup` an explicit
-`NotImplementedError` stub for M2). Needs the new `router` extra
-(`pip install -e ".[router]"` then `pip install -e ../pub5_neural_operators`
-— see pyproject.toml for why the second step is required). Real design
-deviation from the original plan doc: `route()` takes
-`{"Pb_Pc", "Thw_Tc", "Tcw_Tc"}` directly, not the plan's original
-`inlet_pressure`/`inlet_temperature`/`mass_flow_rate` schema — there's no
-validated mapping from physical units to these ratios anywhere in Pub 4/5
-(see `docs/agent_implementation_plan.md`'s "Schema update" note).
+**Track C/D, M0-M2 (2026-08-29)**: `src/metis/router/` is now a working
+core router. `confidence.py` — rule-based regime-envelope/`Tcw_Tc`
+diagnostic, reusing the *validated* Pub 5 finding that blind OOD error
+tracks `Tcw_Tc` crossing the pseudo-critical boundary, not distance in
+the surrogate's own `(Pb_Pc, Thw_Tc)` conditioning (a different
+latent-geometry diagnostic was tried in Pub 5 and explicitly failed, and
+is deliberately not reused here). `surrogate.py` — wraps the frozen
+`unet_raw_ood` checkpoint, reproduces its recorded blind-OOD errors for
+case10/case15 to ~3e-4 relative. `solver.py` — precomputed fallback,
+matches `(Pb_Pc, Thw_Tc, Tcw_Tc)` against `case_descriptors.json`
+(near-exact match, never a nearest-neighbor guess — a genuinely novel
+point raises `KeyError`) and returns the actual converged DNS RMS fields
+for one of the 11 simulated cases (case01-09, case10, case15 — not 15
+cases, case11-14 were never simulated). `core.py` ties them into
+`route()`. Needs the `router` extra (`pip install -e ".[router]"` then
+`pip install -e ../pub5_neural_operators` — see pyproject.toml for why
+the second step is required). Real design deviation from the original
+plan doc: `route()` takes `{"Pb_Pc", "Thw_Tc", "Tcw_Tc"}` directly, not
+the plan's original `inlet_pressure`/`inlet_temperature`/`mass_flow_rate`
+schema — there's no validated mapping from physical units to these ratios
+anywhere in Pub 4/5 (see `docs/agent_implementation_plan.md`'s "Schema
+update" note).
 
 ## Immediate priorities
 
-1. Track C/D, M2: build the precomputed `solver_lookup` fallback (the 15
-   already-simulated cases only — never a live solve).
+1. Track C/D, M3: wire the router's three functions to an LLM
+   orchestrator (Claude tool use) — natural-language query in, routed
+   result + plain-language explanation out. Update
+   `agent_implementation_plan.md`'s tool-schema JSON block to match the
+   `(Pb_Pc, Thw_Tc, Tcw_Tc)` interface while doing this.
 2. Track A/B: no active priority — regime discovery reached a settled,
    documented stopping point (`FINDINGS.md` §1-4). Defer
    MLflow/baselines/advanced ML/deployment (roadmap v2 §38 "do now" list)

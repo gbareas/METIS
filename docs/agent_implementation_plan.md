@@ -135,11 +135,18 @@ the pseudo-critical point where the surrogate is known to degrade").
   `surrogate_infer` wraps the frozen U-Net checkpoint and reproduces its
   recorded blind-OOD errors for case10/case15 to ~3e-4 relative precision;
   `route()` correctly trusts the surrogate for case01 (in-envelope) and
-  falls back — loudly, via `NotImplementedError` — for case10 (M2 isn't
-  built yet). See `tests/integration/test_router.py`.)*
-- [ ] **M2 — Fallback path.** Build the precomputed lookup for `solver_lookup`.
+  falls back to the full solver for case10. See
+  `tests/integration/test_router.py`.)*
+- [x] **M2 — Fallback path.** Build the precomputed lookup for `solver_lookup`.
   Document clearly (in code and README) that it's precomputed, not a live
-  solve — don't let it read as live.
+  solve — don't let it read as live. *(2026-08-29: `src/metis/router/
+  solver.py` — matches `(Pb_Pc, Thw_Tc, Tcw_Tc)` against
+  `case_descriptors.json` (near-exact match, not nearest-neighbor — a
+  genuinely novel point raises `KeyError`, it's never fabricated) and
+  returns the group's actual converged DNS RMS fields for that case, in
+  the same `{"fields", "field_means"}` shape as `surrogate_infer` so the
+  two are directly comparable. Covers case01-09/case10/case15 only —
+  11 simulated cases, not 15 as M1's docstring imprecisely said.)*
 - [ ] **M3 — Agent layer.** Wire the three tools to an LLM orchestrator
   (Claude, tool use). Natural-language query in, routed result + explanation
   out.

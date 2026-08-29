@@ -1,32 +1,19 @@
-"""Core OOD-gated router (Track C/D milestone M1, no LLM yet — see
+"""Core OOD-gated router (Track C/D milestones M1+M2, no LLM yet — see
 docs/agent_implementation_plan.md).
 
 `route()` decides between the fast neural-operator surrogate
-(`metis.router.surrogate.surrogate_infer`) and the full DNS solver based
-on the validated confidence diagnostic
-(`metis.router.confidence.confidence_score`). Only `"high"` confidence is
-trusted with the surrogate — see `confidence.py`'s docstring for why the
-policy is this conservative given only n=2 OOD cases back it.
+(`metis.router.surrogate.surrogate_infer`) and the precomputed full-solver
+answer (`metis.router.solver.solver_lookup`) based on the validated
+confidence diagnostic (`metis.router.confidence.confidence_score`). Only
+`"high"` confidence is trusted with the surrogate — see `confidence.py`'s
+docstring for why the policy is this conservative given only n=2 OOD
+cases back it.
 """
 from __future__ import annotations
 
 from metis.router.confidence import confidence_score
+from metis.router.solver import solver_lookup
 from metis.router.surrogate import surrogate_infer
-
-
-def solver_lookup(case_params: dict) -> dict:
-    """Precomputed full-solver fallback — milestone M2, not yet built.
-
-    This must stay a precomputed lookup against the group's existing DNS
-    database, never a live solve (see agent_implementation_plan.md's
-    Definition of Done) — so it will only ever be able to answer for the
-    15 cases that already have DNS output, not arbitrary (Pb_Pc, Thw_Tc).
-    """
-    raise NotImplementedError(
-        "solver_lookup is milestone M2 — route() currently falls back to "
-        "this for any non-'high'-confidence case, but there's no "
-        "precomputed lookup wired up yet."
-    )
 
 
 def route(case_params: dict) -> dict:
@@ -36,6 +23,11 @@ def route(case_params: dict) -> dict:
     `Tcw_Tc` is required for the confidence check even though the
     surrogate itself is only conditioned on `(Pb_Pc, Thw_Tc)` — see
     `metis.router.confidence` for why.
+
+    Falling back to the full solver only succeeds if `case_params`
+    matches one of the group's 11 already-simulated cases — see
+    `metis.router.solver` for why that's a deliberate limitation, not a
+    bug: there's no precomputed answer for a genuinely novel point.
     """
     confidence = confidence_score(case_params)
 
