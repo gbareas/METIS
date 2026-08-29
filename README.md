@@ -32,19 +32,20 @@ pass before it's wired to real DNS output.
 
 ```
 src/metis/
-    data/ingestion/     # HDF5 readers -> standardized DNSCase
+    data/ingestion/     # HDF5Reader -> DNSCase (3D snapshots)
+                        # SliceReader -> SliceCase (time-resolved 2D planes)
     data/validation/
     data/preprocessing/
     data/datasets/
-    features/
+    features/           # physics.py (bulk quantities), spectra.py, pod.py, regime.py
     models/             # baselines, classical_ml, lstm, fno, wno, deeponet
     training/
-    evaluation/          # metrics, physics, ood, modal — filled in Phase 4-7
+    evaluation/         # regime.py: PCA, clustering, ARI/LOCO, MFA combination
     registry/
     inference/
     monitoring/
     api/
-    testing/            # mock DNS generator, shared test fixtures
+    testing/            # mock DNS + mock slice generators, shared test fixtures
 ```
 
 ## Status
