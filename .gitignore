@@ -9,8 +9,11 @@ dist/
 build/
 *.egg-info/
 
-# Data — never commit raw or mock DNS output
-data/
+# Data — never commit raw or mock DNS output.
+# Anchored to the repo root so it doesn't also swallow the src/metis/data/
+# Python package (unanchored `data/` matched that too — see CI history
+# 2026-08-29, ModuleNotFoundError: No module named 'metis.data').
+/data/
 *.h5
 *.hdf5
 
