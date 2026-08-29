@@ -36,6 +36,7 @@ ml = ["torch>=2.2", "scikit-learn>=1.4", "mlflow>=2.10"]
 router = [
     "torch>=2.2",
     "neuralop_bench @ file:///home/brinkman/Documents/PostDoc_phase/pub5_neural_operators",
+    "anthropic>=0.68",
 ]
 
 [tool.setuptools.packages.find]

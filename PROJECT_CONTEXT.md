@@ -97,11 +97,11 @@ thermal), not one unified clustering — this positively confirms H1 and H2
 individually rather than "failing" the reference task. `research_protocol.md`'s
 evaluation section has been rewritten to match.
 
-**Track C/D, M0-M2 (2026-08-29)**: `src/metis/router/` is now a working
-core router. `confidence.py` — rule-based regime-envelope/`Tcw_Tc`
-diagnostic, reusing the *validated* Pub 5 finding that blind OOD error
-tracks `Tcw_Tc` crossing the pseudo-critical boundary, not distance in
-the surrogate's own `(Pb_Pc, Thw_Tc)` conditioning (a different
+**Track C/D, M0-M3 (2026-08-29)**: `src/metis/router/` is a working
+end-to-end router agent. `confidence.py` — rule-based regime-envelope/
+`Tcw_Tc` diagnostic, reusing the *validated* Pub 5 finding that blind OOD
+error tracks `Tcw_Tc` crossing the pseudo-critical boundary, not distance
+in the surrogate's own `(Pb_Pc, Thw_Tc)` conditioning (a different
 latent-geometry diagnostic was tried in Pub 5 and explicitly failed, and
 is deliberately not reused here). `surrogate.py` — wraps the frozen
 `unet_raw_ood` checkpoint, reproduces its recorded blind-OOD errors for
@@ -111,23 +111,34 @@ matches `(Pb_Pc, Thw_Tc, Tcw_Tc)` against `case_descriptors.json`
 point raises `KeyError`) and returns the actual converged DNS RMS fields
 for one of the 11 simulated cases (case01-09, case10, case15 — not 15
 cases, case11-14 were never simulated). `core.py` ties them into
-`route()`. Needs the `router` extra (`pip install -e ".[router]"` then
+`route()`. `agent.py` — wraps `route()` as a **single** Claude tool
+(`route_case`, model `claude-opus-5`, SDK tool runner) rather than
+exposing `surrogate_infer`/`confidence_score`/`solver_lookup` separately;
+letting the LLM sequence those three itself would mean the LLM makes the
+routing decision, which is exactly the "new unvalidated policy" the
+project's own design principle rules out. **Not verified live** — no
+`ANTHROPIC_API_KEY`/`ant auth login` credentials configured in this
+environment, so `agent.py`'s actual LLM round trip is untested; only
+`route_case`'s underlying logic is (against real cases). Needs the
+`router` extra (`pip install -e ".[router]"` then
 `pip install -e ../pub5_neural_operators` — see pyproject.toml for why
-the second step is required). Real design deviation from the original
-plan doc: `route()` takes `{"Pb_Pc", "Thw_Tc", "Tcw_Tc"}` directly, not
-the plan's original `inlet_pressure`/`inlet_temperature`/`mass_flow_rate`
+the second step is required; re-run it after any `[router]` reinstall,
+it silently reverts). Real design deviation from the original plan doc:
+`route_case` takes `{"Pb_Pc", "Thw_Tc", "Tcw_Tc"}` directly, not the
+plan's original `inlet_pressure`/`inlet_temperature`/`mass_flow_rate`
 schema — there's no validated mapping from physical units to these ratios
 anywhere in Pub 4/5 (see `docs/agent_implementation_plan.md`'s "Schema
 update" note).
 
 ## Immediate priorities
 
-1. Track C/D, M3: wire the router's three functions to an LLM
-   orchestrator (Claude tool use) — natural-language query in, routed
-   result + plain-language explanation out. Update
-   `agent_implementation_plan.md`'s tool-schema JSON block to match the
-   `(Pb_Pc, Thw_Tc, Tcw_Tc)` interface while doing this.
-2. Track A/B: no active priority — regime discovery reached a settled,
+1. Track C/D, M3 follow-up: verify `agent.py`'s live LLM round trip once
+   Anthropic API credentials are available in this environment
+   (`tests/integration/test_agent.py::test_ask_end_to_end_live_llm_call`
+   currently skips).
+2. Track C/D, M4: minimal Streamlit/CLI demo front end, 5-10 curated
+   scenarios exercising both branches.
+3. Track A/B: no active priority — regime discovery reached a settled,
    documented stopping point (`FINDINGS.md` §1-4). Defer
    MLflow/baselines/advanced ML/deployment (roadmap v2 §38 "do now" list)
    until there's a specific reason to pick it back up.

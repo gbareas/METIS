@@ -147,9 +147,23 @@ the pseudo-critical point where the surrogate is known to degrade").
   the same `{"fields", "field_means"}` shape as `surrogate_infer` so the
   two are directly comparable. Covers case01-09/case10/case15 only —
   11 simulated cases, not 15 as M1's docstring imprecisely said.)*
-- [ ] **M3 — Agent layer.** Wire the three tools to an LLM orchestrator
+- [x] **M3 — Agent layer.** Wire the three tools to an LLM orchestrator
   (Claude, tool use). Natural-language query in, routed result + explanation
-  out.
+  out. *(2026-08-29: `src/metis/router/agent.py` — deliberately **one**
+  tool, `route_case`, not three. Letting the LLM sequence
+  `surrogate_infer`/`confidence_score`/`solver_lookup` itself would mean
+  the LLM enacts the routing decision — exactly the "new unvalidated
+  policy on top of the validated one" this project's own design principle
+  rules out. `route_case` wraps `route()` unmodified; the LLM only parses
+  the query and explains the (already-decided) result. Model:
+  `claude-opus-5`. Built on the SDK's tool runner (beta), not a
+  hand-written loop — single tool, single turn, no need for the runner's
+  per-turn hooks. `_route_case`'s logic is validated against real
+  cases/checkpoint in `tests/integration/test_agent.py`; the actual live
+  LLM round trip (`ask()`) is untested in this environment — no
+  `ANTHROPIC_API_KEY` or `ant auth login` profile configured here, so
+  that test skips. Needs live credentials to verify before relying on
+  it.)*
 - [ ] **M4 — Interface + demo.** Minimal Streamlit or CLI front end. 5–10
   curated scenarios that clearly exercise both branches (confident surrogate
   case, routed-to-solver case).
