@@ -169,11 +169,13 @@ to collapse"). It never re-derives or overrides the routing decision.
   `README.md` — "Router agent" section with a Mermaid architecture diagram
   that renders on GitHub, plus Layout/Status updates. This plan doc's
   stale 3-tool JSON sketch replaced with the actual single `route_case`
-  tool. GitHub Actions CI green. The demo GIF is left as optional polish —
-  record `scripts/router_demo_app.py` and drop it in as
-  `docs/router_demo.gif` (a commented `![]()` placeholder is already in
-  the README); not blocking, since the write-up + diagram + live demo
-  script already carry the packaging goal.)*
+  tool. GitHub Actions CI green. `docs/router_demo.gif` — a 6-frame
+  capture of `scripts/router_demo_app.py` (recorded by driving headless
+  Brave over the DevTools protocol against the real checkpoint/DNS
+  lookup), embedded at the top of the README's Router agent section:
+  landing → routing → a confident surrogate case → the `Tcw_Tc`>1
+  fallback to the full solver → the novel point returning an explicit
+  "no precomputed answer". M5 complete.)*
 
 ---
 

@@ -24,6 +24,13 @@ neural-operator surrogate **or** the group's full-solver (DNS) database,
 based on a *validated* out-of-distribution confidence signal, and
 explains the decision in plain language.
 
+![Router demo](docs/router_demo.gif)
+
+*The curated demo (`scripts/router_demo_app.py`) routing 8 cases through
+the real checkpoint + DNS lookup: confident cases → surrogate, a case
+across the pseudo-critical boundary → full solver, a genuinely novel
+point → explicit "no precomputed answer" rather than a fabricated one.*
+
 ```mermaid
 flowchart TD
     Q["Natural-language query"] --> LLM["LLM orchestrator (Claude)<br/>parse → Pb_Pc, Thw_Tc, Tcw_Tc"]
@@ -63,11 +70,6 @@ pip install -e ".[router,demo]"
 pip install -e ../pub5_neural_operators     # see pyproject.toml for why
 streamlit run scripts/router_demo_app.py    # 8 curated scenarios, both branches
 ```
-
-<!-- Demo GIF: record scripts/router_demo_app.py and drop it in as
-     docs/router_demo.gif, then uncomment:
-![Router demo](docs/router_demo.gif)
--->
 
 ## Quickstart
 

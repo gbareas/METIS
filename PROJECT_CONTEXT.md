@@ -148,8 +148,11 @@ one-tool agent rationale, real vs. precomputed, explicit Pub 4/5 linkage,
 the n=2 limitation). `README.md` — "Router agent" section with a Mermaid
 architecture diagram that renders on GitHub, plus Layout/Status updates.
 `agent_implementation_plan.md`'s stale 3-tool JSON sketch replaced with
-the real single `route_case` tool. GitHub Actions CI green. Demo GIF left
-as optional polish (no screen recorder on the dev machine).
+the real single `route_case` tool. GitHub Actions CI green.
+`docs/router_demo.gif` (2026-08-30) — 6-frame capture of the Streamlit
+demo, recorded by driving headless Brave over the DevTools protocol
+against the real checkpoint/DNS lookup; embedded at the top of the
+README's Router agent section. **M5 complete.**
 
 ## Immediate priorities
 
@@ -164,17 +167,14 @@ demo, write-up + architecture diagram — is shippable as-is.
 
 No hard blockers remain. Open, non-blocking follow-ups:
 
-1. Demo GIF (M5 polish, optional): record `scripts/router_demo_app.py`
-   and drop it in as `docs/router_demo.gif` — commented `![]()`
-   placeholder already in the README. No screen recorder on the dev
-   machine, so it needs doing on the user's box (`peek`, or
-   `ffmpeg -f x11grab`).
-2. M3 follow-up (blocked on credentials): verify `agent.py`'s live LLM
+1. M3 follow-up (blocked on credentials): verify `agent.py`'s live LLM
    round trip once an `ANTHROPIC_API_KEY` is available in this
    environment
    (`tests/integration/test_agent.py::test_ask_end_to_end_live_llm_call`
    currently skips). The tool logic is already tested against real
    cases; only the live round trip is unverified.
+2. Optional: check the README renders as intended on GitHub (Mermaid
+   diagram + `docs/router_demo.gif`).
 3. Track A/B: no active priority — regime discovery reached a settled,
    documented stopping point (`FINDINGS.md` §1-4). Defer
    MLflow/baselines/advanced ML/deployment (roadmap v2 §38 "do now" list)
