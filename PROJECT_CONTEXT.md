@@ -180,9 +180,23 @@ eval).
   `scripts/`, `pyproject.toml`); the `router` extra no longer carries the
   `file:///` neuralop_bench dep (install it editable separately).
   `tests/unit/test_config.py` covers the resolution order.
-- **Next: R2 — `CaseDescriptor` + `CaseRegistry`** (one authoritative DNS
-  case representation; ingestion readers constructable from a descriptor;
-  missing data products raise explicit errors).
+- **R2 — case registry: DONE (2026-08-30).** New `metis.data.registry`:
+  `CaseDescriptor` (frozen; `case_id`, the three ratios, `nx/ny/nz`,
+  `n_snapshots`, `raw_dir`/`processed_dir`/`slice_root`, `extra`; methods
+  `has_raw`/`has_processed`/`has_slices`, `available_slices()`,
+  `load()`→`DNSCase`, `load_slice(id)`→`SliceCase`, `require(raw=,
+  slices=)`) and `CaseRegistry` (`from_config()` resolves the data root
+  via `metis.config`; discovers cases from `processed/<id>/metadata.json`;
+  `registry["case01"]`, `in`, `iter`, `len`, `descriptors()`; `KeyError`
+  lists known cases, missing metadata keys raise `ValueError`).
+  `metis.features.regime.case_grid_labels` now also accepts a registry.
+  `metis.data.registry.REQUIRED_METADATA_KEYS` is the authoritative
+  case-metadata schema. `tests/unit/test_registry.py` (11 tests) +
+  smoke-checked against the real 11-case data tree.
+- **Next: R3 — data validation layer** (`metis.data.validation`, currently
+  empty): structural + numerical + dataset-compatibility checks returning
+  a structured report (`report.ok/errors/warnings`), with deliberately
+  corrupted mock fixtures proving each check fails for the right reason.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

@@ -36,6 +36,7 @@ import numpy as np
 
 from metis.data.ingestion.hdf5_reader import DNSCase, HDF5Reader, latest_snapshot
 from metis.data.ingestion.slice_reader import SliceReader
+from metis.data.registry import CaseRegistry
 from metis.features.physics import case_physics_summary, wall_normal_profiles
 from metis.features.pod import pod
 
@@ -226,11 +227,22 @@ def build_feature_matrix_rich(
     return X, names
 
 
-def case_grid_labels(data_root: Path, case_ids: tuple[str, ...]) -> dict[str, CaseGridLabel]:
-    """True (Pb_Pc, Thw_Tc) operating condition per case, from the
-    companion metadata — the ground truth regime discovery is benchmarked
-    against."""
-    data_root = Path(data_root)
+def case_grid_labels(
+    source: Path | str | CaseRegistry, case_ids: tuple[str, ...]
+) -> dict[str, CaseGridLabel]:
+    """True (Pb_Pc, Thw_Tc) operating condition per case — the ground
+    truth regime discovery is benchmarked against.
+
+    `source` is either a data root (path) or a `CaseRegistry`; with a
+    registry the descriptors carry the ratios, so no metadata file is
+    re-parsed here.
+    """
+    if isinstance(source, CaseRegistry):
+        return {
+            c: CaseGridLabel(Pb_Pc=source[c].Pb_Pc, Thw_Tc=source[c].Thw_Tc)
+            for c in case_ids
+        }
+    data_root = Path(source)
     labels = {}
     for case_id in case_ids:
         meta = json.loads((data_root / "processed" / case_id / "metadata.json").read_text())
