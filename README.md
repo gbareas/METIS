@@ -69,6 +69,7 @@ metis case validate case01
 metis analyze physics case01
 metis benchmark regime-v1
 metis report regime-v1 --from results/regime_v1.json
+metis report i2b-representation --from results/   # bundles the i2b_*.json study outputs
 ```
 
 ## Router agent (Track C/D)

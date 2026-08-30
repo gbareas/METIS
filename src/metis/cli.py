@@ -240,6 +240,26 @@ def _cmd_benchmark(args) -> int:
 # --------------------------------------------------------------------- #
 # report
 # --------------------------------------------------------------------- #
+_I2B_BUNDLE_FILES = {
+    "baseline": "i2b_baseline.json", "training": "i2b_training.json",
+    "evaluation": "i2b_evaluation.json", "decision": "i2b_decision.json",
+    "modal_compare": "i2b_modal_compare.json",
+}
+
+
+def _load_i2b_bundle(path: Path) -> dict | None:
+    root = path if path.is_dir() else path.parent
+    bundle = {
+        key: json.loads((root / fn).read_text())
+        for key, fn in _I2B_BUNDLE_FILES.items() if (root / fn).exists()
+    }
+    missing = {"evaluation", "decision"} - bundle.keys()
+    if missing:
+        _die(f"i2b-representation report needs {sorted(missing)} under {root}")
+        return None
+    return bundle
+
+
 def _cmd_report(args) -> int:
     from metis.reporting.generators import GENERATORS, physics_report
 
@@ -252,6 +272,15 @@ def _cmd_report(args) -> int:
         reg = _registry(args)
         report = physics_report(run_analysis(reg, "physics", args.target))
         out = args.out or reports_dir / f"physics-{args.target}"
+    elif args.kind == "i2b-representation":
+        if not args.from_json:
+            return _die("metis report i2b-representation needs --from results/ "
+                        "(a directory, or any of its i2b_*.json)")
+        data = _load_i2b_bundle(args.from_json)
+        if data is None:
+            return 2
+        report = GENERATORS[args.kind](data)
+        out = args.out or reports_dir / args.kind
     else:
         if args.run_id:
             import mlflow
@@ -397,7 +426,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # report
     pr = sub.add_parser("report", help="build a report from an experiment result")
-    pr.add_argument("kind", choices=["regime-v1", "representation", "physics"])
+    pr.add_argument("kind", choices=["regime-v1", "representation", "i2b-representation", "physics"])
     pr.add_argument("target", nargs="?", help="case id (physics only)")
     pr.add_argument("--from", dest="from_json", type=Path, default=None)
     pr.add_argument("--run-id", dest="run_id", default=None)

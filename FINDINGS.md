@@ -528,3 +528,25 @@ PCA at k=32 vs the best conv-AE seed (seed 3) at k=32.
   spectral distortion on top. That is the whole mechanism behind the
   negative result — there is no missing nonlinear structure for a bigger
   model to chase, so the escalation is correctly declined.
+
+### Artifacts & reproduction (B9 — Phase B closed 2026-08-30)
+
+Protocol `docs/i2b_representation_protocol.md` + config
+`configs/experiments/i2b_representation_v1.yaml` (both frozen B1). Run
+order:
+
+| step | script | output |
+|---|---|---|
+| B3 | `scripts/i2b_baseline.py` | `results/i2b_baseline.json` |
+| B5 | `scripts/i2b_train.py` | `results/i2b_training.json` + 25 checkpoints + MLflow `phase=B5` |
+| B6 | `scripts/i2b_evaluate.py --data-root <dns>` | `results/i2b_evaluation.json` |
+| B7 | `scripts/i2b_decision.py` | `results/i2b_decision.json` + MLflow `phase=B7` |
+| B8 | `scripts/i2b_modal_compare.py` | `results/i2b_modal_compare.json` + `reports/i2b-representation/figures/` |
+| B9 | `metis report i2b-representation --from results/` | `reports/i2b-representation/{summary.md,metrics.json,figures/}` |
+
+The `metis report i2b-representation` generator
+(`metis.reporting.generators.i2b_representation_report`) bundles the five
+`results/i2b_*.json` into one standing report; `evaluation` + `decision`
+are required, the rest enrich it. **No model registered — negative
+result.** Phase B is closed; next is Phase C (virtual-sensor time-series
+ML).

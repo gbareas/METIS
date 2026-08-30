@@ -546,15 +546,24 @@ eval).
     OOD (OOD x-spectrum relL2 PCA 0.07 vs AE 0.22; OOD RMS-profile 0.13
     vs 0.22). No missing nonlinear structure → escalation correctly
     declined. FINDINGS §7 B8 entry added.
-- **Next: B9** — Phase B close-out: final FINDINGS §7 polish + an
-  `i2b_representation_report` generator in `metis.reporting.generators`
-  wired to the `metis report` CLI (reads `results/i2b_{baseline,
-  training,evaluation,decision,modal_compare}.json` → one `Report` with
-  the metric tables + figure hooks). No model registration (negative).
-  Secondary pressure-holdout split stays unbuilt (clean primary negative
-  makes it unnecessary). **Phase B then closes.** After Phase B: Phase C
-  (virtual-sensor temporal ML), D (SQL layer), E (one model → FastAPI →
-  Docker → CI/CD → cloud → monitoring).
+  - **B9 — Phase B close-out: DONE (2026-08-30).**
+    `metis.reporting.generators.i2b_representation_report` +
+    `metis report i2b-representation --from results/` (CLI bundles the
+    five `results/i2b_*.json`; `evaluation`+`decision` required, rest
+    enrich). Report → `reports/i2b-representation/{summary.md,
+    metrics.json,figures/}` (verdict, recon/robustness-vs-k table,
+    physical-fidelity table, per-seed `assess_model` table, modal
+    structure, 2 figures). `tests/unit/test_reporting.py` +2. FINDINGS
+    §7 "Artifacts & reproduction" table added. No model registered.
+- **PHASE B CLOSED (2026-08-30).** I2-B negative result fully documented
+  (FINDINGS §7). Secondary pressure-holdout split intentionally left
+  unbuilt. **Next: Phase C — virtual-sensor / time-series ML** (§53,
+  C1–C11): pick sensors/variables → standardized temporal dataset
+  builder → industry-friendly tabular persistence → leakage-safe
+  chronological splits → persistence baseline → AR/linear baseline →
+  XGBoost/LightGBM → LSTM → OOD operating-condition tests → regime-aware
+  evaluation → MLflow track + register validated model. Then D (SQL
+  layer), E (one model → FastAPI → Docker → CI/CD → cloud → monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

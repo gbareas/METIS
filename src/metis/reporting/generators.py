@@ -109,6 +109,138 @@ def representation_study_report(data: dict) -> Report:
 
 
 # --------------------------------------------------------------------- #
+# I2-B slice representation study  (a bundle of results/i2b_*.json)
+# --------------------------------------------------------------------- #
+_I2B_PHYS_ROWS = (
+    ("rms_profile_rel_l2_x", "RMS profile relL2 (x)"),
+    ("rms_profile_rel_l2_z", "RMS profile relL2 (z)"),
+    ("spectrum_rel_l2_x", "spectrum relL2 (x)"),
+    ("spectrum_rel_l2_z", "spectrum relL2 (z)"),
+    ("spectrum_log_corr_x", "log-spectrum corr (x)"),
+    ("spectrum_log_corr_z", "log-spectrum corr (z)"),
+    ("energy_fraction_l1", "POD energy-fraction L1"),
+)
+
+
+def i2b_representation_report(data: dict) -> Report:
+    """`data` bundles the study's result JSONs by key: `evaluation` and
+    `decision` are required; `training`, `baseline`, `modal_compare` are
+    used when present. Built by `metis report i2b-representation --from`."""
+    ev = data["evaluation"]
+    dec = data["decision"]
+    train = data.get("training", {})
+    modal = data.get("modal_compare")
+    hk = str(ev["headline_latent_dim"])
+    grid = [str(k) for k in ev["latent_dims"]]
+
+    r = Report(title="I2-B slice-level representation study")
+    r.provenance.update({"headline_latent_dim": ev["headline_latent_dim"],
+                         "seeds": ev.get("seeds"), "dataset": ev.get("dataset")})
+
+    r.section("Verdict", f"**{dec['decision']}**\n\n"
+              + "\n".join(f"- {why}" for why in dec.get("negative_reasons", []))
+              + f"\n\nModel registered: **{'yes' if dec.get('register_model') else 'no'}**.")
+
+    if train:
+        r.section("Setup", table=[{
+            "field": train.get("field"), "slice": train.get("slice_id"),
+            "grid": "x".join(map(str, train.get("input_hw", []))),
+            "conv channels": ",".join(map(str, train.get("channels", []))),
+            "activation": train.get("activation"), "batch": train.get("batch_size"),
+            "latent dims": ",".join(grid), "seeds": len(ev.get("seeds", [])),
+            "n train/val": f"{train.get('n', {}).get('train')}/{train.get('n', {}).get('val')}",
+        }])
+
+    recon_rows = []
+    for k in grid:
+        e = ev["per_latent_dim"][k]
+        recon_rows.append({
+            "k": k, "compression": round(e["compression_ratio"]),
+            "PCA val relL2": e["pca"]["val"]["relative_l2"],
+            "AE val relL2": e["ae"]["val_mean"]["relative_l2"],
+            "AE val std": e["ae"]["val_std"]["relative_l2"],
+            "PCA OOD relL2": e["pca"]["ood"]["relative_l2"],
+            "AE OOD relL2": e["ae"]["ood_mean"]["relative_l2"],
+            "PCA OOD-degr": e["pca"]["ood_degradation_ratio"],
+            "AE OOD-degr": e["ae"]["ood_degradation_ratio_mean"],
+            "AE latent-stab max": e["ae"]["latent_stability"]["max_rel_l2"],
+        })
+    r.section("Reconstruction & robustness vs latent dim "
+              "(PCA is the closed-form optimum; lower relL2 better)", table=recon_rows)
+
+    he = ev["per_latent_dim"][hk]
+    phys_rows = []
+    for key, label in _I2B_PHYS_ROWS:
+        phys_rows.append({
+            "diagnostic": label,
+            "PCA val": he["pca"]["val"][key], "AE val": he["ae"]["val_mean"][key],
+            "PCA OOD": he["pca"]["ood"][key], "AE OOD": he["ae"]["ood_mean"][key],
+        })
+    r.section(f"Physical fidelity at headline k={hk} (true vs reconstruction)", table=phys_rows)
+
+    r.section(f"assess_model per seed at k={hk} "
+              "(is_better needs an ML gain AND no physical regression)",
+              table=[{"seed": p["seed"], "is_better": p["is_better"], "reason": p["reason"]}
+                     for p in dec["headline"]["per_seed"]])
+
+    if modal:
+        lr = modal["summary"]["linear_rank"]
+        ef = modal["splits"]["val"]["pod_energy_fraction"]
+        r.section("Modal structure",
+                  f"Training POD is high-rank: **{lr['modes_for_90pct']} modes for 90 %**, "
+                  f"**{lr['modes_for_99pct']} for 99 %**; k={hk} captures "
+                  f"{lr['reconstructed_variance_at_k'] * 100:.1f} %. The conv-AE spans "
+                  "essentially the same leading subspace as POD — reconstructed-ensemble "
+                  "POD energy fractions (val):",
+                  table=[{"mode": i + 1, "true": round(ef["true"][i], 3),
+                          "PCA recon": round(ef["pca"][i], 3), "AE recon": round(ef["ae"][i], 3)}
+                         for i in range(min(6, len(ef["true"])))])
+
+    r.metrics.update({
+        f"k{hk}.pca_val_relL2": he["pca"]["val"]["relative_l2"],
+        f"k{hk}.ae_val_relL2": he["ae"]["val_mean"]["relative_l2"],
+        f"k{hk}.pca_ood_relL2": he["pca"]["ood"]["relative_l2"],
+        f"k{hk}.ae_ood_relL2": he["ae"]["ood_mean"]["relative_l2"],
+        f"k{hk}.ae_latent_stability_max": he["ae"]["latent_stability"]["max_rel_l2"],
+        f"k{hk}.n_is_better": dec["headline"]["n_is_better"],
+        "positive": float(bool(dec.get("positive"))),
+        "register_model": float(bool(dec.get("register_model"))),
+    })
+    if modal:
+        r.metrics["modes_for_90pct"] = modal["summary"]["linear_rank"]["modes_for_90pct"]
+        r.metrics["modes_for_99pct"] = modal["summary"]["linear_rank"]["modes_for_99pct"]
+
+    def _recon_fig(fig):
+        ax = fig.subplots()
+        ks = [int(k) for k in grid]
+        for split, style in (("val", "-"), ("ood", "--")):
+            ax.plot(ks, [ev["per_latent_dim"][k]["pca"][split]["relative_l2"] for k in grid],
+                    style, marker="o", label=f"PCA {split}")
+            ax.plot(ks, [ev["per_latent_dim"][k]["ae"][f"{split}_mean"]["relative_l2"] for k in grid],
+                    style, marker="s", label=f"conv-AE {split}")
+        ax.set(xlabel="latent dim k", ylabel="reconstruction relative L2",
+               title="I2-B: conv-AE never beats PCA")
+        ax.legend()
+
+    r.add_figure("reconstruction_vs_k", _recon_fig)
+
+    if modal and modal.get("training_cumulative_energy_head"):
+        cum = modal["training_cumulative_energy_head"]
+
+        def _pod_fig(fig):
+            ax = fig.subplots()
+            ax.plot(range(1, len(cum) + 1), cum, marker=".")
+            ax.axhline(0.9, ls="--", c="grey")
+            ax.axhline(0.99, ls=":", c="grey")
+            ax.set(xlabel="POD mode", ylabel="cumulative reconstructed variance",
+                   title="Training POD spectrum (centre-plane u')")
+
+        r.add_figure("pod_cumulative_spectrum", _pod_fig)
+
+    return r
+
+
+# --------------------------------------------------------------------- #
 # case physics summary  (an AnalysisResult from run_analysis(..., "physics"))
 # --------------------------------------------------------------------- #
 def physics_report(result) -> Report:
@@ -149,4 +281,5 @@ def physics_report(result) -> Report:
 GENERATORS = {
     "regime-v1": regime_v1_report,
     "representation": representation_study_report,
+    "i2b-representation": i2b_representation_report,
 }
