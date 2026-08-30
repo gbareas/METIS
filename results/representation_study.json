@@ -15,6 +15,10 @@
         "ood_nearest_Pb_Pc_centroid": {
           "case10": 1.5,
           "case15": 1.5
+        },
+        "latent_physical_correlation": {
+          "Pb_Pc": 0.8853971286379118,
+          "Thw_Tc": 0.4525320767324029
         }
       },
       "autoencoder": {
@@ -35,6 +39,10 @@
             "ood_nearest_Pb_Pc_centroid": {
               "case10": 1.5,
               "case15": 1.5
+            },
+            "latent_physical_correlation": {
+              "Pb_Pc": 0.9380369429076763,
+              "Thw_Tc": 0.26850555890584116
             }
           },
           {
@@ -46,6 +54,10 @@
             "ood_nearest_Pb_Pc_centroid": {
               "case10": 1.5,
               "case15": 1.5
+            },
+            "latent_physical_correlation": {
+              "Pb_Pc": 0.9380369429076763,
+              "Thw_Tc": 0.26850555890584116
             }
           },
           {
@@ -57,6 +69,10 @@
             "ood_nearest_Pb_Pc_centroid": {
               "case10": 1.5,
               "case15": 1.5
+            },
+            "latent_physical_correlation": {
+              "Pb_Pc": 0.9380369429076763,
+              "Thw_Tc": 0.26850555890584116
             }
           },
           {
@@ -68,6 +84,10 @@
             "ood_nearest_Pb_Pc_centroid": {
               "case10": 1.5,
               "case15": 1.5
+            },
+            "latent_physical_correlation": {
+              "Pb_Pc": 0.9380369429076763,
+              "Thw_Tc": 0.26850555890584116
             }
           },
           {
@@ -79,6 +99,10 @@
             "ood_nearest_Pb_Pc_centroid": {
               "case10": 1.5,
               "case15": 1.5
+            },
+            "latent_physical_correlation": {
+              "Pb_Pc": 0.9380369429076763,
+              "Thw_Tc": 0.26850555890584116
             }
           }
         ],
@@ -111,7 +135,12 @@
             "case10": 1.5,
             "case15": 1.5
           }
-        ]
+        ],
+        "latent_stability": {
+          "mean_rel_l2": 1.848132031334428e-16,
+          "max_rel_l2": 1.848132031334428e-16,
+          "n": 5
+        }
       },
       "autoencoder_vs_pca": {
         "deltas": {
@@ -145,6 +174,10 @@
         "ood_nearest_Pb_Pc_centroid": {
           "case10": 5.0,
           "case15": 5.0
+        },
+        "latent_physical_correlation": {
+          "Pb_Pc": 0.8080043820802715,
+          "Thw_Tc": 0.830928980764901
         }
       },
       "autoencoder": {
@@ -165,6 +198,10 @@
             "ood_nearest_Pb_Pc_centroid": {
               "case10": 5.0,
               "case15": 5.0
+            },
+            "latent_physical_correlation": {
+              "Pb_Pc": 0.6328789726844264,
+              "Thw_Tc": 0.8261726004048945
             }
           },
           {
@@ -176,6 +213,10 @@
             "ood_nearest_Pb_Pc_centroid": {
               "case10": 5.0,
               "case15": 5.0
+            },
+            "latent_physical_correlation": {
+              "Pb_Pc": 0.6328789726844264,
+              "Thw_Tc": 0.8261726004048945
             }
           },
           {
@@ -187,6 +228,10 @@
             "ood_nearest_Pb_Pc_centroid": {
               "case10": 5.0,
               "case15": 5.0
+            },
+            "latent_physical_correlation": {
+              "Pb_Pc": 0.6328789726844264,
+              "Thw_Tc": 0.8261726004048945
             }
           },
           {
@@ -198,6 +243,10 @@
             "ood_nearest_Pb_Pc_centroid": {
               "case10": 5.0,
               "case15": 5.0
+            },
+            "latent_physical_correlation": {
+              "Pb_Pc": 0.6328789726844264,
+              "Thw_Tc": 0.8261726004048945
             }
           },
           {
@@ -209,6 +258,10 @@
             "ood_nearest_Pb_Pc_centroid": {
               "case10": 5.0,
               "case15": 5.0
+            },
+            "latent_physical_correlation": {
+              "Pb_Pc": 0.6328789726844264,
+              "Thw_Tc": 0.8261726004048945
             }
           }
         ],
@@ -241,7 +294,12 @@
             "case10": 5.0,
             "case15": 5.0
           }
-        ]
+        ],
+        "latent_stability": {
+          "mean_rel_l2": 1.1170334836215282e-16,
+          "max_rel_l2": 1.1170334836215282e-16,
+          "n": 5
+        }
       },
       "autoencoder_vs_pca": {
         "deltas": {

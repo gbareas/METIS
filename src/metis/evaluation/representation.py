@@ -11,7 +11,9 @@ checked mechanically.
 from __future__ import annotations
 
 import numpy as np
+from scipy.linalg import orthogonal_procrustes
 
+from metis.evaluation.metrics import relative_l2
 from metis.evaluation.regime import (
     adjusted_rand_index,
     kmeans_cluster,
@@ -58,6 +60,44 @@ def evaluate_representation(
             nearest[cid] = min(d, key=d.get)
         out["ood_nearest_Pb_Pc_centroid"] = nearest
 
+    return out
+
+
+def latent_stability(latents: list[np.ndarray], *, reference: int = 0) -> dict:
+    """How reproducible a latent embedding is across repeated fits (e.g.
+    different seeds). Each latent is aligned to the reference by
+    orthogonal Procrustes (rotation/reflection of latent axes is
+    meaningless), then compared by relative L2. Returns the mean and max
+    misalignment over the non-reference latents (0 = identical)."""
+    if len(latents) < 2:
+        return {"mean_rel_l2": 0.0, "max_rel_l2": 0.0, "n": len(latents)}
+    ref = np.asarray(latents[reference], dtype=float)
+    diffs = []
+    for i, z in enumerate(latents):
+        if i == reference:
+            continue
+        z = np.asarray(z, dtype=float)
+        rot, _ = orthogonal_procrustes(z, ref)
+        diffs.append(relative_l2(ref, z @ rot))
+    return {
+        "mean_rel_l2": float(np.mean(diffs)),
+        "max_rel_l2": float(np.max(diffs)),
+        "n": len(latents),
+    }
+
+
+def latent_physical_correlation(
+    Z: np.ndarray, physical: dict[str, np.ndarray]
+) -> dict[str, float]:
+    """For each physical variable, the strongest |Pearson correlation|
+    between it and any single latent axis — how directly the latent
+    encodes that variable."""
+    Z = np.asarray(Z, dtype=float)
+    out = {}
+    for name, values in physical.items():
+        v = np.asarray(values, dtype=float)
+        cors = [abs(np.corrcoef(Z[:, j], v)[0, 1]) for j in range(Z.shape[1])]
+        out[name] = float(np.nanmax(cors))
     return out
 
 

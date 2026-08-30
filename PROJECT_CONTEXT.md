@@ -322,14 +322,29 @@ eval).
   scaffold subdirs. First real consumers of I1 tracking: this study +
   the benchmark. `metis.models`/`training`/`evaluation.representation`
   are reusable if I2-B is taken up.
-- **Next: I5 — physics-aware evaluation API** (`metis.evaluation`): a
-  shared layer combining generic ML metrics (MAE/RMSE/nRMSE/relative L2/
-  R²), representation metrics (explained variance, latent stability
-  across seeds, latent↔physical-variable correlations), physical
-  diagnostics (mean/RMS profiles, spectra, POD modal energy, wall
-  quantities), and OOD degradation — with the rule "a model isn't
-  'better' unless the physical diagnostics agree, not just one ML
-  metric".
+- **I5 — physics-aware evaluation API: DONE (2026-08-30).**
+  `metis.evaluation.metrics` — `pointwise_metrics` (MAE / RMSE / nRMSE /
+  relative-L2 / R²; nRMSE & rel-L2 scale-invariant).
+  `metis.evaluation.physical` — `physical_field_report(true, pred, *,
+  profile_axis, spectrum_axis=)` bundling pointwise + mean/RMS-profile
+  relative-L2 + wavenumber-spectrum agreement (rel-L2, log-spectrum
+  correlation, premultiplied-peak shift); `pod_energy_agreement` on
+  energy-fraction arrays. `metis.evaluation.representation` gained
+  `latent_stability` (Procrustes-aligned rel-L2 across repeated fits) and
+  `latent_physical_correlation` (max |corr| of any latent axis with a
+  physical variable). `metis.evaluation.assessment.assess_model` — the
+  §17 gate: signed deltas per metric, `is_better` only if ≥1 ML metric
+  improves AND no physical diagnostic regresses. `tests/unit/{test_metrics,
+  test_physical_eval,test_assessment}.py` + `test_representation_eval`
+  extended (20 new tests, all numpy/scipy → run in CI). Wired into
+  `scripts/representation_study.py`: latent_stability ≈ 1e-16 and
+  matching latent↔physical correlations further confirm the FINDINGS §6
+  stop — the AE just finds PCA's subspace.
+- **Next: I6 — reporting layer.** `metis report --run-id <id>` (a script
+  for now) → `reports/<id>/{summary.md, metrics.json, figures/}` from an
+  experiment, so plots/tables aren't rebuilt by hand. First report
+  types: case physics summary, regime-v1 benchmark, representation
+  study, OOD comparison.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

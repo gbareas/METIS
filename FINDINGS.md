@@ -293,6 +293,12 @@ block). The zero seed-to-seed variance is the tell: with 9 training
 samples a 256→32→2 (or 7→32→2) MLP just finds the leading linear
 subspace — there is no nonlinear structure for it to find at this N.
 
+The I5 diagnostics confirm it: `latent_stability` (Procrustes-aligned
+relative L2 across the 5 seeded fits) is ~1e-16 for both blocks — every
+seed lands on the same latent — and the strongest |latent↔physical
+correlation| matches PCA's (bulk: AE `Pb_Pc` 0.94 vs PCA 0.89;
+rms_profile: AE `Thw_Tc` 0.83 vs PCA 0.83).
+
 **Per the I2 stop criterion (§14): recorded and parked.** Case-level
 representation learning is not pursued further. Escalating to I2-B (2D
 slice fields, where N is thousands of snapshots rather than 9 cases) is

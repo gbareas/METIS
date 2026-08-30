@@ -24,7 +24,12 @@ from metis.config import add_data_root_args, resolve_data_root
 from metis.data.datasets import build_feature_dataset
 from metis.data.preprocessing import StandardScaler
 from metis.data.registry import CaseRegistry
-from metis.evaluation.representation import compare_to_baseline, evaluate_representation
+from metis.evaluation.representation import (
+    compare_to_baseline,
+    evaluate_representation,
+    latent_physical_correlation,
+    latent_stability,
+)
 from metis.features.regime import (
     ALL_CASE_IDS,
     OOD_CASE_IDS,
@@ -61,21 +66,30 @@ def _study_block(block: str, X: np.ndarray, Pb, Thw) -> dict:
     Pb_tr = Pb[_TRAIN_IDX]
     Thw_tr = Thw[_TRAIN_IDX]
 
+    phys = {"Pb_Pc": Pb_tr, "Thw_Tc": Thw_tr}
+
     pca = PCARepresentation(latent_dim=LATENT_DIM).fit(Xs_tr)
+    Z_pca = pca.transform(Xs_tr)
     pca_eval = evaluate_representation(
-        pca.transform(Xs_tr), Pb_tr, Thw_tr,
+        Z_pca, Pb_tr, Thw_tr,
         Z_ood=pca.transform(Xs_ood), ood_case_ids=list(OOD_CASE_IDS),
     )
+    pca_eval["latent_physical_correlation"] = latent_physical_correlation(Z_pca, phys)
 
-    ae_runs = []
+    ae_runs, ae_latents = [], []
     for seed in SEEDS:
         ae = Autoencoder(latent_dim=LATENT_DIM, hidden=(32,), standardize=False)
         ae.fit(Xs_tr, trainer=Trainer(seed=seed, max_epochs=4000, patience=400, log_every=500))
-        ae_runs.append(evaluate_representation(
-            ae.transform(Xs_tr), Pb_tr, Thw_tr,
+        Z = ae.transform(Xs_tr)
+        ae_latents.append(Z)
+        run_eval = evaluate_representation(
+            Z, Pb_tr, Thw_tr,
             Z_ood=ae.transform(Xs_ood), ood_case_ids=list(OOD_CASE_IDS),
-        ))
+        )
+        run_eval["latent_physical_correlation"] = latent_physical_correlation(Z, phys)
+        ae_runs.append(run_eval)
     ae_agg = _aggregate(ae_runs)
+    ae_agg["latent_stability"] = latent_stability(ae_latents)
 
     ae_mean_metrics = {k.removesuffix("_mean"): v for k, v in ae_agg.items() if k.endswith("_mean")}
     verdict = compare_to_baseline(ae_mean_metrics, pca_eval)
