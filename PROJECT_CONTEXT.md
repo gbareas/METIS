@@ -535,16 +535,26 @@ eval).
     VAE/U-Net/FNO escalation, no model registered, I2-B-2 (`T`) /
     near-wall slices NOT triggered (clean negative). FINDINGS §7 header
     rewritten to the verdict + B7 entry.
-- **Next: B8** — assemble the modal / physical-statistic comparison
-  writeup from `results/i2b_evaluation.json` (PCA vs AE reconstructed
-  fields, RMS-profile + spectrum overlays, POD-mode structure) into
-  FINDINGS §7 / a short doc. Then **B9** — final §7 polish + a
-  `metis report`-style generator for the I2-B study (reads the three
-  results JSONs → one report). No model registration (negative).
-  The secondary pressure-holdout split stays unbuilt — a clean negative
-  on the primary makes it unnecessary. **Phase B then closes.**
-  After Phase B: Phase C (virtual-sensor temporal ML), D (SQL layer),
-  E (one model → FastAPI → Docker → CI/CD → cloud → monitoring).
+  - **B8 — modal & physical-statistic comparison: DONE (2026-08-30).**
+    `scripts/i2b_modal_compare.py`, `results/i2b_modal_compare.json`,
+    figures under `reports/i2b-representation/figures/` (regenerated).
+    Key points: centre-plane `u'` is irreducibly high-rank (67 POD modes
+    for 90 %, 181 for 99 %; k32 = 77.6 %). The conv-AE spans essentially
+    the **same leading subspace as POD** — reconstructed-ensemble POD
+    energy fractions match PCA's to ~0.01 (mode 1: true 0.16, PCA 0.26,
+    AE 0.26) — it just reconstructs it less accurately, and much worse
+    OOD (OOD x-spectrum relL2 PCA 0.07 vs AE 0.22; OOD RMS-profile 0.13
+    vs 0.22). No missing nonlinear structure → escalation correctly
+    declined. FINDINGS §7 B8 entry added.
+- **Next: B9** — Phase B close-out: final FINDINGS §7 polish + an
+  `i2b_representation_report` generator in `metis.reporting.generators`
+  wired to the `metis report` CLI (reads `results/i2b_{baseline,
+  training,evaluation,decision,modal_compare}.json` → one `Report` with
+  the metric tables + figure hooks). No model registration (negative).
+  Secondary pressure-holdout split stays unbuilt (clean primary negative
+  makes it unnecessary). **Phase B then closes.** After Phase B: Phase C
+  (virtual-sensor temporal ML), D (SQL layer), E (one model → FastAPI →
+  Docker → CI/CD → cloud → monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

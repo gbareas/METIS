@@ -494,3 +494,37 @@ escalation to VAE / U-Net / FNO / DeepONet; no model registered. I2-B-2
 negative, not an inconclusive one. B8 assembles the modal/physical
 comparison from `results/i2b_evaluation.json`; B9 is the final writeup +
 a `metis report` for the study.
+
+### B8 — modal & physical-statistic comparison (2026-08-30)
+
+`scripts/i2b_modal_compare.py`, `results/i2b_modal_compare.json`, figures
+under `reports/i2b-representation/figures/` (regenerated, not committed).
+PCA at k=32 vs the best conv-AE seed (seed 3) at k=32.
+
+- **The field is irreducibly high-rank.** The training POD spectrum
+  needs **67 modes for 90 %** and **181 for 99 %** of the variance; k=32
+  captures 77.6 %. There is no compact linear code — and, per B6/B7, no
+  compact nonlinear one either at k ≤ 32.
+
+- **The conv-AE spans essentially the same leading subspace as POD, just
+  less accurately.** Leading POD energy fractions of the *reconstructed*
+  val ensembles are nearly identical for the two models — mode 1: true
+  0.163, PCA 0.261, AE 0.258; top-5 cumulative: true 0.49, PCA 0.70, AE
+  0.68. Both reconstructions over-concentrate energy into the leading
+  modes (a low-rank projection always does — it drops the broadband
+  tail), and the AE's modal signature tracks PCA's to within ~0.01. The
+  nonlinearity is not buying a different representation.
+
+- **Where the AE actually loses is fidelity, especially OOD.** Ensemble
+  wavenumber-spectrum relative-L2 (dx = index units): val x-spectrum
+  PCA 0.354 vs AE 0.384; **OOD x-spectrum PCA 0.070 vs AE 0.224**. RMS
+  profile along x: val PCA 0.244 vs AE 0.267; **OOD PCA 0.129 vs AE
+  0.222**. On unseen operating conditions the linear basis reconstructs
+  the second-order statistics ~3× better than the conv-AE.
+
+- **Reading.** POD gives the optimal rank-k subspace in closed form; the
+  fixed, untuned conv-AE (which early-stops at epoch 1–2, §B5)
+  approximates that same subspace and adds reconstruction error and
+  spectral distortion on top. That is the whole mechanism behind the
+  negative result — there is no missing nonlinear structure for a bigger
+  model to chase, so the escalation is correctly declined.
