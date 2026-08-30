@@ -282,11 +282,33 @@ eval).
   FINDINGS.md §5 records the freeze. The three older
   `scripts/run_regime_*.py` still work and still reproduce their JSONs
   bit-for-bit (verified); they're kept as the exploratory trail.
-- **Next (Stage 2): I1 — MLflow experiment tracking.** `mlflow` is
-  already in the `ml` extra but unintegrated. Local `mlruns/` only, no
-  server. Wire it into the *next* new ML workflow (the I2 autoencoder),
-  not retroactively into everything. Given an MLflow run id another user
-  can see the data used, config, metrics, artifact locations.
+- **I1 — MLflow experiment tracking: DONE (2026-08-30).** New
+  `metis.tracking`: `run(experiment, *, params=, tags=, tracking_dir=,
+  enabled=)` context manager over MLflow. Local-first — runs to
+  `<repo>/mlruns/` unless `$MLFLOW_TRACKING_URI` is set, no server/DB
+  (sets `MLFLOW_ALLOW_FILE_STORE=true`, since MLflow ≥3 gates the file
+  store — `mlflow ui` needs the same flag exported). Auto-logs git
+  commit, `metis.__version__`, python/platform, the flattened config,
+  and `runtime_seconds` on exit; handle exposes `log_metrics` /
+  `log_params` / `log_artifact` / `log_dict` / `set_tags`. **Graceful
+  degradation**: no `ml` extra → `is_available()` is False and `run()`
+  yields a no-op `_NullRun` (callers never branch). First consumer:
+  `scripts/benchmark_regime_v1.py` logs every regime-v1 run (params =
+  benchmark config + data_root; metrics = all block/combined ARI/LOCO +
+  per-check pass; artifacts = `regime_v1.json` + the config yaml);
+  `--no-track` disables. `metis.__init__` now sets `__version__` via
+  `importlib.metadata`. `tests/unit/test_tracking.py` (6 tests,
+  `importorskip mlflow`) incl. the §13 acceptance check (run id → data,
+  config, metrics, artifacts) and failed-run recording. Benchmark check
+  names lost their `[]` (MLflow metric-name charset): `best_block[x]` →
+  `best_block__x`; `results/regime_v1.json` regenerated.
+- **Next (Stage 2): I2 — first new ML-discovery model.** An autoencoder
+  representation study on the transcritical DNS, benchmarked against
+  PCA/POD and interpreted through the known pressure/thermal physics
+  (I2-A: RMS/profile vectors → I2-B: 2D slice fields). Stop criterion:
+  if the nonlinear latent only reproduces PCA/POD structure with no
+  extra interpretability or OOD robustness, record that and stop — don't
+  escalate architecture. First real consumer of I1's tracking.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

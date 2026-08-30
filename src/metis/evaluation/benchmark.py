@@ -110,7 +110,7 @@ def run_regime_v1(
     ):
         best = _best_block(metric)
         checks.append(BenchmarkCheck(
-            f"best_block[{metric}]", best == expected_block,
+            f"best_block__{metric}", best == expected_block,
             f"expected {expected_block}, got {best} "
             f"({', '.join(f'{b}={blocks[b][metric]:.3f}' for b in FEATURE_BLOCK_NAMES)})",
         ))
