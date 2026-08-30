@@ -234,12 +234,28 @@ eval).
   Deliberately NOT rewiring `evaluation.regime`'s global standardization
   — the doc says that's fine for the exploratory small-N task; leakage-
   safe splits land with R7/I2.
-- **Next: R5 — dataset abstraction + artifact caching**
-  (`metis.data.datasets`, empty): Level-1 case-level feature datasets
-  first (one row per case) as `.npz` + `metadata.json` (dataset id,
-  source cases, features, preprocessing, split, config, code version);
-  running an evaluation twice shouldn't re-read raw DNS if the extracted
-  dataset is unchanged.
+- **R5 — dataset abstraction + artifact caching: DONE (2026-08-30).** New
+  `metis.data.datasets`: `FeatureDataset` (Level-1, one feature row per
+  case — `X`, `case_ids`, `feature_names`, `feature_set`, `provenance`;
+  `save`/`load` to `<dir>/data.npz` + `metadata.json`; `row(id)`,
+  `matrix(subset)`) and `build_feature_dataset(registry, case_ids,
+  feature_set, out_dir=, rebuild=)`. `feature_set` ∈ {compact, rich,
+  bulk, mean_profile, rms_profile, pod} wraps the `regime.py` builders.
+  Caching keys on a fingerprint of (case_ids, feature_set, sha256 of
+  `features/{regime,physics,pod}.py`) — editing feature code busts the
+  cache; raw-DNS edits are NOT detected (documented; use `--rebuild`).
+  Provenance also records git commit, data_root, timestamp, shape.
+  `scripts/build_feature_dataset.py` CLI; `artifacts/` gitignored.
+  `tests/unit/test_feature_dataset.py` (8 tests). Real-data smoke: first
+  build 11×14 in 7.4s, cached re-run 0.001s, identical X — the
+  acceptance criterion (no raw re-read when unchanged).
+- **Next: R6 — standard analysis API**: a thin common
+  `run_analysis(case, analysis, config)` / `metis analyze <kind> <case>`
+  layer over the trusted physics functions (physics summary, spectra,
+  POD, regime feature extraction) returning a standard result object
+  (name, inputs, config, outputs, validation metadata, artifact writer).
+  Do NOT force one generic class hierarchy — a thin execute/result
+  protocol is enough.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

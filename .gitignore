@@ -19,3 +19,6 @@ build/
 
 # MLflow (added in Phase 3)
 mlruns/
+
+# Generated dataset / model / report artifacts (milestone R5+)
+/artifacts/
