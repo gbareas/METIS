@@ -1,0 +1,79 @@
+"""Score a learned representation against the known regime axes
+(milestone I2).
+
+Same instruments as `metis.evaluation.regime` (k=3 clustering ARI, LOCO
+nearest-centroid accuracy, OOD nearest-Pb_Pc-centroid) but applied to an
+arbitrary latent `Z` instead of a PCA of raw features — so a PCA baseline
+and an autoencoder latent are directly comparable, and the I2 stop
+criterion ("does the nonlinear latent add anything over PCA?") can be
+checked mechanically.
+"""
+from __future__ import annotations
+
+import numpy as np
+
+from metis.evaluation.regime import (
+    adjusted_rand_index,
+    kmeans_cluster,
+    loco_axis_accuracy,
+)
+
+_METRICS = ("ari_vs_Pb_Pc", "ari_vs_Thw_Tc", "loco_accuracy_Pb_Pc", "loco_accuracy_Thw_Tc")
+
+
+def evaluate_representation(
+    Z_train: np.ndarray,
+    Pb_Pc_train: np.ndarray,
+    Thw_Tc_train: np.ndarray,
+    *,
+    Z_ood: np.ndarray | None = None,
+    ood_case_ids: list[str] | None = None,
+    seed: int = 0,
+) -> dict:
+    """Cluster/organisation metrics for a latent embedding of the training
+    cases, plus OOD nearest-`Pb_Pc`-centroid placement if `Z_ood` given."""
+    Z_train = np.asarray(Z_train, dtype=float)
+    Pb_Pc_train = np.asarray(Pb_Pc_train)
+    Thw_Tc_train = np.asarray(Thw_Tc_train)
+
+    clusters = kmeans_cluster(Z_train, k=3, seed=seed)
+    out = {
+        "n_latent": int(Z_train.shape[1]),
+        "ari_vs_Pb_Pc": adjusted_rand_index(Pb_Pc_train, clusters),
+        "ari_vs_Thw_Tc": adjusted_rand_index(Thw_Tc_train, clusters),
+        "loco_accuracy_Pb_Pc": loco_axis_accuracy(Z_train, Pb_Pc_train),
+        "loco_accuracy_Thw_Tc": loco_axis_accuracy(Z_train, Thw_Tc_train),
+    }
+
+    if Z_ood is not None:
+        Z_ood = np.asarray(Z_ood, dtype=float)
+        ids = ood_case_ids or [f"ood{i}" for i in range(len(Z_ood))]
+        centroids = {
+            float(lvl): Z_train[Pb_Pc_train == lvl].mean(axis=0)
+            for lvl in np.unique(Pb_Pc_train)
+        }
+        nearest = {}
+        for cid, z in zip(ids, Z_ood):
+            d = {lvl: float(np.linalg.norm(z - c)) for lvl, c in centroids.items()}
+            nearest[cid] = min(d, key=d.get)
+        out["ood_nearest_Pb_Pc_centroid"] = nearest
+
+    return out
+
+
+def compare_to_baseline(
+    candidate: dict, baseline: dict, *, margin: float = 1e-6
+) -> dict:
+    """Per-metric verdict of `candidate` vs `baseline` (both from
+    `evaluate_representation`). `beats_baseline` is True only if the
+    candidate strictly improves at least one clustering/LOCO metric by
+    more than `margin` without regressing any other by more than `margin`."""
+    deltas = {m: candidate[m] - baseline[m] for m in _METRICS if m in candidate and m in baseline}
+    improved = [m for m, d in deltas.items() if d > margin]
+    regressed = [m for m, d in deltas.items() if d < -margin]
+    return {
+        "deltas": deltas,
+        "improved": improved,
+        "regressed": regressed,
+        "beats_baseline": bool(improved) and not regressed,
+    }

@@ -1,0 +1,261 @@
+{
+  "blocks": {
+    "bulk": {
+      "n_features": 7,
+      "pca": {
+        "explained_variance_ratio": [
+          0.6553882665713249,
+          0.2568839384367135
+        ],
+        "n_latent": 2,
+        "ari_vs_Pb_Pc": 0.35714285714285715,
+        "ari_vs_Thw_Tc": 0.07142857142857142,
+        "loco_accuracy_Pb_Pc": 0.5555555555555556,
+        "loco_accuracy_Thw_Tc": 0.1111111111111111,
+        "ood_nearest_Pb_Pc_centroid": {
+          "case10": 1.5,
+          "case15": 1.5
+        }
+      },
+      "autoencoder": {
+        "seeds": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "per_seed": [
+          {
+            "n_latent": 2,
+            "ari_vs_Pb_Pc": 0.35294117647058826,
+            "ari_vs_Thw_Tc": -0.11764705882352941,
+            "loco_accuracy_Pb_Pc": 0.6666666666666666,
+            "loco_accuracy_Thw_Tc": 0.1111111111111111,
+            "ood_nearest_Pb_Pc_centroid": {
+              "case10": 1.5,
+              "case15": 1.5
+            }
+          },
+          {
+            "n_latent": 2,
+            "ari_vs_Pb_Pc": 0.35294117647058826,
+            "ari_vs_Thw_Tc": -0.11764705882352941,
+            "loco_accuracy_Pb_Pc": 0.6666666666666666,
+            "loco_accuracy_Thw_Tc": 0.1111111111111111,
+            "ood_nearest_Pb_Pc_centroid": {
+              "case10": 1.5,
+              "case15": 1.5
+            }
+          },
+          {
+            "n_latent": 2,
+            "ari_vs_Pb_Pc": 0.35294117647058826,
+            "ari_vs_Thw_Tc": -0.11764705882352941,
+            "loco_accuracy_Pb_Pc": 0.6666666666666666,
+            "loco_accuracy_Thw_Tc": 0.1111111111111111,
+            "ood_nearest_Pb_Pc_centroid": {
+              "case10": 1.5,
+              "case15": 1.5
+            }
+          },
+          {
+            "n_latent": 2,
+            "ari_vs_Pb_Pc": 0.35294117647058826,
+            "ari_vs_Thw_Tc": -0.11764705882352941,
+            "loco_accuracy_Pb_Pc": 0.6666666666666666,
+            "loco_accuracy_Thw_Tc": 0.1111111111111111,
+            "ood_nearest_Pb_Pc_centroid": {
+              "case10": 1.5,
+              "case15": 1.5
+            }
+          },
+          {
+            "n_latent": 2,
+            "ari_vs_Pb_Pc": 0.35294117647058826,
+            "ari_vs_Thw_Tc": -0.11764705882352941,
+            "loco_accuracy_Pb_Pc": 0.6666666666666666,
+            "loco_accuracy_Thw_Tc": 0.1111111111111111,
+            "ood_nearest_Pb_Pc_centroid": {
+              "case10": 1.5,
+              "case15": 1.5
+            }
+          }
+        ],
+        "ari_vs_Pb_Pc_mean": 0.35294117647058826,
+        "ari_vs_Thw_Tc_mean": -0.11764705882352941,
+        "loco_accuracy_Pb_Pc_mean": 0.6666666666666666,
+        "loco_accuracy_Thw_Tc_mean": 0.11111111111111112,
+        "ari_vs_Pb_Pc_std": 0.0,
+        "ari_vs_Thw_Tc_std": 0.0,
+        "loco_accuracy_Pb_Pc_std": 0.0,
+        "loco_accuracy_Thw_Tc_std": 1.3877787807814457e-17,
+        "ood_nearest_Pb_Pc_centroid_by_seed": [
+          {
+            "case10": 1.5,
+            "case15": 1.5
+          },
+          {
+            "case10": 1.5,
+            "case15": 1.5
+          },
+          {
+            "case10": 1.5,
+            "case15": 1.5
+          },
+          {
+            "case10": 1.5,
+            "case15": 1.5
+          },
+          {
+            "case10": 1.5,
+            "case15": 1.5
+          }
+        ]
+      },
+      "autoencoder_vs_pca": {
+        "deltas": {
+          "ari_vs_Pb_Pc": -0.004201680672268893,
+          "ari_vs_Thw_Tc": -0.18907563025210083,
+          "loco_accuracy_Pb_Pc": 0.11111111111111105,
+          "loco_accuracy_Thw_Tc": 1.3877787807814457e-17
+        },
+        "improved": [
+          "loco_accuracy_Pb_Pc"
+        ],
+        "regressed": [
+          "ari_vs_Pb_Pc",
+          "ari_vs_Thw_Tc"
+        ],
+        "beats_baseline": false
+      }
+    },
+    "rms_profile": {
+      "n_features": 256,
+      "pca": {
+        "explained_variance_ratio": [
+          0.5937811981993215,
+          0.3767833056367009
+        ],
+        "n_latent": 2,
+        "ari_vs_Pb_Pc": -0.16129032258064516,
+        "ari_vs_Thw_Tc": 0.4838709677419355,
+        "loco_accuracy_Pb_Pc": 0.3333333333333333,
+        "loco_accuracy_Thw_Tc": 0.5555555555555556,
+        "ood_nearest_Pb_Pc_centroid": {
+          "case10": 5.0,
+          "case15": 5.0
+        }
+      },
+      "autoencoder": {
+        "seeds": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "per_seed": [
+          {
+            "n_latent": 2,
+            "ari_vs_Pb_Pc": -0.16129032258064516,
+            "ari_vs_Thw_Tc": 0.4838709677419355,
+            "loco_accuracy_Pb_Pc": 0.3333333333333333,
+            "loco_accuracy_Thw_Tc": 0.5555555555555556,
+            "ood_nearest_Pb_Pc_centroid": {
+              "case10": 5.0,
+              "case15": 5.0
+            }
+          },
+          {
+            "n_latent": 2,
+            "ari_vs_Pb_Pc": -0.16129032258064516,
+            "ari_vs_Thw_Tc": 0.4838709677419355,
+            "loco_accuracy_Pb_Pc": 0.3333333333333333,
+            "loco_accuracy_Thw_Tc": 0.5555555555555556,
+            "ood_nearest_Pb_Pc_centroid": {
+              "case10": 5.0,
+              "case15": 5.0
+            }
+          },
+          {
+            "n_latent": 2,
+            "ari_vs_Pb_Pc": -0.16129032258064516,
+            "ari_vs_Thw_Tc": 0.4838709677419355,
+            "loco_accuracy_Pb_Pc": 0.3333333333333333,
+            "loco_accuracy_Thw_Tc": 0.5555555555555556,
+            "ood_nearest_Pb_Pc_centroid": {
+              "case10": 5.0,
+              "case15": 5.0
+            }
+          },
+          {
+            "n_latent": 2,
+            "ari_vs_Pb_Pc": -0.16129032258064516,
+            "ari_vs_Thw_Tc": 0.4838709677419355,
+            "loco_accuracy_Pb_Pc": 0.3333333333333333,
+            "loco_accuracy_Thw_Tc": 0.5555555555555556,
+            "ood_nearest_Pb_Pc_centroid": {
+              "case10": 5.0,
+              "case15": 5.0
+            }
+          },
+          {
+            "n_latent": 2,
+            "ari_vs_Pb_Pc": -0.16129032258064516,
+            "ari_vs_Thw_Tc": 0.4838709677419355,
+            "loco_accuracy_Pb_Pc": 0.3333333333333333,
+            "loco_accuracy_Thw_Tc": 0.5555555555555556,
+            "ood_nearest_Pb_Pc_centroid": {
+              "case10": 5.0,
+              "case15": 5.0
+            }
+          }
+        ],
+        "ari_vs_Pb_Pc_mean": -0.16129032258064516,
+        "ari_vs_Thw_Tc_mean": 0.4838709677419355,
+        "loco_accuracy_Pb_Pc_mean": 0.3333333333333333,
+        "loco_accuracy_Thw_Tc_mean": 0.5555555555555556,
+        "ari_vs_Pb_Pc_std": 0.0,
+        "ari_vs_Thw_Tc_std": 0.0,
+        "loco_accuracy_Pb_Pc_std": 0.0,
+        "loco_accuracy_Thw_Tc_std": 0.0,
+        "ood_nearest_Pb_Pc_centroid_by_seed": [
+          {
+            "case10": 5.0,
+            "case15": 5.0
+          },
+          {
+            "case10": 5.0,
+            "case15": 5.0
+          },
+          {
+            "case10": 5.0,
+            "case15": 5.0
+          },
+          {
+            "case10": 5.0,
+            "case15": 5.0
+          },
+          {
+            "case10": 5.0,
+            "case15": 5.0
+          }
+        ]
+      },
+      "autoencoder_vs_pca": {
+        "deltas": {
+          "ari_vs_Pb_Pc": 0.0,
+          "ari_vs_Thw_Tc": 0.0,
+          "loco_accuracy_Pb_Pc": 0.0,
+          "loco_accuracy_Thw_Tc": 0.0
+        },
+        "improved": [],
+        "regressed": [],
+        "beats_baseline": false
+      }
+    }
+  },
+  "any_block_ae_beats_pca": false,
+  "verdict": "STOP CRITERION MET \u2014 AE latent does not beat PCA on any block; case-level representation learning is parked"
+}

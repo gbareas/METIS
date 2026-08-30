@@ -302,13 +302,34 @@ eval).
   config, metrics, artifacts) and failed-run recording. Benchmark check
   names lost their `[]` (MLflow metric-name charset): `best_block[x]` →
   `best_block__x`; `results/regime_v1.json` regenerated.
-- **Next (Stage 2): I2 — first new ML-discovery model.** An autoencoder
-  representation study on the transcritical DNS, benchmarked against
-  PCA/POD and interpreted through the known pressure/thermal physics
-  (I2-A: RMS/profile vectors → I2-B: 2D slice fields). Stop criterion:
-  if the nonlinear latent only reproduces PCA/POD structure with no
-  extra interpretability or OOD robustness, record that and stop — don't
-  escalate architecture. First real consumer of I1's tracking.
+- **I2-A / I3 / I4 — autoencoder representation study: DONE, STOP
+  CRITERION MET (2026-08-30).** New `metis.models` (`RepresentationModel`
+  = the R4 `Transform` contract; `PCARepresentation` numpy baseline;
+  `Autoencoder` small MLP, torch-gated), `metis.training.Trainer`
+  (full-batch Adam + early stop + best-state + optional checkpoint +
+  optional `metis.tracking` run; reproducible per seed), and
+  `metis.evaluation.representation` (`evaluate_representation` — same
+  ARI/LOCO/OOD-nearest-centroid instruments as regime, on any latent;
+  `compare_to_baseline` — the mechanical stop-criterion check).
+  `scripts/representation_study.py` (I2-A, MLflow `representation-v1`,
+  `results/representation_study.json`) ran on real data: on `bulk` and
+  `rms_profile`, latent dim 2, 5 seeds — **the AE latent reproduces the
+  PCA subspace** (rms_profile metrics identical to 3 dp; bulk slightly
+  worse; zero seed variance). `beats_baseline` False on every block.
+  Recorded in **FINDINGS.md §6**; case-level representation learning is
+  parked per §14. I2-B (2D slice fields, N≫9) is a deliberate decision,
+  not an automatic next step. Removed the six empty `models/*/`
+  scaffold subdirs. First real consumers of I1 tracking: this study +
+  the benchmark. `metis.models`/`training`/`evaluation.representation`
+  are reusable if I2-B is taken up.
+- **Next: I5 — physics-aware evaluation API** (`metis.evaluation`): a
+  shared layer combining generic ML metrics (MAE/RMSE/nRMSE/relative L2/
+  R²), representation metrics (explained variance, latent stability
+  across seeds, latent↔physical-variable correlations), physical
+  diagnostics (mean/RMS profiles, spectra, POD modal energy, wall
+  quantities), and OOD degradation — with the rule "a model isn't
+  'better' unless the physical diagnostics agree, not just one ML
+  metric".
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`
