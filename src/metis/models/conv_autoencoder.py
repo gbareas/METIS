@@ -124,7 +124,8 @@ class ConvAutoencoder(RepresentationModel):
     def _tensor(self, arr):
         import torch
 
-        return torch.as_tensor(np.asarray(arr, dtype=np.float32))
+        device = next(self.module.parameters()).device
+        return torch.as_tensor(np.asarray(arr, dtype=np.float32), device=device)
 
     def transform(self, X):
         self._check_fitted()
