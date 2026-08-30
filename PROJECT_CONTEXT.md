@@ -487,12 +487,26 @@ eval).
     to **32** (largest grid dim, `reached=False` noted). val relL2
     0.94→0.65 over k=2→32; OOD relL2 0.53→0.35 (OOD reconstructs *better*
     than held-out train snapshots — noted). FINDINGS.md §7 started.
-- **Next: B4** — add a mini-batch loop to `metis.training.Trainer` (+
-  test), implement the fixed conv-AE (`metis.models`, torch-gated) per
-  the protocol §4, wire it to the slice dataset. Then B5 (train 5 seeds ×
-  the k grid, MLflow) → B6-B7 (eval + decision gate) → B8-B9. After
-  Phase B: Phase C (virtual-sensor temporal ML), D (SQL layer), E (one
-  model → FastAPI → Docker → CI/CD → cloud → monitoring).
+  - **B4 — mini-batch Trainer + conv-AE: DONE (2026-08-30).**
+    `Trainer` gained `batch_size` (shuffled mini-batch loop, full-batch
+    by default / back-compatible) and an `X_val` arg to `fit` that
+    switches early stopping to validation MSE; history reports
+    `best_<monitor>_mse` plus a stable `best_train_mse`.
+    `metis.models.conv_autoencoder.ConvAutoencoder` (torch-gated,
+    imported directly): 3× stride-2 conv encoder (H→H/8) + linear
+    bottleneck + mirrored ConvTranspose decoder per protocol §4, operates
+    on `(n, H, W)`, seed drives weight init, `save`/`load` via the
+    `Transform` registry. `tests/unit/test_conv_autoencoder.py` (12) +
+    4 new `Trainer` tests. Clean-venv CI sim green (torch-gated tests
+    skip). CI green (82fa52d).
+- **Next: B5** — training script: 5 seeds × k grid {2,4,8,16,32} on the
+  frozen slice dataset
+  (`artifacts/datasets/i2b_representation_v1_primary_u_s3_center`),
+  MLflow-logged, best-state checkpoints. Then B6-B7 (eval + `assess_model`
+  decision gate) → B8-B9 (FINDINGS §7 writeup, register if positive,
+  `metis report`). After Phase B: Phase C (virtual-sensor temporal ML),
+  D (SQL layer), E (one model → FastAPI → Docker → CI/CD → cloud →
+  monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`
