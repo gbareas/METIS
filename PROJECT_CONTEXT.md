@@ -523,18 +523,28 @@ eval).
     interpretability comparable. **Direction: negative** — H-I2B looks
     falsified; B7 formalises with `assess_model`. FINDINGS §7 B6 entry
     added.
-- **Next: B7** — run `metis.evaluation.assessment.assess_model` (AE vs
-  PCA) per seed at headline k=32 from `results/i2b_evaluation.json`:
-  `ml_metrics` = val/OOD relative_l2 + ood_degradation_ratio;
-  `physical_metrics` = RMS-profile + spectrum + log-corr + energy-frac on
-  val and OOD. Expect `is_better=False` on all 5 seeds → **valuable
-  negative result, stop** (no VAE/U-Net/FNO). Then B8 (modal/physical
-  writeup), B9 (FINDINGS §7 final verdict; no model registration since
-  negative; `metis report` generator). Open gap: the secondary
-  pressure-holdout split was never built/trained — decide after B7
-  whether it adds anything. After Phase B: Phase C (virtual-sensor
-  temporal ML), D (SQL layer), E (one model → FastAPI → Docker → CI/CD →
-  cloud → monitoring).
+  - **B7 — accept/stop gate: STOP (2026-08-30).**
+    `scripts/i2b_decision.py`, `results/i2b_decision.json`, MLflow
+    `i2b-representation/decision` (`phase=B7`). `assess_model` per seed
+    (AE vs PCA at each k): **`is_better=False` for all 5 seeds at every
+    k** — no ML metric improves (headline k32 ML deltas ≈ val relL2
+    −0.04, OOD relL2 −0.09, OOD-degr −0.10), and the AE would also
+    regress ~16/18 physical diagnostics. Two §6 negative criteria met
+    (no seed better; latent_stability poor 0.38–2.16 vs PCA exact).
+    **Decision: NEGATIVE — linear PCA/POD is sufficient; STOP.** No
+    VAE/U-Net/FNO escalation, no model registered, I2-B-2 (`T`) /
+    near-wall slices NOT triggered (clean negative). FINDINGS §7 header
+    rewritten to the verdict + B7 entry.
+- **Next: B8** — assemble the modal / physical-statistic comparison
+  writeup from `results/i2b_evaluation.json` (PCA vs AE reconstructed
+  fields, RMS-profile + spectrum overlays, POD-mode structure) into
+  FINDINGS §7 / a short doc. Then **B9** — final §7 polish + a
+  `metis report`-style generator for the I2-B study (reads the three
+  results JSONs → one report). No model registration (negative).
+  The secondary pressure-holdout split stays unbuilt — a clean negative
+  on the primary makes it unnecessary. **Phase B then closes.**
+  After Phase B: Phase C (virtual-sensor temporal ML), D (SQL layer),
+  E (one model → FastAPI → Docker → CI/CD → cloud → monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

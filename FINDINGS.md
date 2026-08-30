@@ -317,7 +317,16 @@ different task and a deliberate decision. The `PCARepresentation` /
 `Autoencoder` / `Trainer` / `evaluate_representation` machinery is
 reusable there.
 
-## 7. I2-B slice-level representation learning (running log)
+## 7. I2-B slice-level representation learning — negative result, stopped (2026-08-30)
+
+**Verdict (B7): H-I2B falsified.** A fixed conv-autoencoder on centre-plane
+`u'` snapshots does **not**, at any tested latent dim, beat a linear
+PCA/POD basis on reconstruction, OOD robustness, physical fidelity, or
+latent interpretability — and its latent is seed-unstable while PCA's is
+exact. `assess_model` returns `is_better=False` for **all 5 seeds at
+every k**. Linear representations are sufficient for this flow structure
+under these thermodynamic conditions. **Stopped** — no VAE / U-Net / FNO
+/ operator escalation, no model registered (`results/i2b_decision.json`).
 
 Protocol: `docs/i2b_representation_protocol.md` (frozen 2026-08-30, B1).
 Dataset: `metis dataset build-slices` primary split — centre-plane (`s3_center`)
@@ -451,3 +460,37 @@ tables.
   than PCA/POD at matched latent dim; its latent is seed-unstable while
   PCA's is exact. B7 runs `assess_model` per seed to formalise the
   accept/stop decision.
+
+### B7 — accept/stop gate: STOP (2026-08-30)
+
+`scripts/i2b_decision.py`, `results/i2b_decision.json`, MLflow
+`i2b-representation/decision` (tag `phase=B7`). `assess_model` per seed
+(protocol §17 rule: an ML metric must improve **and** no physical
+diagnostic may regress), candidate = conv-AE seed, baseline = PCA at the
+same k.
+
+- `ml_metrics` = `val_relative_l2`, `ood_relative_l2`,
+  `ood_degradation_ratio` (lower-is-better for all three).
+- `physical_metrics` = mean/RMS-profile relL2, x/z spectrum relL2, x/z
+  log-spectrum correlation, POD energy-fraction L1 — on both val and OOD.
+
+**Result — `is_better = False` for all 5 seeds at every k (2/4/8/16/32).**
+At the headline k=32 the per-seed ML deltas (signed, + = better) are
+about `val_relative_l2 −0.04`, `ood_relative_l2 −0.09`,
+`ood_degradation_ratio −0.10` — no ML metric improves, so the gate never
+even reaches the physical check. For the record it would fail there too:
+the AE regresses ~16 of the 18 physical diagnostics per seed
+(log-spectrum correlation −0.2 to −0.3, OOD spectrum relL2 −0.22),
+improving only POD energy-fraction L1.
+
+Two protocol §6 negative criteria are met: (1) no seed reaches
+`is_better=True`; (2) `latent_stability` is poor — AE Procrustes relL2
+across seeds 0.38 (k=32) to 2.16 (k=4) while PCA's latent is exact.
+
+**Decision: NEGATIVE — linear PCA/POD is sufficient for centre-plane
+`u'` structure across the tested thermodynamic conditions. Stop.** No
+escalation to VAE / U-Net / FNO / DeepONet; no model registered. I2-B-2
+(`T` field) and near-wall slices are *not* triggered — this is a clean
+negative, not an inconclusive one. B8 assembles the modal/physical
+comparison from `results/i2b_evaluation.json`; B9 is the final writeup +
+a `metis report` for the study.
