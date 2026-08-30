@@ -181,8 +181,15 @@ def _cmd_benchmark(args) -> int:
     config = load_config(args.benchmark_config)
     with tracking.run("regime-v1", params={"benchmark": config, "data_root": str(reg.data_root)},
                       tags={"kind": "benchmark"}, enabled=args.track) as run:
-        result = run_regime_v1_from_registry(reg, config)
+        result = run_regime_v1_from_registry(
+            reg, config,
+            cache_dir=None if args.no_cache else args.cache_dir,
+            rebuild=args.rebuild,
+        )
         print(result.summary())
+        if "cache" in result.provenance:
+            print("  feature cache: " + ", ".join(
+                f"{b}={s}" for b, s in result.provenance["cache"].items()))
         payload = {
             "name": result.name, "passed": result.passed,
             "checks": [{"name": c.name, "passed": c.passed, "detail": c.detail}
@@ -339,6 +346,13 @@ def build_parser() -> argparse.ArgumentParser:
     pbm.add_argument("--output", type=Path,
                      default=Path("results") / "regime_v1.json")
     pbm.add_argument("--no-track", dest="track", action="store_false")
+    pbm.add_argument("--cache-dir", dest="cache_dir",
+                     default=str(Path("artifacts") / "datasets" / "regime-v1"),
+                     help="where the feature blocks are cached")
+    pbm.add_argument("--no-cache", dest="no_cache", action="store_true",
+                     help="always rebuild feature blocks from raw DNS")
+    pbm.add_argument("--rebuild", action="store_true",
+                     help="ignore any cached feature blocks (rebuild + rewrite)")
     add_data_root_args(pbm)
     pbm.set_defaults(func=_cmd_benchmark)
 

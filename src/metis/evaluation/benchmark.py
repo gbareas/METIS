@@ -158,20 +158,45 @@ def run_regime_v1(
     )
 
 
-def run_regime_v1_from_registry(registry, config: dict | None = None) -> BenchmarkResult:
-    """Build the block feature matrices from a `CaseRegistry` (reads DNS,
-    with R5 caching if `cache_dir` given) and run the benchmark."""
-    from metis.data.datasets import build_feature_dataset
+DEFAULT_CACHE_DIR = REPO_ROOT / "artifacts" / "datasets" / "regime-v1"
+
+
+def run_regime_v1_from_registry(
+    registry,
+    config: dict | None = None,
+    *,
+    cache_dir: str | Path | None = DEFAULT_CACHE_DIR,
+    rebuild: bool = False,
+) -> BenchmarkResult:
+    """Build the block feature matrices from a `CaseRegistry` and run the
+    benchmark. Feature blocks are cached under
+    `artifacts/datasets/regime-v1/<block>/` (pass `cache_dir=None` to
+    disable, `rebuild=True` to force). `result.provenance["cache"]`
+    records which blocks were reused vs. rebuilt."""
+    from metis.data.datasets import FeatureDataset, build_feature_dataset
+    from metis.data.datasets.build import _fingerprint
 
     config = config or load_config()
     case_ids = list(config["cases"]["train"]) + list(config["cases"]["ood"])
     assert case_ids == list(ALL_CASE_IDS), (
         f"benchmark case list {case_ids} != regime ALL_CASE_IDS {list(ALL_CASE_IDS)}"
     )
-    block_matrices = {
-        b: build_feature_dataset(registry, case_ids, b).X for b in FEATURE_BLOCK_NAMES
-    }
+
+    cache: dict[str, str] = {}
+    block_matrices = {}
+    for b in FEATURE_BLOCK_NAMES:
+        out_dir = None if cache_dir is None else Path(cache_dir) / b
+        reused = (
+            out_dir is not None and not rebuild and FeatureDataset.exists_at(out_dir)
+            and FeatureDataset.load(out_dir).fingerprint == _fingerprint(b, case_ids, registry)
+        )
+        ds = build_feature_dataset(registry, case_ids, b, out_dir=out_dir, rebuild=rebuild)
+        block_matrices[b] = ds.X
+        cache[b] = "reused" if reused else "built"
+
     from metis.features.regime import case_grid_labels
 
     labels = case_grid_labels(registry, tuple(case_ids))  # covers train + OOD
-    return run_regime_v1(block_matrices, labels, config)
+    result = run_regime_v1(block_matrices, labels, config)
+    result.provenance["cache"] = cache
+    return result

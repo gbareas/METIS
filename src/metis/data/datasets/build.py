@@ -1,13 +1,23 @@
 """Build (and cache) Level-1 feature datasets from the case registry
-(milestone R5).
+(milestone R5; fingerprinting hardened per updated-plan §20).
 
 `build_feature_dataset(...)` extracts one of the regime feature sets for a
 list of cases and returns a `FeatureDataset`. If `out_dir` already holds
 an artifact whose fingerprint matches the request, it is loaded instead
-of recomputed — so re-running an evaluation does not re-read raw DNS
-unless the cases, the feature set, or the feature-extraction code changed.
-It does NOT detect edits to the underlying DNS files; pass
-`rebuild=True` (or delete the artifact) if those change.
+of recomputed.
+
+The fingerprint covers everything that can change a feature value:
+
+  - the feature set and case ids;
+  - the source of the feature-extraction + ingestion + preprocessing
+    code (`features/{regime,physics,pod,spectra}.py`,
+    `data/ingestion/*.py`, `data/preprocessing/*.py`);
+  - a lightweight **source manifest** — for every raw / processed / slice
+    file of every requested case: relative path, size, mtime, and (for
+    the small metadata files) a content hash.
+
+TB-scale field files are *not* hashed byte-by-byte; size + mtime is the
+reliable-invalidation signal. `rebuild=True` forces a rebuild regardless.
 """
 from __future__ import annotations
 
@@ -28,11 +38,16 @@ from metis.features.regime import (
     build_feature_matrix_rich,
 )
 
-# Source files whose content defines what a feature value *is* — a change
-# to any of these must invalidate cached datasets.
-_FEATURE_SOURCE_MODULES = ("regime", "physics", "pod")
+# Source files whose content defines what a feature value *is*.
+_FEATURE_SOURCES = (
+    "features/regime.py", "features/physics.py", "features/pod.py", "features/spectra.py",
+    "data/ingestion/hdf5_reader.py", "data/ingestion/slice_reader.py",
+    "data/preprocessing/base.py", "data/preprocessing/scalers.py",
+    "data/preprocessing/fields.py",
+)
 
 FEATURE_SETS = ("compact", "rich", *FEATURE_BLOCK_NAMES)
+_METIS_ROOT = Path(regime.__file__).resolve().parents[1]  # src/metis/
 
 
 def _build_matrix(feature_set: str, case_ids, data_root):
@@ -47,20 +62,49 @@ def _build_matrix(feature_set: str, case_ids, data_root):
     raise ValueError(f"unknown feature_set {feature_set!r}, expected one of {FEATURE_SETS}")
 
 
-def _feature_code_hash() -> str:
+def _code_hash() -> str:
     h = hashlib.sha256()
-    features_dir = Path(regime.__file__).resolve().parent
-    for name in sorted(_FEATURE_SOURCE_MODULES):
-        h.update((features_dir / f"{name}.py").read_bytes())
+    for rel in _FEATURE_SOURCES:
+        p = _METIS_ROOT / rel
+        h.update(p.read_bytes() if p.exists() else b"<missing>")
     return h.hexdigest()
 
 
-def _fingerprint(feature_set: str, case_ids) -> str:
+def _source_manifest(registry: CaseRegistry | None, case_ids) -> str:
+    """Hash of (path, size, mtime, [content hash for small metadata]) over
+    every input file of every requested case. Empty when no registry."""
+    if registry is None:
+        return "no-registry"
+    entries: list = []
+    for cid in case_ids:
+        try:
+            desc = registry[cid]
+        except KeyError:
+            entries.append([cid, "missing"])
+            continue
+        for f in sorted(desc.raw_dir.glob("*.h5")) if desc.raw_dir.is_dir() else []:
+            st = f.stat()
+            entries.append([f"raw/{cid}/{f.name}", st.st_size, st.st_mtime_ns])
+        if desc.metadata_path.exists():
+            raw = desc.metadata_path.read_bytes()
+            entries.append([f"processed/{cid}/metadata.json", len(raw),
+                            hashlib.sha256(raw).hexdigest()[:16]])
+        if desc.slice_root and desc.slice_root.is_dir():
+            for f in sorted(desc.slice_root.rglob("*")):
+                if f.is_file():
+                    st = f.stat()
+                    entries.append([f"slices/{cid}/{f.relative_to(desc.slice_root)}",
+                                    st.st_size, st.st_mtime_ns])
+    return hashlib.sha256(json.dumps(entries, sort_keys=True).encode()).hexdigest()[:16]
+
+
+def _fingerprint(feature_set: str, case_ids, registry: CaseRegistry | None = None) -> str:
     payload = json.dumps(
         {
             "feature_set": feature_set,
             "case_ids": list(case_ids),
-            "feature_code": _feature_code_hash(),
+            "code_hash": _code_hash(),
+            "source_manifest": _source_manifest(registry, case_ids),
         },
         sort_keys=True,
     )
@@ -77,7 +121,7 @@ def build_feature_dataset(
 ) -> FeatureDataset:
     """Extract `feature_set` for `case_ids`; cache to / load from `out_dir`."""
     case_ids = list(case_ids)
-    fp = _fingerprint(feature_set, case_ids)
+    fp = _fingerprint(feature_set, case_ids, registry)
 
     if out_dir is not None and not rebuild and FeatureDataset.exists_at(out_dir):
         cached = FeatureDataset.load(out_dir)

@@ -89,11 +89,11 @@ def test_feature_code_change_invalidates_cache(registry, tmp_path, monkeypatch):
     calls = _spy_on_builder(monkeypatch)
     out = tmp_path / "art"
 
-    monkeypatch.setattr(build_mod, "_feature_code_hash", lambda: "codehash-A")
+    monkeypatch.setattr(build_mod, "_code_hash", lambda: "codehash-A")
     build_feature_dataset(registry, CASE_IDS, "compact", out_dir=out)
     assert len(calls) == 1
 
-    monkeypatch.setattr(build_mod, "_feature_code_hash", lambda: "codehash-B")
+    monkeypatch.setattr(build_mod, "_code_hash", lambda: "codehash-B")
     ds = build_feature_dataset(registry, CASE_IDS, "compact", out_dir=out)
     assert len(calls) == 2  # fingerprint changed -> recomputed
     assert ds.fingerprint == FeatureDataset.load(out).fingerprint
@@ -118,3 +118,30 @@ def test_constructor_validates_shapes():
     with pytest.raises(ValueError, match="rows"):
         FeatureDataset(X=np.zeros((2, 3)), case_ids=["a"], feature_names=["f0", "f1", "f2"],
                        feature_set="compact")
+
+
+# --- source-manifest fingerprinting (updated-plan §20) ---
+def test_touching_a_raw_file_invalidates_the_cache(registry, tmp_path, monkeypatch):
+    calls = _spy_on_builder(monkeypatch)
+    out = tmp_path / "art"
+    build_feature_dataset(registry, CASE_IDS, "compact", out_dir=out)
+    assert len(calls) == 1
+
+    # a rebuild of the underlying DNS (new mtime) must bust the fingerprint
+    h5 = next((registry.data_root / "raw" / "case01").glob("*.h5"))
+    import os
+    st = h5.stat()
+    os.utime(h5, ns=(st.st_atime_ns, st.st_mtime_ns + 10**9))
+
+    build_feature_dataset(registry, CASE_IDS, "compact", out_dir=out)
+    assert len(calls) == 2  # not a cache hit anymore
+
+
+def test_editing_metadata_invalidates_the_cache(registry, tmp_path, monkeypatch):
+    calls = _spy_on_builder(monkeypatch)
+    out = tmp_path / "art"
+    build_feature_dataset(registry, CASE_IDS, "compact", out_dir=out)
+    meta = registry.data_root / "processed" / "case02" / "metadata.json"
+    meta.write_text(meta.read_text().replace('"n_snapshots": 1', '"n_snapshots": 2'))
+    build_feature_dataset(registry, CASE_IDS, "compact", out_dir=out)
+    assert len(calls) == 2
