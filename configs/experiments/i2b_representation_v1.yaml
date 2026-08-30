@@ -1,0 +1,65 @@
+# I2-B slice-level representation study — frozen parameters.
+# The full rationale is docs/i2b_representation_protocol.md. Changing any
+# value here is a scientific change and needs a FINDINGS.md entry.
+
+name: i2b_representation_v1
+question: >
+  Does a conv-autoencoder latent from centre-plane u' snapshots capture
+  transcritical structure that PCA/POD does not, at matched latent dim?
+
+data:
+  slice_id: s3_center
+  field: u
+  grid: [96, 96]
+  snapshots_per_case: 500
+  standardize: global_train_only   # one mean/std per field, fit on train
+
+splits:
+  primary:                          # i2b_representation_v1
+    train_cases: [case01, case02, case03, case04, case05, case06, case07, case08, case09]
+    train_snapshots: [0, 400]       # [start, stop)
+    val_snapshots:   [400, 500]     # chronological hold-out, same cases
+    ood_cases: [case10, case15]     # entire off-grid operating conditions
+    ood_snapshots: [0, 500]
+  secondary:                        # i2b_pressure_holdout_v1 (robustness only)
+    train_cases: [case01, case02, case03, case04, case05, case06]
+    train_snapshots: [0, 400]
+    val_snapshots:   [400, 500]
+    ood_cases: [case07, case08, case09]
+    ood_snapshots: [0, 500]
+
+baseline:
+  model: pca                        # == snapshot POD for a fluctuation ensemble
+  latent_dims: [2, 4, 8, 16, 32]
+
+candidate:
+  model: conv_autoencoder
+  encoder_channels: [16, 32, 64]    # stride-2 conv blocks: 96 -> 48 -> 24 -> 12
+  activation: gelu
+  loss: mse
+  latent_dims: [2, 4, 8, 16, 32]
+  headline_latent_dim: null         # set in B3 to the k where PCA first hits >=90% reconstructed variance
+
+training:
+  seeds: [0, 1, 2, 3, 4]            # genuinely independent (post updated-plan §18 fix)
+  batch_size: 64
+  optimizer: adam
+  early_stopping: val_mse
+  tracker: mlflow                   # local mlruns/, experiment "i2b-representation"
+
+evaluation:
+  reconstruction: [relative_l2, rmse, mae, r2, reconstructed_variance, compression_ratio]
+  robustness: [seed_std, latent_stability, ood_degradation_ratio]
+  physical: [mean_profile_rel_l2, rms_profile_rel_l2, spectrum_rel_l2,
+             spectrum_log_corr, energy_fraction_l1]
+  latent: [latent_physical_correlation]   # vs Pb_Pc, Thw_Tc, Tcw_Tc, snapshot RMS, spectral-peak k
+  gate: assess_model                       # AE vs PCA: ML up AND no physical regression
+
+acceptance:
+  positive: ">=3 of 5 seeds give assess_model.is_better=True at headline_latent_dim, improvement > seed std"
+  negative: "no seed is_better, OR within seed noise, OR a physical diagnostic regresses, OR poor latent_stability"
+  either_way: "write FINDINGS.md §7 + results/i2b_representation.json; register the model only if positive"
+
+out_of_scope:
+  - T field / near-wall slices / multi-field input (only if I2-B-1 is inconclusive, not clearly negative)
+  - VAE, U-Net skip connections, attention, FNO/WNO, perceptual/spectral losses

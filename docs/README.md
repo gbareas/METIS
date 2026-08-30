@@ -20,6 +20,14 @@
   dataset fingerprinting/caching, MLflow tracking, the frozen benchmark,
   and provenance on every artifact.
 
+## Research protocols
+
+- **[i2b_representation_protocol.md](i2b_representation_protocol.md)** —
+  the frozen I2-B slice-level representation-learning study (question,
+  data, splits, models, evaluation, accept/stop criteria).
+- Repo-root **`research_protocol.md`** — the Phase-0 regime-discovery
+  reference task.
+
 ## The router-agent module (Track C/D)
 
 - **[router_agent.md](router_agent.md)** — the standalone write-up:

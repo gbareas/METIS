@@ -10,6 +10,10 @@ Track C/D (the personal router-agent project), which wraps
 `pub5_neural_operators` directly and has its own protocol in
 `docs/agent_implementation_plan.md`.
 
+The follow-on **slice-level representation-learning study (I2-B)** has its
+own frozen protocol in `docs/i2b_representation_protocol.md` (+ machine-
+readable `configs/experiments/i2b_representation_v1.yaml`).
+
 ## Primary task
 
 Cross-case regime discovery from raw DNS-derived physical features,

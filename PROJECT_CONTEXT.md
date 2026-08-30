@@ -443,15 +443,28 @@ eval).
     validation ERROR aborts (`ValidationError`); `strict=False` /
     `metis analyze --allow-invalid` proceeds and stamps
     `provenance["validation_overridden"]`.
-- **Next: Phase B — I2-B richer representation learning** (updated-plan
-  §24-29, §52). First write and freeze the I2-B research protocol
-  (selected field/slice, sample unit = 2D slice snapshots, train / held-
-  out-sample / OOD-condition splits, latent dims, PCA/POD baseline, conv-
-  autoencoder arch, evaluation metrics, stop criteria) — **do not tune
-  the model before the protocol is written**. Then build the slice
-  dataset artifact and run it. After that: Phase C (virtual-sensor
-  temporal ML), Phase D (SQL layer), Phase E (one model → FastAPI →
-  Docker → CI/CD → cloud → monitoring).
+- **Phase B — I2-B: protocol DRAFTED (2026-08-30), awaiting freeze (B1).**
+  `docs/i2b_representation_protocol.md` + `configs/experiments/
+  i2b_representation_v1.yaml`. Question: does a conv-AE latent from
+  centre-plane `u'` snapshots (`s3_center`, field `u`, 96×96, ~500/case)
+  capture structure PCA/POD misses, at matched latent dim? Splits:
+  train = case01-09 snapshots 0-399; val = same cases 400-499
+  (chronological); OOD = all of case10/case15 (off-grid thermal). +
+  secondary Pb_Pc=5.0 pressure-holdout. Baseline PCA(=snapshot POD) at
+  k∈{2,4,8,16,32}; candidate = small fixed conv-AE (16/32/64 stride-2,
+  GELU, MSE) at the same k; headline k = where PCA first hits ≥90%
+  reconstructed variance. Eval: reconstruction + seed robustness +
+  `latent_stability` + OOD degradation ratio + physical fidelity
+  (`profile`/`spectrum`/`pod_energy` agreement) + `latent_physical_
+  correlation`, compared via `assess_model`. Accept = ≥3/5 seeds
+  `is_better` beyond seed noise; else record the negative in FINDINGS §7
+  and stop (no VAE/U-Net/operator escalation). Execution: B1 freeze →
+  B2 Level-2 slice-dataset builder → B3 baseline + pick k → B4 mini-batch
+  `Trainer` + conv-AE → B5 train all seeds → B6-B7 eval + decision gate →
+  B8-B9 writeup/registry.
+- **Next: freeze the protocol (B1), then B2.** After Phase B: Phase C
+  (virtual-sensor temporal ML), Phase D (SQL layer), Phase E (one model →
+  FastAPI → Docker → CI/CD → cloud → monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`
