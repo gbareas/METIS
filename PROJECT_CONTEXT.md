@@ -413,11 +413,45 @@ eval).
   `authors`, `keywords`, `classifiers`, `[project.urls]`. Wheel builds
   and the `metis` entry point works from it. Full suite 249 passed / 1
   skipped; clean-venv 213 / 8.
-- **Next: P2 open item + optional deployment tier.** Remaining backlog:
-  P4 Docker (§26 — containerise the mock→features→report demo), P5
-  FastAPI (§27), P6 monitoring (§28), P7 cloud demo (§29) — all "do
-  later", none blocking. The scientific/engineering v1 (Stages 1-3) is
-  functionally complete; pick these up only with a specific reason.
+- **Plan superseded (2026-08-30).** `METIS_detailed_next_steps_updated.md`
+  replaces the R/I/P milestone plan. It rates the platform "early but
+  credible ML experimentation platform", says **stop broad architecture
+  refactoring** (§23), and reprioritises: correctness debt → richer ML
+  research → an industry temporal track → one model to deployment.
+- **Phase A (correctness / small debt, updated-plan §18-22): DONE
+  (2026-08-30).**
+  - **§18 AE seed bug (P0):** `_make_net` reset torch to seed 0 inside
+    net construction → every "seed" started from identical weights.
+    Fixed (seed drives init); reran I2-A. Headline result survives (AE
+    beats PCA on no block) but the reasoning changed: on `rms_profile`
+    the AE is now *worse on average and highly seed-sensitive* (ARI vs
+    Thw_Tc 0.24 ± 0.23 vs PCA 0.48). FINDINGS §6 rewritten with a
+    correction note; `results/representation_study.json` + MLflow
+    regenerated.
+  - **§19 persistent benchmark cache:** `metis benchmark regime-v1`
+    caches each feature block under `artifacts/datasets/regime-v1/<block>/`
+    (`--cache-dir` / `--no-cache` / `--rebuild`; `provenance["cache"]`
+    reports reused/built). Re-run 8.5s → 0.9s.
+  - **§20 stronger fingerprints:** the dataset fingerprint now also
+    covers a per-file **source manifest** (raw/processed/slice: path,
+    size, mtime, + metadata content hash) and the ingestion +
+    preprocessing source — touching a raw `.h5` or editing a
+    `metadata.json` busts the cache.
+  - **§21 `from_config` mapping:** `resolve_data_root` takes a `config`
+    mapping; order is explicit arg > mapping > file > env.
+  - **§22 strict validation:** `run_analysis(strict=True)` default — a
+    validation ERROR aborts (`ValidationError`); `strict=False` /
+    `metis analyze --allow-invalid` proceeds and stamps
+    `provenance["validation_overridden"]`.
+- **Next: Phase B — I2-B richer representation learning** (updated-plan
+  §24-29, §52). First write and freeze the I2-B research protocol
+  (selected field/slice, sample unit = 2D slice snapshots, train / held-
+  out-sample / OOD-condition splits, latent dims, PCA/POD baseline, conv-
+  autoencoder arch, evaluation metrics, stop criteria) — **do not tune
+  the model before the protocol is written**. Then build the slice
+  dataset artifact and run it. After that: Phase C (virtual-sensor
+  temporal ML), Phase D (SQL layer), Phase E (one model → FastAPI →
+  Docker → CI/CD → cloud → monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`
