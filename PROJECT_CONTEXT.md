@@ -369,13 +369,26 @@ eval).
   exploratory scripts + `representation_study.py` stay standalone).
   README quickstart rewritten around `metis ...`.
   `tests/unit/test_cli.py` (9 tests, CI-safe — mock_dns raw HDF5 only).
-- **Next: I8 — model / dataset registry** (`metis.registry`, currently an
-  empty package): a directory-backed `artifacts/registry.json` tracking
-  validated datasets and models — `{model_id, run_id, dataset_id,
-  status: experimental|validated|deprecated, created_at, git_commit,
-  metrics}`. "Validated" = approved for reuse under a documented scope,
-  not deployed. Then I6-style docs cleanup + expanded regression tests
-  (Stage 3 tail), then P1-P3 packaging.
+- **I8 — artifact (dataset/model) registry: DONE (2026-08-30).**
+  `metis.registry` (distinct from `metis.data.registry`, the DNS *case*
+  registry): `ArtifactRegistry("artifacts")` over one `registry.json` —
+  `register(id, kind, *, status, run_id, dataset_id, path, scope,
+  metrics)` (raises on duplicate id), `update`, `set_status` /
+  `promote` / `deprecate`, `list(kind=, status=)`, `[id]`. `kind` ∈
+  {dataset, model, report}, `status` ∈ {experimental, validated,
+  deprecated}; **`promote` to `validated` requires a documented
+  `scope`**. Auto-fills created/updated_at, git_commit, metis_version;
+  atomic save. CLI: `metis registry add|list|show|promote|deprecate|
+  set-status`, and `metis dataset build --register <id> --scope ...`
+  records the built dataset with its fingerprint/shape as metrics.
+  `tests/unit/test_artifact_registry.py` (9) + 3 CLI tests.
+- **Next: docs cleanup + Stage 3 tail** (`METIS_detailed_next_steps.md`
+  §31, §33 items 16-18): restructure `docs/` for a new student
+  (getting_started / architecture / data_layout / adding_an_analysis /
+  adding_a_model / reproducibility), trim the README to
+  what/why/install/one-example/where-to-read-more, expand
+  integration/regression tests, then P1-P3 packaging (semver, clean
+  install, CLI smoke in CI, dependency groups).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

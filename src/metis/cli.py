@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from dataclasses import asdict
 from pathlib import Path
 
 from metis import __version__
@@ -109,6 +110,63 @@ def _cmd_dataset_build(args) -> int:
     p = ds.provenance
     print(f"{args.feature_set}: {p['n_cases']} cases x {p['n_features']} features -> {args.out}\n"
           f"  fingerprint {p['fingerprint']}  code {p['code_version'][:12]}")
+    if args.register:
+        from metis.registry import ArtifactRegistry
+
+        entry = ArtifactRegistry(args.registry_root).register(
+            args.register, "dataset", path=args.out, scope=args.scope,
+            metrics={"fingerprint": p["fingerprint"], "n_cases": p["n_cases"],
+                     "n_features": p["n_features"], "feature_set": args.feature_set},
+        )
+        print(f"  registered as {entry.id!r} ({entry.status})")
+    return 0
+
+
+# --------------------------------------------------------------------- #
+# registry
+# --------------------------------------------------------------------- #
+def _artifact_registry(args):
+    from metis.registry import ArtifactRegistry
+
+    return ArtifactRegistry(args.registry_root)
+
+
+def _cmd_registry_list(args) -> int:
+    entries = _artifact_registry(args).list(kind=args.kind, status=args.status)
+    if not entries:
+        print("(registry empty)")
+        return 0
+    print(f"{'id':28s} {'kind':8s} {'status':13s} {'run_id':10s} scope")
+    for e in entries:
+        print(f"{e.id:28s} {e.kind:8s} {e.status:13s} "
+              f"{(e.run_id or '-')[:10]:10s} {e.scope or '-'}")
+    return 0
+
+
+def _cmd_registry_show(args) -> int:
+    print(json.dumps(asdict(_artifact_registry(args)[args.id]), indent=2))
+    return 0
+
+
+def _cmd_registry_add(args) -> int:
+    metrics = {}
+    for kv in args.metric or []:
+        k, _, v = kv.partition("=")
+        try:
+            metrics[k] = float(v)
+        except ValueError:
+            metrics[k] = v
+    entry = _artifact_registry(args).register(
+        args.id, args.kind, status=args.status, run_id=args.run_id,
+        dataset_id=args.dataset_id, path=args.path, scope=args.scope, metrics=metrics,
+    )
+    print(f"registered {entry.id!r} ({entry.kind}, {entry.status})")
+    return 0
+
+
+def _cmd_registry_status(args) -> int:
+    entry = _artifact_registry(args).set_status(args.id, args.status_value)
+    print(f"{entry.id!r} -> {entry.status}")
     return 0
 
 
@@ -231,8 +289,48 @@ def build_parser() -> argparse.ArgumentParser:
     pb.add_argument("--cases", default=None, help="comma-separated (default: regime train+OOD)")
     pb.add_argument("--out", required=True)
     pb.add_argument("--rebuild", action="store_true")
+    pb.add_argument("--register", default=None, metavar="ID",
+                    help="also record this dataset in the artifact registry")
+    pb.add_argument("--scope", default=None, help="documented reuse scope (for --register)")
+    pb.add_argument("--registry-root", dest="registry_root", default="artifacts")
     add_data_root_args(pb)
     pb.set_defaults(func=_cmd_dataset_build)
+
+    # registry
+    p_reg = sub.add_parser("registry", help="the artifact (dataset/model) registry")
+    p_reg.add_argument("--registry-root", dest="registry_root", default="artifacts")
+    reg_sub = p_reg.add_subparsers(dest="registry_command", metavar="<subcommand>")
+
+    rl = reg_sub.add_parser("list", help="list registered artifacts")
+    rl.add_argument("--kind", choices=["dataset", "model", "report"], default=None)
+    rl.add_argument("--status", choices=["experimental", "validated", "deprecated"], default=None)
+    rl.set_defaults(func=_cmd_registry_list)
+
+    rs = reg_sub.add_parser("show", help="show one artifact entry")
+    rs.add_argument("id")
+    rs.set_defaults(func=_cmd_registry_show)
+
+    ra = reg_sub.add_parser("add", help="register an artifact")
+    ra.add_argument("id")
+    ra.add_argument("--kind", required=True, choices=["dataset", "model", "report"])
+    ra.add_argument("--status", default="experimental",
+                    choices=["experimental", "validated", "deprecated"])
+    ra.add_argument("--run-id", dest="run_id", default=None)
+    ra.add_argument("--dataset-id", dest="dataset_id", default=None)
+    ra.add_argument("--path", default=None)
+    ra.add_argument("--scope", default=None)
+    ra.add_argument("--metric", action="append", metavar="KEY=VALUE",
+                    help="repeatable; recorded on the entry")
+    ra.set_defaults(func=_cmd_registry_add)
+
+    for name, val in (("promote", "validated"), ("deprecate", "deprecated")):
+        rp = reg_sub.add_parser(name, help=f"set an artifact's status to {val}")
+        rp.add_argument("id")
+        rp.set_defaults(func=_cmd_registry_status, status_value=val)
+    rss = reg_sub.add_parser("set-status", help="set an artifact's status")
+    rss.add_argument("id")
+    rss.add_argument("status_value", choices=["experimental", "validated", "deprecated"])
+    rss.set_defaults(func=_cmd_registry_status, status_value=None)
 
     # benchmark
     pbm = sub.add_parser("benchmark", help="run a frozen benchmark")
@@ -265,7 +363,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     try:
         return args.func(args) or 0
-    except (KeyError, RuntimeError, FileNotFoundError) as exc:
+    except (KeyError, ValueError, RuntimeError, FileNotFoundError) as exc:
         return _die(str(exc))
 
 

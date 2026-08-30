@@ -9,6 +9,7 @@ import shutil
 import pytest
 
 from metis.cli import main
+from metis.registry import ArtifactRegistry
 from metis.testing import corrupt, mock_dns
 
 
@@ -93,3 +94,31 @@ def test_report_regime_v1_from_json(tmp_path, capsys):
 def test_missing_data_root_is_a_clean_error(monkeypatch, capsys):
     monkeypatch.delenv("METIS_DATA_ROOT", raising=False)
     assert main(["cases", "list", "--config", "/nonexistent/x.yaml"]) in (2,)
+
+
+# --- registry subcommands (I8) ---
+def test_cli_registry_add_list_show_promote(tmp_path, capsys):
+    root = str(tmp_path / "artifacts")
+    assert main(["registry", "--registry-root", root, "add", "ds1",
+                 "--kind", "dataset", "--scope", "compact features", "--metric", "n=11"]) == 0
+    assert main(["registry", "--registry-root", root, "list"]) == 0
+    assert "ds1" in capsys.readouterr().out
+    assert main(["registry", "--registry-root", root, "promote", "ds1"]) == 0
+    assert main(["registry", "--registry-root", root, "show", "ds1"]) == 0
+    assert '"status": "validated"' in capsys.readouterr().out
+
+
+def test_cli_registry_promote_without_scope_is_clean_error(tmp_path, capsys):
+    root = str(tmp_path / "artifacts")
+    main(["registry", "--registry-root", root, "add", "m1", "--kind", "model"])
+    assert main(["registry", "--registry-root", root, "promote", "m1"]) == 2
+    assert "scope" in capsys.readouterr().err
+
+
+def test_cli_dataset_build_with_register(data_root, tmp_path):
+    root = str(tmp_path / "artifacts")
+    assert main(["dataset", "build", "--feature-set", "bulk", "--cases", "case01,case02",
+                 "--out", str(tmp_path / "ds"), "--register", "bulk_v1",
+                 "--scope", "smoke", "--registry-root", root]) == 0
+    entry = ArtifactRegistry(root)["bulk_v1"]
+    assert entry.kind == "dataset" and entry.metrics["n_features"] == 7
