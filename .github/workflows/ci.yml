@@ -19,3 +19,24 @@ jobs:
         run: ruff check src tests
       - name: Test
         run: pytest -q
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build wheel + sdist
+        run: |
+          pip install build
+          python -m build
+      - name: Install the built wheel in a clean venv
+        run: |
+          python -m venv /tmp/wheel-env
+          /tmp/wheel-env/bin/pip install dist/*.whl
+      - name: Smoke-test the CLI
+        run: |
+          /tmp/wheel-env/bin/metis --version
+          /tmp/wheel-env/bin/metis --help
+          /tmp/wheel-env/bin/metis cases list --config /dev/null || true

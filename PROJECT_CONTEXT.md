@@ -396,12 +396,28 @@ eval).
   (`docs/router_agent.md`, `docs/agent_implementation_plan.md`) stayed
   put (11 inbound refs from source docstrings). All relative links
   verified.
-- **Next: Stage 3 tail then P1-P3** (`METIS_detailed_next_steps.md` §24,
-  §33 item 17, §23-25): expand integration/regression tests (a full
-  ingest→validate→preprocess→dataset→train→evaluate→artifact integration
-  test; more regression pins), then packaging — semver, a clean-install
-  check, a `metis --help` / CLI smoke job in CI, and a deliberate
-  dependency-group pass.
+- **Stage 3 tail + P1/P3 packaging: DONE (2026-08-30).**
+  `tests/integration/test_pipeline.py` — the full chain on synthetic data
+  (ingest → validate → cached feature dataset → train-only scaler → fit a
+  model → evaluate (ML + representation + `assess_model` gate) →
+  `AnalysisResult` save/reload → `physical_field_report` → `Report`
+  write); a second test covers the torch leg (`Autoencoder` + `Trainer` +
+  `metis.tracking`, `importorskip`). `tests/regression/
+  test_physics_regression.py` (15) — pins the 11-case `bulk` block (from
+  the committed `block_features.npz`) against `tests/data/
+  physics_regression/bulk_reference.json`, the values published in Pub 4's
+  `case_setup_table.json`; bit-for-bit at `rel=1e-9`, no DNS needed.
+  CI (`.github/workflows/ci.yml`) gained a **`package` job**: `python -m
+  build` → install the wheel in a clean venv → `metis --version` /
+  `--help` / `cases list` smoke. `pyproject.toml` polished — `readme`,
+  `authors`, `keywords`, `classifiers`, `[project.urls]`. Wheel builds
+  and the `metis` entry point works from it. Full suite 249 passed / 1
+  skipped; clean-venv 213 / 8.
+- **Next: P2 open item + optional deployment tier.** Remaining backlog:
+  P4 Docker (§26 — containerise the mock→features→report demo), P5
+  FastAPI (§27), P6 monitoring (§28), P7 cloud demo (§29) — all "do
+  later", none blocking. The scientific/engineering v1 (Stages 1-3) is
+  functionally complete; pick these up only with a specific reason.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

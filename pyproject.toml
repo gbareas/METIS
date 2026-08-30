@@ -6,14 +6,27 @@ build-backend = "setuptools.build_meta"
 name = "metis"
 version = "0.1.0"
 description = "Reusable ML analysis & physical-discovery framework for high-pressure transcritical DNS"
+readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
+authors = [{ name = "Guillem Barea" }]
+keywords = ["DNS", "turbulence", "transcritical", "surrogate", "scientific-ml"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Physics",
+]
 dependencies = [
     "numpy>=1.26",
     "h5py>=3.10",
     "pyyaml>=6.0",
     "scipy>=1.11",
 ]
+
+[project.urls]
+Repository = "https://github.com/gbareas/METIS"
+Documentation = "https://github.com/gbareas/METIS/tree/main/docs"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff>=0.4"]
