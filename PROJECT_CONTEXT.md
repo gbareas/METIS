@@ -572,17 +572,26 @@ virtual_sensors_v1.yaml`, FINDINGS §8.
     multivariate `X_{t-31:t}→X_{t+1:t+H}`, H∈{1,4,8,16}. Splits like
     regime-v1 (train 01–09 s0–399 / val 01–09 s400–499 / OOD 10+15;
     secondary pressure-holdout). Realizability smoke passed.
-- **Next: C2** — `build_virtual_sensor_dataset(registry, config)` in
-  `metis.data.datasets`: reads the 5 probe slices per case, computes the
-  30 channels, applies the chronological splits + per-channel train-only
-  scaler, emits a windowed dataset (context 32, horizons {1,4,8,16},
-  stride-1, no window crossing a case or the train/val boundary) +
-  `metadata.json` under `artifacts/datasets/virtual_sensors_v1/`, with a
-  source-manifest fingerprint (reuse the §20 idea). Then C3 (Parquet
-  long-form table), C4 (leakage-safe windowing + test), C5–C8 (persistence
-  → AR/linear → XGBoost → LSTM), C9 (OOD), C10 (regime-aware eval), C11
-  (MLflow + register). Then D (SQL layer), E (FastAPI → Docker → CI/CD →
-  cloud → monitoring).
+  - **C2 — temporal dataset builder: DONE (2026-08-30).**
+    `metis.data.datasets.build_virtual_sensor_dataset` +
+    `compute_sensor_channels` + `normalize_vs_split_config`; CLI `metis
+    dataset build-sensors`. Emits `{train,val,ood}.npz` (raw 30 channels
+    + `case_ids` + `step_idx` + `window_anchors`) + fingerprinted
+    `metadata.json` (channels, per-case static context, train-only
+    scaler) under `artifacts/datasets/virtual_sensors_v1_primary/`.
+    Real data: steps 3600/900/1000, windows 3177/477/906 (L=32,
+    Hmax=16). `VirtualSensorDataset.assemble()` →
+    `(Xc (W,32,30), Y (W,4,30), anchor_case, anchor_step)`. Leakage-safe
+    (no window crosses a case or train/val boundary). Cache hit 8 ms.
+    `tests/unit/test_virtual_sensor_dataset.py` (7). FINDINGS §8 C2.
+- **Next: C3** — persist the channel table as long-form **Parquet**
+  (`case_id, step, channel, value` + a static-context table) alongside
+  the npz, so the virtual-sensor data is queryable with conventional
+  tooling (feeds the Phase D SQL layer). Then C4 (leakage-safe
+  windowing test — the invariant is already built into C2, C4 pins it),
+  C5–C8 (persistence → AR/linear → XGBoost → LSTM), C9 (OOD), C10
+  (regime-aware eval), C11 (MLflow + register). Then D (SQL layer),
+  E (FastAPI → Docker → CI/CD → cloud → monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

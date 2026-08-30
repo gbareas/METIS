@@ -144,6 +144,29 @@ def _cmd_dataset_build_slices(args) -> int:
     return 0
 
 
+def _cmd_dataset_build_sensors(args) -> int:
+    import yaml
+
+    from metis.data.datasets import (
+        build_virtual_sensor_dataset,
+        normalize_vs_split_config,
+    )
+
+    reg = _registry(args)
+    cfg = yaml.safe_load(Path(args.experiment_config).read_text())
+    splits = normalize_vs_split_config(cfg["splits"][args.split])
+    out = args.out or Path("artifacts") / "datasets" / f"{cfg['name']}_{args.split}"
+    ds = build_virtual_sensor_dataset(reg, cfg, splits, out_dir=out, rebuild=args.rebuild)
+    p = ds["train"].provenance
+    print(f"{cfg['name']} [{args.split}] -> {out}")
+    print(f"  channels={ds['train'].n_channels}  context={ds['train'].context_length}  "
+          f"horizons={ds['train'].horizons}")
+    print(f"  steps train/val/ood = {p['n_steps']['train']}/{p['n_steps']['val']}/"
+          f"{p['n_steps']['ood']}   windows = {p['n_windows']['train']}/"
+          f"{p['n_windows']['val']}/{p['n_windows']['ood']}   fp={p['fingerprint']}")
+    return 0
+
+
 # --------------------------------------------------------------------- #
 # registry
 # --------------------------------------------------------------------- #
@@ -370,6 +393,16 @@ def build_parser() -> argparse.ArgumentParser:
     pbs.add_argument("--rebuild", action="store_true")
     add_data_root_args(pbs)
     pbs.set_defaults(func=_cmd_dataset_build_slices)
+
+    pbv = p_ds.add_parser("build-sensors",
+                          help="build (and cache) a Level-3 virtual-sensor temporal dataset")
+    pbv.add_argument("--experiment-config", dest="experiment_config", required=True,
+                     help="e.g. configs/experiments/virtual_sensors_v1.yaml")
+    pbv.add_argument("--split", default="primary", help="which splits: block in the config")
+    pbv.add_argument("--out", default=None)
+    pbv.add_argument("--rebuild", action="store_true")
+    add_data_root_args(pbv)
+    pbv.set_defaults(func=_cmd_dataset_build_sensors)
 
     # registry
     p_reg = sub.add_parser("registry", help="the artifact (dataset/model) registry")

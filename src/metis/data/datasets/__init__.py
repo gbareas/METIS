@@ -12,12 +12,22 @@ from metis.data.datasets.slice_dataset import (
     build_slice_dataset,
     normalize_split_config,
 )
+from metis.data.datasets.virtual_sensor_dataset import (
+    VirtualSensorDataset,
+    build_virtual_sensor_dataset,
+    compute_sensor_channels,
+    normalize_vs_split_config,
+)
 
 __all__ = [
     "FEATURE_SETS",
     "FeatureDataset",
     "SliceDataset",
+    "VirtualSensorDataset",
     "build_feature_dataset",
     "build_slice_dataset",
+    "build_virtual_sensor_dataset",
+    "compute_sensor_channels",
     "normalize_split_config",
+    "normalize_vs_split_config",
 ]

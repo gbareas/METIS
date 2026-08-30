@@ -581,3 +581,28 @@ Hz/frequency claims (§35).
 - Realizability checked: all 5×3×2 channels build cleanly for train and
   OOD cases; `T_rms` already resolves the cw/hw thermal asymmetry
   (case01 2.83 vs 3.77) and shifts under OOD forcing — there is signal.
+
+### C2 — temporal dataset builder (2026-08-30)
+
+`metis.data.datasets.build_virtual_sensor_dataset` + `metis dataset
+build-sensors --experiment-config configs/experiments/virtual_sensors_v1.yaml`.
+`compute_sensor_channels` reduces each probe plane to `_pmf` / `_rms`
+per field; the builder concatenates the 5 probes, applies the
+chronological splits, fits a per-channel train-only scaler, and emits
+`{train,val,ood}.npz` (raw channels + `case_ids` + `step_idx` +
+`window_anchors`) + `metadata.json` (channels, static context per case,
+scaler, splits, source-manifest fingerprint) under
+`artifacts/datasets/virtual_sensors_v1_primary/`.
+
+- **primary split, real data**: 30 channels; steps train/val/ood =
+  **3600 / 900 / 1000**; windows (L=32, H_max=16, stride 1, per case) =
+  **3177 / 477 / 906** — exactly `n_cases·(steps − 47)`.
+- **Leakage-safe by construction**: each split is built from its own
+  step slice, anchors are placed per case, so no window's context or
+  targets cross a case boundary or the train/val step boundary (checked
+  in `tests/unit/test_virtual_sensor_dataset.py`, 7 tests; C4 pins this).
+- `.assemble()` materialises `(Xc (W,32,30), Y (W,4,30), anchor_case,
+  anchor_step)`; standardised train channels have mean ≈ 0, std ≈ 1.
+- Fingerprint (probes + channel/task config + per-slice size/mtime
+  manifest + code hash) → cache hit in 8 ms; a touched slice file busts
+  it.
