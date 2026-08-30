@@ -219,11 +219,27 @@ eval).
   correct), which is why the Pub 4 cross-checks always passed. Real
   case01/10/15 now validate with 0 warnings; box is ~1.27mm(x) x
   0.35mm(y=2·DELTA) x 0.42mm(z), a minimal flow unit as expected.
-- **Next: R4 — preprocessing layer** (`metis.data.preprocessing`, empty):
-  reusable transforms (coordinate normalization, variable selection,
-  scaling, sensor extraction) with strict fit-on-train / apply-to-OOD
-  leakage control, serializable fitted transforms, inverse where
-  meaningful.
+- **R4 — preprocessing layer: DONE (2026-08-30).** New
+  `metis.data.preprocessing`: a `Transform` ABC (`fit`/`transform`/
+  `fit_transform`/`inverse_transform`/`is_fitted`/`get_params`+
+  `from_params`; subclasses self-register for `save`/`load` to plain
+  JSON), `StandardScaler` (matches `evaluation.regime.standardize`
+  exactly — population std, zero-variance column left at 0, so it's a
+  drop-in), `MinMaxScaler`, and stateless field helpers
+  `strip_ghost_cells` / `select_variables` / `subsample` /
+  `interior_fields`. Fit is training-rows-only; `transform` never refits.
+  `tests/unit/test_preprocessing.py` (14 tests) incl. an explicit
+  no-leakage test (fit on train, `mean_` == train mean not combined
+  mean, applying to test doesn't move it) and `save`/`load` round-trip.
+  Deliberately NOT rewiring `evaluation.regime`'s global standardization
+  — the doc says that's fine for the exploratory small-N task; leakage-
+  safe splits land with R7/I2.
+- **Next: R5 — dataset abstraction + artifact caching**
+  (`metis.data.datasets`, empty): Level-1 case-level feature datasets
+  first (one row per case) as `.npz` + `metadata.json` (dataset id,
+  source cases, features, preprocessing, split, config, code version);
+  running an evaluation twice shouldn't re-read raw DNS if the extracted
+  dataset is unchanged.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`
