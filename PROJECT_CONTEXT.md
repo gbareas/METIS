@@ -557,13 +557,32 @@ eval).
     §7 "Artifacts & reproduction" table added. No model registered.
 - **PHASE B CLOSED (2026-08-30).** I2-B negative result fully documented
   (FINDINGS §7). Secondary pressure-holdout split intentionally left
-  unbuilt. **Next: Phase C — virtual-sensor / time-series ML** (§53,
-  C1–C11): pick sensors/variables → standardized temporal dataset
-  builder → industry-friendly tabular persistence → leakage-safe
-  chronological splits → persistence baseline → AR/linear baseline →
-  XGBoost/LightGBM → LSTM → OOD operating-condition tests → regime-aware
-  evaluation → MLflow track + register validated model. Then D (SQL
-  layer), E (one model → FastAPI → Docker → CI/CD → cloud → monitoring).
+  unbuilt.
+
+**Phase C — virtual-sensor / time-series ML** (§53, C1–C11). Protocol
+`docs/virtual_sensor_protocol.md` + `configs/experiments/
+virtual_sensors_v1.yaml`, FINDINGS §8.
+  - **C1 — sensor / variable selection: FROZEN (2026-08-30).**
+    5 physically-placed virtual probes = existing XZ slices (`cw_buffer`
+    s5, `centre` s3, `hw_buffer` s8, `pseudoboiling` s1_max_cp_f,
+    `max_u` s2_max_u; all exist for all 11 cases). 30 channels = 5 probes
+    × 3 fields (u,T,cp) × 2 plane aggregates (`_pmf` ⟨f′⟩, `_rms`
+    √⟨f′²⟩), 500 sample-steps/case at 2500 solver-iters/step.
+    **Sample-step forecasting only — no physical Δt (§35).** Task:
+    multivariate `X_{t-31:t}→X_{t+1:t+H}`, H∈{1,4,8,16}. Splits like
+    regime-v1 (train 01–09 s0–399 / val 01–09 s400–499 / OOD 10+15;
+    secondary pressure-holdout). Realizability smoke passed.
+- **Next: C2** — `build_virtual_sensor_dataset(registry, config)` in
+  `metis.data.datasets`: reads the 5 probe slices per case, computes the
+  30 channels, applies the chronological splits + per-channel train-only
+  scaler, emits a windowed dataset (context 32, horizons {1,4,8,16},
+  stride-1, no window crossing a case or the train/val boundary) +
+  `metadata.json` under `artifacts/datasets/virtual_sensors_v1/`, with a
+  source-manifest fingerprint (reuse the §20 idea). Then C3 (Parquet
+  long-form table), C4 (leakage-safe windowing + test), C5–C8 (persistence
+  → AR/linear → XGBoost → LSTM), C9 (OOD), C10 (regime-aware eval), C11
+  (MLflow + register). Then D (SQL layer), E (FastAPI → Docker → CI/CD →
+  cloud → monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

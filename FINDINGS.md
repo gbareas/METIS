@@ -550,3 +550,34 @@ The `metis report i2b-representation` generator
 are required, the rest enrich it. **No model registered — negative
 result.** Phase B is closed; next is Phase C (virtual-sensor time-series
 ML).
+
+---
+
+## 8. Virtual-sensor forecasting (Phase C, running log)
+
+Protocol: `docs/virtual_sensor_protocol.md` + config
+`configs/experiments/virtual_sensors_v1.yaml`.
+
+### C1 — sensor / variable selection: FROZEN (2026-08-30)
+
+Turns the `processed_slices` product into a multivariate sample-step
+time series. **No physical Δt** for this product (only solver iteration
+count, uniform at 2500 iters/step) → sample-step forecasting only, no
+Hz/frequency claims (§35).
+
+- **5 virtual probes**, each an existing XZ slice, chosen for transcritical
+  physics: `cw_buffer` (`s5_y_plus_10_cw`), `centre` (`s3_center`),
+  `hw_buffer` (`s8_y_plus_10_hw`), `pseudoboiling` (`s1_max_cp_f`, the
+  Widom-line plane), `max_u` (`s2_max_u`). All 5 exist for all 11 cases.
+- **Channels**: per probe × field (`u`,`T`,`cp`), two plane aggregates —
+  `_pmf` (plane-mean fluctuation ⟨f′⟩) and `_rms` (plane RMS √⟨f′²⟩) →
+  **30 sensor channels**, 500 steps/case. Static per-case context:
+  `Pb_Pc`, `Thw_Tc`, `Tcw_Tc`, per-probe `y_loc`.
+- **Task**: multivariate forecast `X_{t-31:t} → X_{t+1:t+H}`,
+  `H ∈ {1,4,8,16}` steps, windows stride-1 within a case.
+- **Splits** (chronological, like `regime-v1`): train case01–09 steps
+  0–399; val case01–09 steps 400–499; OOD case10+case15 all steps;
+  secondary pressure-holdout train 01–06 / OOD 07–09.
+- Realizability checked: all 5×3×2 channels build cleanly for train and
+  OOD cases; `T_rms` already resolves the cw/hw thermal asymmetry
+  (case01 2.83 vs 3.77) and shifts under OOD forcing — there is signal.
