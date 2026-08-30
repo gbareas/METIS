@@ -16,7 +16,9 @@ from metis.models.base import RepresentationModel
 _ACTIVATIONS = ("tanh", "relu", "gelu")
 
 
-def _make_net(n_features: int, latent_dim: int, hidden: tuple[int, ...], activation: str):
+def _make_net(
+    n_features: int, latent_dim: int, hidden: tuple[int, ...], activation: str, seed: int
+):
     import torch
     from torch import nn
 
@@ -48,7 +50,10 @@ def _make_net(n_features: int, latent_dim: int, hidden: tuple[int, ...], activat
         def forward(self, x):
             return self.decoder(self.encoder(x))
 
-    torch.manual_seed(0)  # deterministic init; Trainer re-seeds before the loop
+    # Seed *parameter initialisation* from the experiment seed — not a
+    # hard-coded 0 — so genuinely independent seeds start from genuinely
+    # different weights. Trainer re-seeds again before the loop.
+    torch.manual_seed(seed)
     return _AENet()
 
 
@@ -90,8 +95,12 @@ class Autoencoder(RepresentationModel):
         self.n_features_ = X.shape[1]
         self.scaler_ = StandardScaler().fit(X) if self.standardize else None
         Xs = self.scaler_.transform(X) if self.scaler_ else X
-        self.module = _make_net(self.n_features_, self.latent_dim, self.hidden, self.activation)
-        self.history_ = (trainer or self._default_trainer()).fit(self, Xs, run=run)
+        trainer = trainer or self._default_trainer()
+        # one seed drives both weight init and the training loop
+        self.module = _make_net(
+            self.n_features_, self.latent_dim, self.hidden, self.activation, seed=trainer.seed
+        )
+        self.history_ = trainer.fit(self, Xs, run=run)
         return self
 
     # -- inference -------------------------------------------------
@@ -147,8 +156,8 @@ class Autoencoder(RepresentationModel):
             import torch
 
             obj.module = _make_net(
-                obj.n_features_, obj.latent_dim, obj.hidden, obj.activation
-            )
+                obj.n_features_, obj.latent_dim, obj.hidden, obj.activation, seed=0
+            )  # init seed is irrelevant here — weights are loaded next
             obj.module.load_state_dict(
                 {k: torch.tensor(v) for k, v in params["state_dict"].items()}
             )

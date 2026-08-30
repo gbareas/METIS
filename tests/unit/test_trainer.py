@@ -29,7 +29,7 @@ def ae_input(ae, X):
     ae.scaler_ = StandardScaler().fit(X)
     from metis.models.autoencoder import _make_net
 
-    ae.module = _make_net(X.shape[1], ae.latent_dim, ae.hidden, ae.activation)
+    ae.module = _make_net(X.shape[1], ae.latent_dim, ae.hidden, ae.activation, seed=0)
     return ae.scaler_.transform(X)
 
 

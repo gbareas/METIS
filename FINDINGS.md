@@ -267,7 +267,7 @@ open line of tuning:
 Changing any expected value in the config now means the science changed
 and needs its own FINDINGS entry.
 
-## 6. Autoencoder representation learning on case-level vectors — stop (2026-08-30)
+## 6. Autoencoder representation learning on case-level vectors — stop (2026-08-30, corrected 2026-08-31)
 
 **I2-A** (`scripts/representation_study.py`, MLflow experiment
 `representation-v1`, results in `results/representation_study.json`).
@@ -276,33 +276,43 @@ Question: does a nonlinear autoencoder latent organise the 9 training
 cases (and place the 2 OOD cases) by pressure/thermal any better than
 2-component PCA of the same features? Blocks `bulk` (7 feat) and
 `rms_profile` (256 feat), train-only standardisation, latent dim 2,
-Autoencoder(hidden=32, tanh) over 5 seeds.
+Autoencoder(hidden=32, tanh) over 5 genuinely independent seeds.
 
-**Result: no — the AE latent reproduces the PCA subspace.**
+> **Correction (2026-08-31).** The first pass reported `± 0.000` seed
+> variance and `latent_stability ~ 1e-16`, and concluded "the AE just
+> finds the linear subspace". That was an artefact: `_make_net` reset
+> torch to seed 0 *inside* network construction, so every nominal seed
+> started from identical weights. Fixed (the experiment seed now drives
+> weight init) and rerun. The **headline conclusion survives** — the AE
+> does not beat PCA on any block — but the reasoning changes.
+
+**Result: no — across independent initialisations the AE does not
+robustly improve on PCA, and is markedly more initialisation-sensitive.**
 
 | block | metric | PCA(2) | Autoencoder(2), mean ± std over 5 seeds |
 |---|---|---|---|
 | bulk | ARI vs Pb_Pc | 0.357 | 0.353 ± 0.000 |
 | bulk | ARI vs Thw_Tc | 0.071 | −0.118 ± 0.000 |
-| rms_profile | ARI vs Pb_Pc | −0.161 | −0.161 ± 0.000 |
-| rms_profile | ARI vs Thw_Tc | 0.484 | 0.484 ± 0.000 |
+| rms_profile | ARI vs Pb_Pc | −0.161 | −0.034 ± 0.108 |
+| rms_profile | ARI vs Thw_Tc | **0.484** | 0.237 ± 0.228 |
 
-On `rms_profile` the AE metrics are *identical* to PCA to 3 dp; on `bulk`
-it slightly regresses both ARIs (net: `beats_baseline` False on every
-block). The zero seed-to-seed variance is the tell: with 9 training
-samples a 256→32→2 (or 7→32→2) MLP just finds the leading linear
-subspace — there is no nonlinear structure for it to find at this N.
-
-The I5 diagnostics confirm it: `latent_stability` (Procrustes-aligned
-relative L2 across the 5 seeded fits) is ~1e-16 for both blocks — every
-seed lands on the same latent — and the strongest |latent↔physical
-correlation| matches PCA's (bulk: AE `Pb_Pc` 0.94 vs PCA 0.89;
-rms_profile: AE `Thw_Tc` 0.83 vs PCA 0.83).
+- **`rms_profile`**: the AE's thermal-axis ARI is both **worse on
+  average** (0.237 vs PCA's 0.484) and **highly seed-dependent**
+  (std 0.228). `latent_stability` (Procrustes-aligned relative L2 across
+  seeds) is 0.12 — the embedding genuinely varies from run to run.
+- **`bulk`**: only 7 features into a 2-D latent; the k=3 cluster
+  assignment lands on the same ARI every seed (std 0), but the latent
+  itself still varies (`latent_stability` 0.23), and the ARIs sit below
+  PCA's.
+- `beats_baseline` is **False on every block** (`assess_model`): where an
+  ML metric improves, a physical/organisation metric regresses.
 
 **Per the I2 stop criterion (§14): recorded and parked.** Case-level
-representation learning is not pursued further. Escalating to I2-B (2D
-slice fields, where N is thousands of snapshots rather than 9 cases) is
-possible but is a deliberate decision, not an automatic next step — it's
-a different task (spatial structure per case, not one vector per case).
-The `PCARepresentation` / `Autoencoder` / `Trainer` / `evaluate_
-representation` machinery built here is reusable if I2-B is taken up.
+representation learning is not pursued further — with only 9 training
+cases the nonlinear model has no robust advantage and adds
+initialisation risk. Escalating to **I2-B** (2D slice fields, N ~
+thousands of snapshots per case rather than one vector) is the
+recommended next scientific step (updated plan §24–29), but it is a
+different task and a deliberate decision. The `PCARepresentation` /
+`Autoencoder` / `Trainer` / `evaluate_representation` machinery is
+reusable there.
