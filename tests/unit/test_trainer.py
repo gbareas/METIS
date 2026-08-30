@@ -58,3 +58,36 @@ def test_deterministic_for_fixed_seed(X):
         return h["best_train_mse"]
 
     assert run() == pytest.approx(run(), abs=1e-9)
+
+
+def test_minibatch_reduces_loss_and_is_deterministic(X):
+    def run():
+        ae = Autoencoder(latent_dim=2, hidden=(12,))
+        return Trainer(max_epochs=300, patience=300, log_every=50, seed=3,
+                       batch_size=8).fit(ae, ae_input(ae, X))
+
+    h = run()
+    assert h["best_train_mse"] < h["logged_losses"][0]
+    assert run()["best_train_mse"] == pytest.approx(h["best_train_mse"], abs=1e-9)
+
+
+def test_validation_monitor_switches_history_keys(X):
+    ae = Autoencoder(latent_dim=2, hidden=(12,))
+    Xs = ae_input(ae, X)
+    hist = Trainer(max_epochs=300, patience=300, log_every=50, seed=0, batch_size=8).fit(
+        ae, Xs[:16], X_val=Xs[16:]
+    )
+    assert hist["monitor"] == "val_mse"
+    assert "best_val_mse" in hist
+    assert "best_train_mse" in hist  # stable key kept for back-compat
+    assert hist["logged_losses"][0] > hist["best_train_mse"]
+
+
+def test_early_stopping_uses_validation_loss(X):
+    ae = Autoencoder(latent_dim=3, hidden=(12,))
+    Xs = ae_input(ae, X)
+    hist = Trainer(max_epochs=100000, patience=20, min_delta=1e-3, log_every=200, seed=0).fit(
+        ae, Xs[:16], X_val=Xs[16:]
+    )
+    assert hist["epochs_run"] < 100000
+    assert hist["best_epoch"] <= hist["epochs_run"]
