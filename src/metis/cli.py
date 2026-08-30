@@ -123,6 +123,27 @@ def _cmd_dataset_build(args) -> int:
     return 0
 
 
+def _cmd_dataset_build_slices(args) -> int:
+    import yaml
+
+    from metis.data.datasets import build_slice_dataset, normalize_split_config
+
+    reg = _registry(args)
+    cfg = yaml.safe_load(Path(args.experiment_config).read_text())
+    field = args.field or cfg["data"]["field"]
+    slice_id = args.slice_id or cfg["data"]["slice_id"]
+    splits = normalize_split_config(cfg["splits"][args.split])
+    out = args.out or (
+        Path("artifacts") / "datasets" / f"{cfg['name']}_{args.split}_{field}_{slice_id}"
+    )
+    ds = build_slice_dataset(reg, field, slice_id, splits, out_dir=out, rebuild=args.rebuild)
+    n = ds["train"].provenance["n"]
+    print(f"{field} @ {slice_id} [{args.split}] -> {out}")
+    print(f"  train={n['train']}  val={n['val']}  ood={n['ood']}  "
+          f"grid={list(ds['train'].X.shape[1:])}  fp={ds['train'].provenance['fingerprint']}")
+    return 0
+
+
 # --------------------------------------------------------------------- #
 # registry
 # --------------------------------------------------------------------- #
@@ -307,6 +328,19 @@ def build_parser() -> argparse.ArgumentParser:
     pb.add_argument("--registry-root", dest="registry_root", default="artifacts")
     add_data_root_args(pb)
     pb.set_defaults(func=_cmd_dataset_build)
+
+    pbs = p_ds.add_parser("build-slices",
+                          help="build (and cache) a Level-2 slice-snapshot dataset")
+    pbs.add_argument("--experiment-config", dest="experiment_config", required=True,
+                     help="e.g. configs/experiments/i2b_representation_v1.yaml")
+    pbs.add_argument("--split", default="primary", help="which splits: block in the config")
+    pbs.add_argument("--field", default=None, help="override the config's data.field")
+    pbs.add_argument("--slice", dest="slice_id", default=None,
+                     help="override the config's data.slice_id")
+    pbs.add_argument("--out", default=None)
+    pbs.add_argument("--rebuild", action="store_true")
+    add_data_root_args(pbs)
+    pbs.set_defaults(func=_cmd_dataset_build_slices)
 
     # registry
     p_reg = sub.add_parser("registry", help="the artifact (dataset/model) registry")

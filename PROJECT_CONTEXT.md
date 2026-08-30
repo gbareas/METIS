@@ -462,9 +462,27 @@ eval).
   B2 Level-2 slice-dataset builder → B3 baseline + pick k → B4 mini-batch
   `Trainer` + conv-AE → B5 train all seeds → B6-B7 eval + decision gate →
   B8-B9 writeup/registry.
-- **Next: freeze the protocol (B1), then B2.** After Phase B: Phase C
-  (virtual-sensor temporal ML), Phase D (SQL layer), Phase E (one model →
-  FastAPI → Docker → CI/CD → cloud → monitoring).
+  - **B1 — protocol FROZEN (2026-08-30).** `docs/i2b_representation_
+    protocol.md` + `configs/experiments/i2b_representation_v1.yaml`; user
+    confirmed all four freeze decisions.
+  - **B2 — Level-2 slice-dataset builder: DONE (2026-08-30).** New
+    `metis.data.datasets.slice_dataset`: `SliceDataset` (raw `(n,NX,NZ)`
+    snapshots + `case_ids` + `snapshot_idx` + a train-only global
+    `scaler`; `standardize()` / `inverse()`; `save`/`load` as
+    `{train,val,ood}.npz` + `metadata.json`) and `build_slice_dataset(
+    registry, field, slice_id, splits, out_dir=, rebuild=)` with a
+    source-manifest fingerprint + cache (touching a slice `.npy` busts
+    it). `normalize_split_config` maps the yaml `splits.<name>` shape.
+    `metis dataset build-slices --experiment-config ... --split primary`.
+    `tests/unit/test_slice_dataset.py` (7). Real-data run of the primary
+    split: **train 3600 / val 900 / ood 1000** 96×96 samples, ~170 MB
+    artifact, scaler mean≈0 std 0.073.
+- **Next: B3** — PCA / snapshot-POD baseline over `k ∈ {2,4,8,16,32}` on
+  the frozen slice dataset; pick and freeze `headline_latent_dim` (where
+  PCA first reaches ≥90% reconstructed variance) into the yaml. Then B4
+  (mini-batch `Trainer` + conv-AE), B5-B9. After Phase B: Phase C
+  (virtual-sensor temporal ML), D (SQL layer), E (one model → FastAPI →
+  Docker → CI/CD → cloud → monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

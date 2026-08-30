@@ -1,10 +1,15 @@
 # I2-B — slice-level representation-learning protocol
 
-**Status: DRAFT for freeze.** Once frozen, the machine-readable
-parameters live in `configs/experiments/i2b_representation_v1.yaml` and
-must not be changed without a `FINDINGS.md` entry. Per
+**Status: FROZEN 2026-08-30 (B1).** The machine-readable parameters live
+in `configs/experiments/i2b_representation_v1.yaml`; neither may change
+without a `FINDINGS.md` entry. Per
 `METIS_detailed_next_steps_updated.md` §24–29, §52, §57 — the model is
-**not** tuned before this document is frozen.
+**not** tuned before the study runs to its decision gate (B7).
+
+Freeze decisions (confirmed): slice `s3_center` / field `u`; primary OOD
+= case10 + case15 (series convention) with a secondary Pb_Pc = 5.0
+pressure-holdout; `Trainer` gains a mini-batch loop in B4 (batch 64); 5
+seeds and the `k ∈ {2,4,8,16,32}` grid.
 
 Supersedes nothing; extends the Track A/B reference work (`research_protocol.md`,
 `FINDINGS.md` §1–6). I2-A (case-level, N = 9 training cases) reached a
