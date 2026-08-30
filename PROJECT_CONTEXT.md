@@ -193,10 +193,30 @@ eval).
   `metis.data.registry.REQUIRED_METADATA_KEYS` is the authoritative
   case-metadata schema. `tests/unit/test_registry.py` (11 tests) +
   smoke-checked against the real 11-case data tree.
-- **Next: R3 — data validation layer** (`metis.data.validation`, currently
-  empty): structural + numerical + dataset-compatibility checks returning
-  a structured report (`report.ok/errors/warnings`), with deliberately
-  corrupted mock fixtures proving each check fails for the right reason.
+- **R3 — data validation layer: DONE (2026-08-30).** New
+  `metis.data.validation`: `ValidationReport` / `ValidationIssue` /
+  `ValidationError` (`report.ok/errors/warnings`, `raise_if_failed()`,
+  `summary()`) + validators `validate_dns_case`, `validate_slice_case`,
+  `validate_case(descriptor, load=)`, `validate_compatibility([...])`.
+  Structural (grid+ghost-cell shape, coordinate length/finiteness/
+  monotonicity, `timesteps` ordered & `timesteps_done ⊆ timesteps`),
+  numerical (NaN/Inf per field, physically-positive rho/T/P/mu/kappa/
+  c_p/c_v/sos, `rmsf_* >= 0`, constant-field warning, slice fluctuation-
+  drift + duplicate-frame warnings), and cross-case (matching grids &
+  field-name sets). New `metis.testing.corrupt` supplies the deliberately
+  corrupted fixtures; `tests/unit/test_validation.py` (14 tests) asserts
+  each failure by its `check` slug. Smoke-checked on real case01/10/15
+  and slices s3_center/s2_max_u — clean except a `coordinate_degenerate`
+  **warning** that surfaced a real latent bug: **`HDF5Reader` extracts
+  `coordinates['x']`/`['z']` along the wrong mesh axis** (they come back
+  constant for real RHEA data; only `y` is right). Nothing downstream
+  uses those two today; fix the reader separately (own change + physics
+  re-check), it's not an R-milestone blocker.
+- **Next: R4 — preprocessing layer** (`metis.data.preprocessing`, empty):
+  reusable transforms (coordinate normalization, variable selection,
+  scaling, sensor extraction) with strict fit-on-train / apply-to-OOD
+  leakage control, serializable fitted transforms, inverse where
+  meaningful.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`
