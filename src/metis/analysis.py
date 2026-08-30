@@ -218,9 +218,18 @@ def run_analysis(
     case: str,
     *,
     validate: bool = True,
+    strict: bool = True,
     **options,
 ) -> AnalysisResult:
-    """Run `analysis` on `case` and return a standard `AnalysisResult`."""
+    """Run `analysis` on `case` and return a standard `AnalysisResult`.
+
+    With `validate=True` (default) the data validators run and, if
+    `strict` is also True (default), a validation **error** aborts the
+    analysis with `ValidationError` — no artifact is produced from
+    known-invalid input. `strict=False` proceeds anyway and stamps
+    `provenance["validation_overridden"] = True`. `validate=False` skips
+    validation entirely.
+    """
     if analysis not in _RUNNERS:
         raise ValueError(
             f"unknown analysis {analysis!r}; choose from {list(ANALYSES)}"
@@ -228,6 +237,17 @@ def run_analysis(
     descriptor = registry[case]  # KeyError (listing known cases) if unknown
     out = _RUNNERS[analysis](registry, descriptor, options, validate)
     merged = _merge_reports(out.reports)
+
+    provenance = {
+        "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "code_version": git_commit(),
+        "data_root": str(registry.data_root),
+    }
+    if merged is not None and not merged.ok:
+        if strict:
+            merged.raise_if_failed()  # ValidationError, no result returned
+        provenance["validation_overridden"] = True
+
     return AnalysisResult(
         analysis=analysis,
         case_ids=[case],
@@ -235,9 +255,5 @@ def run_analysis(
         outputs=out.outputs,
         arrays=out.arrays,
         validation=_report_to_dict(merged) if merged is not None else None,
-        provenance={
-            "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-            "code_version": git_commit(),
-            "data_root": str(registry.data_root),
-        },
+        provenance=provenance,
     )

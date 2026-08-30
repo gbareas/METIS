@@ -102,3 +102,29 @@ def test_provenance_is_populated(registry):
     r = run_analysis(registry, "physics", "case01")
     assert r.provenance["data_root"] == str(registry.data_root)
     assert "created_at" in r.provenance and "code_version" in r.provenance
+
+
+# --- strict validation (updated-plan §22) ---
+def test_strict_validation_aborts_on_error(registry, tmp_path):
+    from metis.data.validation import ValidationError
+    from metis.testing import corrupt
+
+    corrupt.break_grid_metadata(registry["case01"].metadata_path, Nx=999)
+    fresh = CaseRegistry(registry.data_root)
+    with pytest.raises(ValidationError):
+        run_analysis(fresh, "physics", "case01")
+
+
+def test_allow_invalid_proceeds_and_records_the_override(registry):
+    from metis.testing import corrupt
+
+    corrupt.break_grid_metadata(registry["case01"].metadata_path, Nx=999)
+    fresh = CaseRegistry(registry.data_root)
+    r = run_analysis(fresh, "physics", "case01", strict=False)
+    assert r.validation["ok"] is False
+    assert r.provenance["validation_overridden"] is True
+
+
+def test_clean_case_has_no_override_flag(registry):
+    r = run_analysis(registry, "physics", "case01")
+    assert "validation_overridden" not in r.provenance

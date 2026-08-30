@@ -43,18 +43,26 @@ def load_config(path: str | Path | None = None) -> dict:
 def resolve_data_root(
     cli_value: str | Path | None = None,
     config_path: str | Path | None = None,
+    *,
+    config: dict | None = None,
 ) -> Path:
-    """Resolve the DNS data root (see module docstring for the order).
+    """Resolve the DNS data root.
 
-    Raises `RuntimeError` if none of the three sources supplies one.
+    Order, first hit wins: `cli_value` > `data.root` in `config` (an
+    already-loaded mapping) > `data.root` in the `config_path` file (else
+    `configs/default.yaml`) > `$METIS_DATA_ROOT` > `RuntimeError`.
     """
     if cli_value:
         return Path(cli_value).expanduser()
 
-    config = load_config(config_path)
-    from_config = (config.get("data") or {}).get("root")
-    if from_config:
-        return Path(from_config).expanduser()
+    if config is not None:
+        from_mapping = (config.get("data") or {}).get("root")
+        if from_mapping:
+            return Path(from_mapping).expanduser()
+    else:
+        from_file = (load_config(config_path).get("data") or {}).get("root")
+        if from_file:
+            return Path(from_file).expanduser()
 
     from_env = os.environ.get(DATA_ROOT_ENV_VAR)
     if from_env:

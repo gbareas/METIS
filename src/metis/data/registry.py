@@ -182,11 +182,12 @@ class CaseRegistry:
         data_root: str | Path | None = None,
         config_path: str | Path | None = None,
     ) -> CaseRegistry:
-        """Build a registry from `metis.config`: data root resolved via
-        `resolve_data_root` (CLI value > config `data.root` > env), and
-        the `paths:` block for the subdir names."""
+        """Build a registry from `metis.config`. Both the data root and the
+        `paths:` sub-dir names come from the same source: an explicit
+        `data_root` arg > the supplied `config` mapping > the
+        `config_path` file (else `configs/default.yaml`) > env."""
         cfg = dict(config) if config is not None else load_config(config_path)
-        root = resolve_data_root(cli_value=data_root, config_path=config_path)
+        root = resolve_data_root(cli_value=data_root, config=cfg)
         paths = cfg.get("paths") or {}
         return cls(
             root,

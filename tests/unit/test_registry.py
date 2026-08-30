@@ -128,3 +128,12 @@ def test_from_config_resolves_data_root(data_root, monkeypatch):
     reg = CaseRegistry.from_config(config={})
     assert reg.data_root == data_root
     assert reg.case_ids() == ["case01", "case02"]
+
+
+def test_from_config_honours_a_mapping_data_root(tmp_path, monkeypatch):
+    monkeypatch.delenv("METIS_DATA_ROOT", raising=False)
+    (tmp_path / "processed").mkdir()
+    reg = CaseRegistry.from_config(config={"data": {"root": str(tmp_path)},
+                                           "paths": {"processed": "processed"}})
+    assert reg.data_root == tmp_path
+    assert reg.processed_root == tmp_path / "processed"

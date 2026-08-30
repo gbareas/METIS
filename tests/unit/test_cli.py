@@ -122,3 +122,10 @@ def test_cli_dataset_build_with_register(data_root, tmp_path):
                  "--scope", "smoke", "--registry-root", root]) == 0
     entry = ArtifactRegistry(root)["bulk_v1"]
     assert entry.kind == "dataset" and entry.metrics["n_features"] == 7
+
+
+def test_cli_analyze_aborts_on_invalid_input_unless_allowed(data_root, capsys):
+    corrupt.break_grid_metadata(data_root / "processed" / "case01" / "metadata.json", Nx=999)
+    assert main(["analyze", "physics", "case01"]) == 2
+    assert "validation" in capsys.readouterr().err.lower()
+    assert main(["analyze", "physics", "case01", "--allow-invalid"]) == 0

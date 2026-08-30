@@ -21,6 +21,7 @@ from pathlib import Path
 
 from metis import __version__
 from metis.config import add_data_root_args, resolve_data_root
+from metis.data.validation import ValidationError
 
 
 def _die(msg: str) -> int:
@@ -82,7 +83,7 @@ def _cmd_analyze(args) -> int:
         return _die(f"unknown case {args.case!r}; known: {reg.case_ids() or 'none'}")
     opts = {k: getattr(args, k) for k in _ANALYSIS_OPTS if getattr(args, k) is not None}
     result = run_analysis(reg, args.kind.replace("-", "_"), args.case,
-                          validate=args.validate, **opts)
+                          validate=args.validate, strict=not args.allow_invalid, **opts)
     print(result.summary())
     for k, v in result.outputs.items():
         if not isinstance(v, (list, dict)):
@@ -283,7 +284,11 @@ def build_parser() -> argparse.ArgumentParser:
     pa.add_argument("--feature-set", dest="feature_set", default=None)
     pa.add_argument("--energy-threshold", dest="energy_threshold", type=float, default=None)
     pa.add_argument("--out", default=None, help="directory for outputs.json + arrays.npz")
-    pa.add_argument("--no-validate", dest="validate", action="store_false")
+    pa.add_argument("--no-validate", dest="validate", action="store_false",
+                    help="skip the data-validation pass entirely")
+    pa.add_argument("--allow-invalid", dest="allow_invalid", action="store_true",
+                    help="produce a result even if validation reports errors "
+                         "(recorded in provenance)")
     add_data_root_args(pa)
     pa.set_defaults(func=_cmd_analyze)
 
@@ -377,6 +382,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     try:
         return args.func(args) or 0
+    except ValidationError as exc:
+        print(exc.report.summary(), file=sys.stderr)
+        return _die("input failed validation (pass --allow-invalid to override)")
     except (KeyError, ValueError, RuntimeError, FileNotFoundError) as exc:
         return _die(str(exc))
 

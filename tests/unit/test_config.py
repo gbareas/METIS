@@ -42,3 +42,18 @@ def test_user_home_is_expanded(monkeypatch):
 def test_missing_explicit_config_path_raises(tmp_path):
     with pytest.raises(FileNotFoundError):
         load_config(tmp_path / "does_not_exist.yaml")
+
+
+def test_config_mapping_data_root_is_honoured(monkeypatch):
+    monkeypatch.delenv(DATA_ROOT_ENV_VAR, raising=False)
+    assert resolve_data_root(config={"data": {"root": "/foo"}}).as_posix() == "/foo"
+
+
+def test_cli_value_still_beats_a_config_mapping():
+    got = resolve_data_root(cli_value="/from/cli", config={"data": {"root": "/foo"}})
+    assert got.as_posix() == "/from/cli"
+
+
+def test_config_mapping_without_root_falls_to_env(monkeypatch):
+    monkeypatch.setenv(DATA_ROOT_ENV_VAR, "/from/env")
+    assert resolve_data_root(config={"paths": {"raw": "raw"}}).as_posix() == "/from/env"
