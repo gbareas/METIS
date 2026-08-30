@@ -22,3 +22,4 @@ mlruns/
 
 # Generated dataset / model / report artifacts (milestone R5+)
 /artifacts/
+/reports/

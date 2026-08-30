@@ -39,6 +39,9 @@ router = [
 # M4 demo front end only — kept separate from `router` so the router's own
 # logic/tests don't pull in a UI framework.
 demo = ["streamlit>=1.30"]
+# Reporting layer (metis.reporting) — matplotlib for figures only; the
+# summary.md / metrics.json path works without it.
+report = ["matplotlib>=3.7"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

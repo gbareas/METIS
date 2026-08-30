@@ -340,11 +340,27 @@ eval).
   `scripts/representation_study.py`: latent_stability ≈ 1e-16 and
   matching latent↔physical correlations further confirm the FINDINGS §6
   stop — the AE just finds PCA's subspace.
-- **Next: I6 — reporting layer.** `metis report --run-id <id>` (a script
-  for now) → `reports/<id>/{summary.md, metrics.json, figures/}` from an
-  experiment, so plots/tables aren't rebuilt by hand. First report
-  types: case physics summary, regime-v1 benchmark, representation
-  study, OOD comparison.
+- **I6 — reporting layer: DONE (2026-08-30). Stage 2 (I1-I6) complete.**
+  `metis.reporting.Report` — accumulates markdown sections (+ GFM tables),
+  a flat metrics dict, and named figures, then `write`s
+  `<out>/{summary.md, metrics.json, figures/*.png}` with a provenance
+  header (generated_at, metis version, git commit). Figures need the new
+  `report` extra (matplotlib, Agg); without it the text+JSON still write
+  and `summary.md` says the figure was skipped.
+  `metis.reporting.generators` — `regime_v1_report`,
+  `representation_study_report` (from the `results/*.json` shapes),
+  `physics_report` (from an `AnalysisResult`). `scripts/report.py`:
+  `report <kind> [--from JSON | --run-id <mlflow-id>] [--out]`, plus
+  `report physics <case> --data-root ...`. `reports/` gitignored.
+  `tests/unit/test_reporting.py` (5 tests, text/JSON path runs in CI;
+  figure assertions guard on `has_matplotlib()`). Smoke-tested all three
+  report kinds on real artifacts + the `--run-id` MLflow-artifact path.
+- **Next (Stage 3): I7 — user-facing `metis` CLI.** One entry point
+  (`argparse`/`typer`) wrapping what exists: `metis cases list`,
+  `metis case validate <id>`, `metis analyze <kind> <case>`,
+  `metis dataset build`, `metis benchmark regime-v1`, `metis report
+  <kind>`. The `scripts/*.py` become thin shims. Priority: discoverable
+  help + meaningful errors, not the library choice.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`
