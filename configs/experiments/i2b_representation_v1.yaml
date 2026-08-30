@@ -38,7 +38,11 @@ candidate:
   activation: gelu
   loss: mse
   latent_dims: [2, 4, 8, 16, 32]
-  headline_latent_dim: null         # set in B3 to the k where PCA first hits >=90% reconstructed variance
+  # B3 (2026-08-30): PCA reconstructed variance is high-rank — only 77.6%
+  # at k=32, so the >=90% rule has no answer in the grid. Frozen to the
+  # largest grid dim; the AE-vs-PCA comparison still runs across all k.
+  # See FINDINGS.md §7.
+  headline_latent_dim: 32
 
 training:
   seeds: [0, 1, 2, 3, 4]            # genuinely independent (post updated-plan §18 fix)

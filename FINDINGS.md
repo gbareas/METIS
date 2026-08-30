@@ -316,3 +316,47 @@ recommended next scientific step (updated plan §24–29), but it is a
 different task and a deliberate decision. The `PCARepresentation` /
 `Autoencoder` / `Trainer` / `evaluate_representation` machinery is
 reusable there.
+
+## 7. I2-B slice-level representation learning (running log)
+
+Protocol: `docs/i2b_representation_protocol.md` (frozen 2026-08-30, B1).
+Dataset: `metis dataset build-slices` primary split — centre-plane (`s3_center`)
+streamwise-velocity fluctuation snapshots, 96×96, train 3600 (case01-09
+snaps 0-399) / val 900 (same cases 400-499, chronological) / OOD 1000
+(all of case10, case15). Standardised by one global mean/std fit on train
+(mean 0.015, std 0.073).
+
+### B3 — PCA / snapshot-POD baseline (2026-08-30)
+
+`scripts/i2b_baseline.py`, results in `results/i2b_baseline.json`, MLflow
+`i2b-representation/baseline-pca`.
+
+- **PCA ≡ method-of-snapshots POD**: on the same centred training matrix,
+  max singular-value relative difference **2e-15** — the two are the same
+  computation to machine precision, as expected.
+- **Linear reconstruction is high-rank.** Cumulative reconstructed
+  variance on the training split:
+
+  | k | var | val relL2 | OOD relL2 |
+  |---|---|---|---|
+  | 2 | 0.233 | 0.938 | 0.525 |
+  | 4 | 0.350 | 0.875 | 0.453 |
+  | 8 | 0.473 | 0.824 | 0.435 |
+  | 16 | 0.630 | 0.729 | 0.393 |
+  | 32 | 0.776 | 0.647 | 0.349 |
+
+  The protocol's "smallest k with ≥90% reconstructed variance" rule has
+  **no answer in the grid** — 32 modes capture only 77.6%. Frozen
+  `headline_latent_dim = 32` (largest grid dim); the AE-vs-PCA comparison
+  runs across the whole grid regardless. That a 96×96 turbulent
+  fluctuation field needs > 32 linear modes for 90% is the expected
+  behaviour of broadband turbulence, and is exactly the regime where a
+  nonlinear model *could* help (H-I2B) — or where the field is simply
+  irreducibly high-rank. B5-B7 decides.
+- **OOD relL2 < val relL2 at every k.** case10/case15's `u'` fields are
+  reconstructed *better* by the train PCA basis than the training cases'
+  own held-out snapshots. Likely because both OOD cases sit at Pb_Pc=1.5
+  (matching case01-03) and their fluctuation energy, once standardised by
+  the train-wide scale, is lower and more concentrated in the leading
+  modes. Not alarming; noted for interpretation when the AE OOD numbers
+  come in.

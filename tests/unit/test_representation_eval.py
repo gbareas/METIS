@@ -74,3 +74,29 @@ def test_latent_physical_correlation_finds_the_encoding_axis():
     Z = np.c_[np.random.default_rng(0).normal(size=20), 3 * v + 0.001]
     cor = latent_physical_correlation(Z, {"pressure": v})
     assert cor["pressure"] == pytest.approx(1.0, abs=1e-3)
+
+
+# --- I2-B B3: latent-dim selection from the PCA spectrum ---
+def test_explained_variance_curve_is_cumulative_and_ends_at_one():
+    from metis.evaluation.representation import explained_variance_curve
+    cum = explained_variance_curve([3.0, 2.0, 1.0])
+    assert cum[-1] == pytest.approx(1.0)
+    assert np.all(np.diff(cum) >= 0)
+    assert cum[0] == pytest.approx(9 / 14)
+
+
+def test_choose_latent_dim_picks_smallest_k_over_threshold():
+    from metis.evaluation.representation import choose_latent_dim
+    # spectrum where k=3 first crosses 0.9
+    sv = np.sqrt([50, 30, 15, 4, 1])
+    c = choose_latent_dim(sv, [2, 3, 4, 8], threshold=0.9)
+    assert c["headline_latent_dim"] == 3 and c["reached"] is True
+    assert c["reconstructed_variance"] >= 0.9
+
+
+def test_choose_latent_dim_falls_back_to_largest_when_unreachable():
+    from metis.evaluation.representation import choose_latent_dim
+    sv = np.sqrt([10, 9, 8, 7, 6, 5])   # very flat -> no small k hits 0.9
+    c = choose_latent_dim(sv, [2, 4], threshold=0.9)
+    assert c["headline_latent_dim"] == 4 and c["reached"] is False
+    assert c["reconstructed_variance"] < 0.9

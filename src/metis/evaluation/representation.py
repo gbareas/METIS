@@ -117,3 +117,29 @@ def compare_to_baseline(
         "regressed": regressed,
         "beats_baseline": bool(improved) and not regressed,
     }
+
+
+# --- I2-B: pick a latent dimension from the PCA spectrum -------
+def explained_variance_curve(singular_values) -> np.ndarray:
+    """Cumulative reconstructed-variance fraction from a (descending)
+    singular-value spectrum: `cumsum(s**2) / sum(s**2)`."""
+    s2 = np.asarray(singular_values, dtype=float) ** 2
+    return np.cumsum(s2) / np.sum(s2)
+
+
+def choose_latent_dim(
+    singular_values, grid, *, threshold: float = 0.90
+) -> dict:
+    """Smallest `k` in `grid` whose PCA reconstruction captures at least
+    `threshold` of the variance. If none do, returns the largest `k` and
+    `reached=False`."""
+    cum = explained_variance_curve(singular_values)
+    grid = sorted(int(k) for k in grid)
+    for k in grid:
+        if k <= cum.size and cum[k - 1] >= threshold:
+            return {"headline_latent_dim": k, "reconstructed_variance": float(cum[k - 1]),
+                    "threshold": threshold, "reached": True}
+    k = grid[-1]
+    return {"headline_latent_dim": k,
+            "reconstructed_variance": float(cum[min(k, cum.size) - 1]),
+            "threshold": threshold, "reached": False}
