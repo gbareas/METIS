@@ -1,0 +1,42 @@
+# Frozen regime-discovery reference benchmark (milestone R7).
+#
+# This consolidates the FINDINGS.md §1-4 result into a platform
+# acceptance test. The settled conclusion: the two regime axes are
+# recovered by two axis-specific diagnostics, NOT one unified k=3
+# clustering (a single clustering cannot equal two independent 3-level
+# factorial partitions of the same 9 cases at once).
+#
+# Do NOT tune k-means or add feature blocks here. Changing the expected
+# values means the science changed and needs a FINDINGS.md entry.
+
+name: regime-v1
+description: >
+  Regime discovery on the Pub 4/5 case family. bulk carries the pressure
+  axis (H1), rms_profile carries the thermal axis (H2); MFA-combined
+  bulk+rms_profile restores the OOD pressure assignment (H3) that naive
+  concatenation gets wrong. mean_profile and pod are not useful.
+
+cases:
+  train: [case01, case02, case03, case04, case05, case06, case07, case08, case09]
+  ood:   [case10, case15]
+
+diagnostics:
+  pressure_block: bulk          # best block on the Pb_Pc axis
+  thermal_block:  rms_profile   # best block on the Thw_Tc axis
+
+combined_sanity: [bulk, rms_profile]   # MFA of these must place both OOD cases nearest Pb_Pc=1.5
+
+tolerance: 1.0e-6
+
+expected:
+  blocks:
+    bulk:         {ari_vs_Pb_Pc:  0.35714285714285715, ari_vs_Thw_Tc:  0.07142857142857142, loco_accuracy_Pb_Pc: 0.5555555555555556, loco_accuracy_Thw_Tc: 0.1111111111111111}
+    mean_profile: {ari_vs_Pb_Pc:  0.0,                 ari_vs_Thw_Tc:  0.0,                 loco_accuracy_Pb_Pc: 0.4444444444444444, loco_accuracy_Thw_Tc: 0.3333333333333333}
+    rms_profile:  {ari_vs_Pb_Pc: -0.16129032258064516, ari_vs_Thw_Tc:  0.4838709677419355, loco_accuracy_Pb_Pc: 0.2222222222222222, loco_accuracy_Thw_Tc: 0.7777777777777778}
+    pod:          {ari_vs_Pb_Pc:  0.35294117647058826, ari_vs_Thw_Tc: -0.11764705882352941, loco_accuracy_Pb_Pc: 0.2222222222222222, loco_accuracy_Thw_Tc: 0.1111111111111111}
+  mfa_combined:
+    ari_vs_Pb_Pc: 0.07142857142857142
+    ari_vs_Thw_Tc: 0.35714285714285715
+    ood_nearest_Pb_Pc_centroid: {case10: 1.5, case15: 1.5}
+  naive_combined:
+    ood_nearest_Pb_Pc_centroid: {case10: 5.0, case15: 5.0}

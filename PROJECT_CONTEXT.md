@@ -264,14 +264,29 @@ eval).
   `tests/unit/test_analysis.py` (11 tests). Real case01 smoke: pod
   energy_captured = 0.9900003143 (exact Pub 4 match), spectra Parseval
   rel-err 4e-11, physics/regime clean.
-- **Next: R7 — freeze regime discovery as `regime-v1` benchmark**
-  (consolidation, not new research): a frozen benchmark config
-  (case01-09 train / case10,15 OOD; `bulk` pressure diagnostic,
-  `rms_profile` thermal diagnostic, MFA sanity check; expected metric
-  ranges), regression tests on reduced/cached features asserting the
-  specialists stay best and deterministic outputs don't drift, and one
-  `metis benchmark regime-v1` command reproducing the current
-  results/*.json.
+- **R7 — freeze regime discovery as `regime-v1` benchmark: DONE
+  (2026-08-30). Stage 1 of the backlog is complete.**
+  `configs/benchmarks/regime_discovery_v1.yaml` pins the spec (train
+  case01-09 / OOD case10,15; `bulk` = pressure diagnostic, `rms_profile`
+  = thermal diagnostic; MFA `bulk`+`rms_profile` sanity check; every
+  §3/§4 metric with a 1e-6 tolerance). `metis.evaluation.benchmark`:
+  `run_regime_v1(block_matrices, labels, config) -> BenchmarkResult`
+  (per-block eval + MFA/naive combos + 7 frozen `checks`;
+  `assert_passes()`), `run_regime_v1_from_registry` (builds the blocks
+  via R5 caching). `scripts/benchmark_regime_v1.py` — the `metis
+  benchmark regime-v1` command; writes `results/regime_v1.json`, exits
+  non-zero on regression; reproduces §3/§4 exactly on real data (7/7
+  pass). `tests/regression/test_regime_v1_benchmark.py` (5 tests) runs
+  on a 60 KB committed feature artifact
+  (`tests/data/regime_v1/block_features.npz`) — no DNS, CI-safe.
+  FINDINGS.md §5 records the freeze. The three older
+  `scripts/run_regime_*.py` still work and still reproduce their JSONs
+  bit-for-bit (verified); they're kept as the exploratory trail.
+- **Next (Stage 2): I1 — MLflow experiment tracking.** `mlflow` is
+  already in the `ml` extra but unintegrated. Local `mlruns/` only, no
+  server. Wire it into the *next* new ML workflow (the I2 autoencoder),
+  not retroactively into everything. Given an MLflow run id another user
+  can see the data used, config, metrics, artifact locations.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

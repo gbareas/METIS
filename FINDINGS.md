@@ -242,3 +242,27 @@ axis-specific diagnostics as the primary method, with the combined/MFA
 view kept only as a secondary "does the space at least blend sensibly"
 check (which §4 confirms it does, per the mixed-cluster inspection
 above).
+
+## 5. Regime discovery frozen as the `regime-v1` benchmark (2026-08-30)
+
+§1-4 are done. The conclusion is now a platform acceptance test, not an
+open line of tuning:
+
+- Spec: `configs/benchmarks/regime_discovery_v1.yaml` (train case01-09,
+  OOD case10/case15; `bulk` = pressure diagnostic, `rms_profile` =
+  thermal diagnostic; MFA `bulk`+`rms_profile` as the combined sanity
+  check; every §3/§4 metric pinned with a 1e-6 tolerance).
+- Runner: `metis.evaluation.benchmark.run_regime_v1` +
+  `scripts/benchmark_regime_v1.py` (writes `results/regime_v1.json`,
+  exits non-zero on any regression). Reproduces §3/§4 exactly against
+  the real data — 7/7 checks pass.
+- Regression test: `tests/regression/test_regime_v1_benchmark.py`, run
+  on a 60 KB committed feature artifact
+  (`tests/data/regime_v1/block_features.npz`) so CI needs no DNS. It
+  asserts `bulk` stays the best block on both pressure metrics,
+  `rms_profile` on both thermal metrics, MFA restores the OOD
+  `Pb_Pc=1.5` assignment where naive concatenation gets it wrong, and no
+  metric drifts.
+
+Changing any expected value in the config now means the science changed
+and needs its own FINDINGS entry.
