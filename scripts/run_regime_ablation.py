@@ -10,13 +10,16 @@ isolation — bulk, mean_profile, rms_profile, pod — through the exact same
 H1/H2/H3 pipeline, to find out which block actually carries the pressure
 vs. thermal signal before attempting any block-weighted combination.
 
-Usage: python scripts/run_regime_ablation.py
+Usage: python scripts/run_regime_ablation.py --data-root /path/to/dns_data
+       (or set METIS_DATA_ROOT / configs/default.yaml — see metis.config)
 """
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
+from metis.config import add_data_root_args, data_root_from_args
 from metis.evaluation.regime import evaluate_regime_discovery
 from metis.features.regime import (
     ALL_CASE_IDS,
@@ -25,16 +28,24 @@ from metis.features.regime import (
     case_grid_labels,
 )
 
-DATA_ROOT = Path("/home/brinkman/Documents/PostDoc_phase/data")
 OUT_DIR = Path(__file__).resolve().parents[1] / "results"
 
 
-def main() -> None:
-    labels = case_grid_labels(DATA_ROOT, ALL_CASE_IDS)
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_data_root_args(parser)
+    parser.add_argument(
+        "--output", default=OUT_DIR / "regime_discovery_ablation.json", type=Path,
+        help="where to write the results JSON",
+    )
+    args = parser.parse_args(argv)
+    data_root = data_root_from_args(args)
+
+    labels = case_grid_labels(data_root, ALL_CASE_IDS)
 
     results = {}
     for block in FEATURE_BLOCK_NAMES:
-        X, names = build_feature_matrix_block(ALL_CASE_IDS, DATA_ROOT, block)
+        X, names = build_feature_matrix_block(ALL_CASE_IDS, data_root, block)
         results[block] = {"feature_names": names, **evaluate_regime_discovery(X, labels)}
 
     header = f"{'block':14s} {'n_feat':>7s} {'ARI_Pb':>8s} {'ARI_Thw':>8s} {'LOCO_Pb':>8s} {'LOCO_Thw':>9s}"
@@ -48,9 +59,9 @@ def main() -> None:
         )
         print(f"    OOD nearest Pb_Pc centroid: {r['ood_nearest_Pb_Pc_centroid']}")
 
-    OUT_DIR.mkdir(exist_ok=True)
-    (OUT_DIR / "regime_discovery_ablation.json").write_text(json.dumps(results, indent=2))
-    print(f"\nWrote {OUT_DIR / 'regime_discovery_ablation.json'}")
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(results, indent=2))
+    print(f"\nWrote {args.output}")
 
 
 if __name__ == "__main__":

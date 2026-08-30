@@ -84,21 +84,21 @@ same layout the ingestion layer expects, so the pipeline runs and tests
 pass without needing the group's (multi-GB, access-restricted) real DNS
 output.
 
-With access to the group's data (`data/raw/`, `data/processed/`,
-`data/processed_slices/`), run the regime-discovery reference task
-end-to-end:
+With access to the group's DNS data (the standard `raw/`, `processed/`,
+`processed_slices/` layout under one root), run the regime-discovery
+reference task end-to-end. Point the scripts at that root via
+`--data-root`, the `METIS_DATA_ROOT` environment variable, or `data.root`
+in `configs/default.yaml` (resolution order: flag > config > env):
 
 ```bash
+export METIS_DATA_ROOT=/path/to/dns_data
 python scripts/run_regime_discovery.py   # compact vs. rich feature sets
 python scripts/run_regime_ablation.py    # per-block ablation
 python scripts/run_regime_blockwise.py   # MFA block-wise combination
 ```
 
-Each writes its results to `results/`; see `FINDINGS.md` for the
-interpreted findings. These scripts currently point at the group's
-canonical local data path (`DATA_ROOT` at the top of each script) rather
-than taking it as an argument — fine for this single-machine workflow,
-but worth knowing if you're running from elsewhere.
+Each writes its results to `results/` (override with `--output`); see
+`FINDINGS.md` for the interpreted findings.
 
 ## Layout
 

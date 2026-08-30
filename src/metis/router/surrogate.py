@@ -10,12 +10,22 @@ leave-one-out split), so it's the right frozen checkpoint for a router
 that must answer queries against the whole training envelope rather than
 8/9 of it.
 
-Requires the `router` extra (`pip install -e ".[router]"`), which wires
-`neuralop_bench` in as a local editable dependency on
-pub5_neural_operators — see pyproject.toml.
+Requires the `router` extra (`pip install -e ".[router]"`) plus a
+separate editable install of `neuralop_bench` from the sibling
+`pub5_neural_operators` checkout — see pyproject.toml.
+
+The checkpoint lives in that sibling project (not under version control
+here). Its location is resolved, first hit wins:
+
+    1. $METIS_ROUTER_CHECKPOINT           (full path to best.pt)
+    2. $METIS_PUB5_ROOT / runs/.../best.pt (the pub5 checkout root)
+    3. a sibling `pub5_neural_operators/` next to the metis repo
+
+so nothing in this file is tied to one machine's home directory.
 """
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -24,9 +34,11 @@ import torch
 from neuralop_bench.data import FIELDS, TranscriticalSliceDataset
 from neuralop_bench.models import build_model
 
-PUB5_ROOT = Path("/home/brinkman/Documents/PostDoc_phase/pub5_neural_operators")
-CHECKPOINT_PATH = (
-    PUB5_ROOT / "runs" / "campaignB" / "A2" / "xy_slice_1" / "unet_raw_ood" / "best.pt"
+_CHECKPOINT_RELPATH = Path("runs/campaignB/A2/xy_slice_1/unet_raw_ood/best.pt")
+_DEFAULT_PUB5_ROOT = Path(__file__).resolve().parents[4] / "pub5_neural_operators"
+PUB5_ROOT = Path(os.environ.get("METIS_PUB5_ROOT", _DEFAULT_PUB5_ROOT))
+CHECKPOINT_PATH = Path(
+    os.environ.get("METIS_ROUTER_CHECKPOINT", PUB5_ROOT / _CHECKPOINT_RELPATH)
 )
 SLICE_ID = "xy_slice_1"
 TRAIN_CASES = tuple(range(1, 10))

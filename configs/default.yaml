@@ -1,0 +1,19 @@
+# METIS project defaults. Copy/edit this or pass --config to a script.
+#
+# `data.root` is the one machine-specific setting. Leave it null and set
+# the METIS_DATA_ROOT environment variable instead, or fill it in here.
+# Resolution order for every script: --data-root flag > this file >
+# $METIS_DATA_ROOT > error.
+
+data:
+  root: null            # e.g. /path/to/group/dns_data
+
+# Layout of the standard data products under data.root (rarely changed).
+paths:
+  raw: raw
+  processed: processed
+  slices: processed_slices
+  results: results
+
+runtime:
+  seed: 0

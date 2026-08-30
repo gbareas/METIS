@@ -9,13 +9,16 @@ See metis.evaluation.regime.evaluate_regime_discovery for the shared
 H1/H2/H3 evaluation (ARI, LOCO nearest-centroid accuracy, OOD nearest
 centroid) both feature sets are judged by.
 
-Usage: python scripts/run_regime_discovery.py
+Usage: python scripts/run_regime_discovery.py --data-root /path/to/dns_data
+       (or set METIS_DATA_ROOT / configs/default.yaml — see metis.config)
 """
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
+from metis.config import add_data_root_args, data_root_from_args
 from metis.evaluation.regime import evaluate_regime_discovery
 from metis.features.regime import (
     ALL_CASE_IDS,
@@ -25,15 +28,23 @@ from metis.features.regime import (
     case_grid_labels,
 )
 
-DATA_ROOT = Path("/home/brinkman/Documents/PostDoc_phase/data")
 OUT_DIR = Path(__file__).resolve().parents[1] / "results"
 
 
-def main() -> None:
-    labels = case_grid_labels(DATA_ROOT, ALL_CASE_IDS)
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_data_root_args(parser)
+    parser.add_argument(
+        "--output", default=OUT_DIR / "regime_discovery.json", type=Path,
+        help="where to write the results JSON",
+    )
+    args = parser.parse_args(argv)
+    data_root = data_root_from_args(args)
 
-    X_compact = build_feature_matrix(ALL_CASE_IDS, DATA_ROOT)
-    X_rich, rich_names = build_feature_matrix_rich(ALL_CASE_IDS, DATA_ROOT)
+    labels = case_grid_labels(data_root, ALL_CASE_IDS)
+
+    X_compact = build_feature_matrix(ALL_CASE_IDS, data_root)
+    X_rich, rich_names = build_feature_matrix_rich(ALL_CASE_IDS, data_root)
 
     results = {
         "case_ids": list(ALL_CASE_IDS),
@@ -50,9 +61,9 @@ def main() -> None:
         print(f"  LOCO Thw_Tc:    {r['loco_accuracy_Thw_Tc']:.3f}")
         print(f"  OOD nearest Pb_Pc centroid: {r['ood_nearest_Pb_Pc_centroid']}")
 
-    OUT_DIR.mkdir(exist_ok=True)
-    (OUT_DIR / "regime_discovery.json").write_text(json.dumps(results, indent=2))
-    print(f"\nWrote {OUT_DIR / 'regime_discovery.json'}")
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(results, indent=2))
+    print(f"\nWrote {args.output}")
 
 
 if __name__ == "__main__":

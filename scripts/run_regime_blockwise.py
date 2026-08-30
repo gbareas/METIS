@@ -15,27 +15,42 @@ status rather than guess) via `metis.evaluation.regime.combine_blocks_mfa`
 so blocks compete on genuine structure rather than raw feature count —
 and compares against naive concatenation of the same blocks as a control.
 
-Usage: python scripts/run_regime_blockwise.py
+Usage: python scripts/run_regime_blockwise.py --data-root /path/to/dns_data
+       (or set METIS_DATA_ROOT / configs/default.yaml — see metis.config)
 """
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
 import numpy as np
 
+from metis.config import add_data_root_args, data_root_from_args
 from metis.evaluation.regime import combine_blocks_mfa, evaluate_regime_discovery
-from metis.features.regime import ALL_CASE_IDS, build_feature_matrix_block, case_grid_labels
+from metis.features.regime import (
+    ALL_CASE_IDS,
+    build_feature_matrix_block,
+    case_grid_labels,
+)
 
-DATA_ROOT = Path("/home/brinkman/Documents/PostDoc_phase/data")
 OUT_DIR = Path(__file__).resolve().parents[1] / "results"
 
 
-def main() -> None:
-    labels = case_grid_labels(DATA_ROOT, ALL_CASE_IDS)
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_data_root_args(parser)
+    parser.add_argument(
+        "--output", default=OUT_DIR / "regime_discovery_blockwise.json", type=Path,
+        help="where to write the results JSON",
+    )
+    args = parser.parse_args(argv)
+    data_root = data_root_from_args(args)
+
+    labels = case_grid_labels(data_root, ALL_CASE_IDS)
 
     block_matrices = {
-        block: build_feature_matrix_block(ALL_CASE_IDS, DATA_ROOT, block)[0]
+        block: build_feature_matrix_block(ALL_CASE_IDS, data_root, block)[0]
         for block in ("bulk", "rms_profile", "pod")
     }
 
@@ -67,9 +82,9 @@ def main() -> None:
             )
             print(f"    OOD nearest Pb_Pc centroid: {r['ood_nearest_Pb_Pc_centroid']}")
 
-    OUT_DIR.mkdir(exist_ok=True)
-    (OUT_DIR / "regime_discovery_blockwise.json").write_text(json.dumps(results, indent=2))
-    print(f"\nWrote {OUT_DIR / 'regime_discovery_blockwise.json'}")
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(results, indent=2))
+    print(f"\nWrote {args.output}")
 
 
 if __name__ == "__main__":

@@ -1,9 +1,11 @@
 # Real DNS case — training grid, Pb_Pc=1.5, Thw_Tc=1.1 (see
 # research_protocol.md for the full case01-09/10/15 selection and splits).
+# `source` / `metadata` are relative to the resolved data root
+# (--data-root / configs/default.yaml data.root / $METIS_DATA_ROOT).
 # metadata is a companion file, not stored in the HDF5 (see
 # src/metis/data/ingestion/hdf5_reader.py for why).
 case_id: case01
-source: /home/brinkman/Documents/PostDoc_phase/data/raw/case01
-metadata: /home/brinkman/Documents/PostDoc_phase/data/processed/case01/metadata.json
+source: raw/case01
+metadata: processed/case01/metadata.json
 variables: [avg_u, avg_T, avg_rho, avg_c_p, rmsf_u, rmsf_T]
 task: regime_discovery

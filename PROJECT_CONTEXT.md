@@ -156,34 +156,38 @@ README's Router agent section. **M5 complete.**
 
 ## Immediate priorities
 
-**Track C/D is complete: M0-M5 all done, committed, and pushed
-(2026-08-29).** GitHub Actions CI is green (it had failed on every run
-since the initial commit — two latent bugs: ruff isort not resolving
-`metis` as first-party in a clean checkout, and `.gitignore`'s unanchored
-`data/` rule silently excluding the whole `src/metis/data/` package; both
-fixed, see git history). The portfolio module — deterministic OOD-gated
-router, precomputed solver fallback, single-tool Claude layer, curated
-demo, write-up + architecture diagram — is shippable as-is.
+**Track C/D (router portfolio module) is complete — M0-M5, all pushed,
+CI green.** Non-blocking leftovers: verify `agent.py`'s live LLM round
+trip once an `ANTHROPIC_API_KEY` exists
+(`test_ask_end_to_end_live_llm_call` skips); eyeball the GitHub-rendered
+README (Mermaid + `docs/router_demo.gif`).
 
-No hard blockers remain. Open, non-blocking follow-ups:
+**Active work now: the `METIS_detailed_next_steps.md` backlog** — turning
+the Track A/B scientific core into something another researcher can
+actually run. Execution order there: R1 config/path refactor → R2 case
+registry → R3 validation → R4 preprocessing → R5 dataset artifacts → R6
+common analysis API → R7 freeze regime-v1 benchmark, then Stage 2 (MLflow
++ autoencoder representation study + training framework + physics-aware
+eval).
 
-1. M3 follow-up (blocked on credentials): verify `agent.py`'s live LLM
-   round trip once an `ANTHROPIC_API_KEY` is available in this
-   environment
-   (`tests/integration/test_agent.py::test_ask_end_to_end_live_llm_call`
-   currently skips). The tool logic is already tested against real
-   cases; only the live round trip is unverified.
-2. Optional: check the README renders as intended on GitHub (Mermaid
-   diagram + `docs/router_demo.gif`).
-3. Track A/B: no active priority — regime discovery reached a settled,
-   documented stopping point (`FINDINGS.md` §1-4). Defer
-   MLflow/baselines/advanced ML/deployment (roadmap v2 §38 "do now" list)
-   until there's a specific reason to pick it back up.
+- **R1 — configurable data root: DONE (2026-08-30).** New `metis.config`
+  (resolve order: `--data-root` > YAML `data.root` > `$METIS_DATA_ROOT` >
+  helpful error); `configs/default.yaml`; the three `run_regime_*.py`
+  scripts take `--data-root`/`--config`/`--output` and lost their
+  hard-coded `DATA_ROOT`; `router/surrogate.py` resolves the checkpoint
+  via `$METIS_ROUTER_CHECKPOINT` / `$METIS_PUB5_ROOT` / a sibling
+  `pub5_neural_operators/` (no `/home/...` literal left under `src/`,
+  `scripts/`, `pyproject.toml`); the `router` extra no longer carries the
+  `file:///` neuralop_bench dep (install it editable separately).
+  `tests/unit/test_config.py` covers the resolution order.
+- **Next: R2 — `CaseDescriptor` + `CaseRegistry`** (one authoritative DNS
+  case representation; ingestion readers constructable from a descriptor;
+  missing data products raise explicit errors).
 
-Future work explicitly out of v1 scope (revisit only with a deliberate
-decision): live HPC/Slurm solver connection, a validated physical-units →
-`(Pb_Pc, Thw_Tc, Tcw_Tc)` mapping, more OOD cases to firm up the n=2
-confidence rule.
+Out of scope until a deliberate decision (both docs agree): live
+HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`
+mapping, more OOD cases for the n=2 router rule, and the
+Kubernetes/Kafka/Spark/Airflow/Terraform tier.
 
 ## Constraints to respect
 

@@ -25,17 +25,15 @@ ml = ["torch>=2.2", "scikit-learn>=1.4", "mlflow>=2.10"]
 # from Track A/B, so it gets its own extra rather than sharing `ml`
 # (no scikit-learn/mlflow needed here).
 #
-# `pip install -e ".[router]"` alone installs neuralop_bench as a regular
-# (non-editable) wheel copy, which breaks its internal `_PROJECT_ROOT`
-# path resolution (neuralop_bench/data.py locates pub4_grassmann_rom's
-# case_descriptors.json via `Path(__file__).resolve().parents[3]`, which
-# only lands on PostDoc_phase/ if __file__ still points into the real
-# pub5_neural_operators/src/ tree). After installing this extra, also run:
-#     pip install -e ../pub5_neural_operators
-# to force an editable install that preserves that path.
+# `neuralop_bench` is NOT listed here on purpose: it must be an *editable*
+# install of the local `pub5_neural_operators` checkout (its data.py walks
+# `Path(__file__).resolve().parents[3]` to find pub4's case_descriptors,
+# which only resolves if __file__ still points into the real src/ tree — a
+# packaged wheel copy breaks it), and its path is machine-specific. Install
+# it separately after this extra:
+#     pip install -e path/to/pub5_neural_operators
 router = [
     "torch>=2.2",
-    "neuralop_bench @ file:///home/brinkman/Documents/PostDoc_phase/pub5_neural_operators",
     "anthropic>=0.68",
 ]
 # M4 demo front end only — kept separate from `router` so the router's own
