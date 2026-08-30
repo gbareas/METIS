@@ -499,11 +499,26 @@ eval).
     `Transform` registry. `tests/unit/test_conv_autoencoder.py` (12) +
     4 new `Trainer` tests. Clean-venv CI sim green (torch-gated tests
     skip). CI green (82fa52d).
-- **Next: B5** — training script: 5 seeds × k grid {2,4,8,16,32} on the
-  frozen slice dataset
-  (`artifacts/datasets/i2b_representation_v1_primary_u_s3_center`),
-  MLflow-logged, best-state checkpoints. Then B6-B7 (eval + `assess_model`
-  decision gate) → B8-B9 (FINDINGS §7 writeup, register if positive,
+  - **B5 — conv-AE training grid: DONE (2026-08-30).**
+    `scripts/i2b_train.py` trained all 25 `(k∈{2,4,8,16,32}, seed∈0..4)`
+    cells on the frozen primary slice dataset — CUDA, ~57 s/run, 25
+    MLflow runs `i2b-representation/convae-k*_seed*` (tag `phase=B5`),
+    checkpoints under
+    `artifacts/models/i2b_representation_v1_primary_u_s3_center/`,
+    manifest `results/i2b_training.json`. **Val MSE mean±std over seeds:**
+    k2 0.866±.023 · k4 0.760±.012 · k8 0.674±.011 · k16 0.562±.008 ·
+    k32 0.449±.011 (seed-stable, 1–3 %). Every cell early-stops at
+    epoch 1–3 then overfits train only. Preliminary: conv-AE *matches*
+    PCA at k≤8, *slightly worse* at k=16/32 on val recon — no
+    compressive edge yet. FINDINGS §7 B5 entry added.
+- **Next: B6** — reload each checkpoint from the manifest, run the
+  protocol §5.1–5.5 evaluation on **val and OOD**, both splits:
+  reconstruction (`metis.evaluation.metrics` relative_l2/rmse/mae/r2),
+  robustness (seed std, `latent_stability`, OOD degradation ratio),
+  physical fidelity (`metis.evaluation.physical` mean/RMS profile +
+  spectrum + POD-energy), latent interpretation
+  (`latent_physical_correlation`). Then B7 (`assess_model` AE-vs-PCA per
+  seed → accept/stop gate) → B8-B9 (writeup, register if positive,
   `metis report`). After Phase B: Phase C (virtual-sensor temporal ML),
   D (SQL layer), E (one model → FastAPI → Docker → CI/CD → cloud →
   monitoring).

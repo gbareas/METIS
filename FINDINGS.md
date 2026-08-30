@@ -360,3 +360,44 @@ snaps 0-399) / val 900 (same cases 400-499, chronological) / OOD 1000
   the train-wide scale, is lower and more concentrated in the leading
   modes. Not alarming; noted for interpretation when the AE OOD numbers
   come in.
+
+### B5 — conv-autoencoder training, seed × latent-dim grid (2026-08-30)
+
+`scripts/i2b_train.py`, manifest in `results/i2b_training.json`, 25 MLflow
+runs `i2b-representation/convae-k*_seed*` (tag `phase=B5`), best-state
+checkpoints under
+`artifacts/models/i2b_representation_v1_primary_u_s3_center/`. Fixed
+architecture per protocol §4 (Conv 1→16→32→64, stride 2, GELU; linear
+bottleneck; mirrored ConvTranspose), `Trainer` defaults untouched (Adam
+lr 1e-3, batch 64, early stop on val MSE, patience 150), CUDA, ~57 s/run.
+**Training only — the reconstruction / physical / latent evaluation and
+the `assess_model` gate are B6-B7.**
+
+- **Best val MSE (standardised field), mean ± std over 5 seeds:**
+
+  | k | val MSE | train MSE | best epoch | √(val MSE) ≈ relL2 | PCA val relL2 |
+  |---|---|---|---|---|---|
+  | 2 | 0.866 ± 0.023 | 0.775 | 1 | 0.93 | 0.938 |
+  | 4 | 0.760 ± 0.012 | 0.602 | 1 | 0.87 | 0.875 |
+  | 8 | 0.674 ± 0.011 | 0.544 | 1 | 0.82 | 0.824 |
+  | 16 | 0.562 ± 0.008 | 0.340 | 1–2 | 0.75 | 0.729 |
+  | 32 | 0.449 ± 0.011 | 0.231 | 2 | 0.67 | 0.647 |
+
+  (√(val MSE) is a rough proxy for relL2 since the standardised field has
+  ≈ unit variance; B6 computes the real `metis.evaluation.metrics`
+  numbers on both val and OOD.)
+
+- **Seed-stable.** Val-MSE seed std is 1–3 % of the mean at every k — the
+  §18 seed fix holds up and the conv-AE optimisation is reproducible.
+
+- **The conv-AE reaches its validation optimum in epoch 1–3, then only
+  train MSE keeps falling** (k=32: train 0.23 vs val 0.45). With protocol
+  settings (no tuning) the model captures the generalisable structure on
+  its first pass and overfits pixel detail thereafter — best-state
+  restore + early stopping is doing real work here.
+
+- **Preliminary read (not the verdict):** on validation the conv-AE
+  *matches* PCA at k ≤ 8 and is *slightly worse* at k = 16, 32 — no
+  compressive advantage visible so far. Whether it wins on OOD
+  robustness, physical fidelity, or latent interpretability is what B6-B7
+  tests before the decision gate.
