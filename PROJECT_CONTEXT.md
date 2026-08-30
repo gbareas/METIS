@@ -477,12 +477,22 @@ eval).
     `tests/unit/test_slice_dataset.py` (7). Real-data run of the primary
     split: **train 3600 / val 900 / ood 1000** 96×96 samples, ~170 MB
     artifact, scaler mean≈0 std 0.073.
-- **Next: B3** — PCA / snapshot-POD baseline over `k ∈ {2,4,8,16,32}` on
-  the frozen slice dataset; pick and freeze `headline_latent_dim` (where
-  PCA first reaches ≥90% reconstructed variance) into the yaml. Then B4
-  (mini-batch `Trainer` + conv-AE), B5-B9. After Phase B: Phase C
-  (virtual-sensor temporal ML), D (SQL layer), E (one model → FastAPI →
-  Docker → CI/CD → cloud → monitoring).
+  - **B3 — PCA/POD baseline: DONE (2026-08-30).**
+    `metis.evaluation.representation.{explained_variance_curve,
+    choose_latent_dim}` + `scripts/i2b_baseline.py`
+    (`results/i2b_baseline.json`, MLflow `i2b-representation/baseline-pca`).
+    PCA ≡ method-of-snapshots POD to **2e-15**. Linear reconstruction is
+    **high-rank**: k=32 captures only **77.6%** of training variance →
+    the ≥90% rule has no answer in the grid; `headline_latent_dim` frozen
+    to **32** (largest grid dim, `reached=False` noted). val relL2
+    0.94→0.65 over k=2→32; OOD relL2 0.53→0.35 (OOD reconstructs *better*
+    than held-out train snapshots — noted). FINDINGS.md §7 started.
+- **Next: B4** — add a mini-batch loop to `metis.training.Trainer` (+
+  test), implement the fixed conv-AE (`metis.models`, torch-gated) per
+  the protocol §4, wire it to the slice dataset. Then B5 (train 5 seeds ×
+  the k grid, MLflow) → B6-B7 (eval + decision gate) → B8-B9. After
+  Phase B: Phase C (virtual-sensor temporal ML), D (SQL layer), E (one
+  model → FastAPI → Docker → CI/CD → cloud → monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`
