@@ -511,17 +511,30 @@ eval).
     epoch 1–3 then overfits train only. Preliminary: conv-AE *matches*
     PCA at k≤8, *slightly worse* at k=16/32 on val recon — no
     compressive edge yet. FINDINGS §7 B5 entry added.
-- **Next: B6** — reload each checkpoint from the manifest, run the
-  protocol §5.1–5.5 evaluation on **val and OOD**, both splits:
-  reconstruction (`metis.evaluation.metrics` relative_l2/rmse/mae/r2),
-  robustness (seed std, `latent_stability`, OOD degradation ratio),
-  physical fidelity (`metis.evaluation.physical` mean/RMS profile +
-  spectrum + POD-energy), latent interpretation
-  (`latent_physical_correlation`). Then B7 (`assess_model` AE-vs-PCA per
-  seed → accept/stop gate) → B8-B9 (writeup, register if positive,
-  `metis report`). After Phase B: Phase C (virtual-sensor temporal ML),
-  D (SQL layer), E (one model → FastAPI → Docker → CI/CD → cloud →
-  monitoring).
+  - **B6 — §5.1–5.5 evaluation: DONE (2026-08-30).**
+    `scripts/i2b_evaluate.py` reloaded all 25 checkpoints, scored vs PCA
+    (refit at k=32, truncated per k) on val + OOD; `results/i2b_
+    evaluation.json`. **Conv-AE loses to PCA at every k on both splits:**
+    val relL2 k32 0.688±.008 vs PCA 0.647; OOD 0.455±.013 vs 0.349.
+    OOD-degradation ratio worse (AE 0.66 vs 0.54). `latent_stability`
+    poor (AE Procrustes relL2 max 0.38 @k32, 0.65–2.2 lower k; PCA
+    exactly 0). Physical fidelity a wash on val, AE clearly worse on OOD
+    (RMS-profile relL2 0.26 vs 0.13; x-spectrum 0.36 vs 0.07). Latent
+    interpretability comparable. **Direction: negative** — H-I2B looks
+    falsified; B7 formalises with `assess_model`. FINDINGS §7 B6 entry
+    added.
+- **Next: B7** — run `metis.evaluation.assessment.assess_model` (AE vs
+  PCA) per seed at headline k=32 from `results/i2b_evaluation.json`:
+  `ml_metrics` = val/OOD relative_l2 + ood_degradation_ratio;
+  `physical_metrics` = RMS-profile + spectrum + log-corr + energy-frac on
+  val and OOD. Expect `is_better=False` on all 5 seeds → **valuable
+  negative result, stop** (no VAE/U-Net/FNO). Then B8 (modal/physical
+  writeup), B9 (FINDINGS §7 final verdict; no model registration since
+  negative; `metis report` generator). Open gap: the secondary
+  pressure-holdout split was never built/trained — decide after B7
+  whether it adds anything. After Phase B: Phase C (virtual-sensor
+  temporal ML), D (SQL layer), E (one model → FastAPI → Docker → CI/CD →
+  cloud → monitoring).
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

@@ -401,3 +401,53 @@ the `assess_model` gate are B6-B7.**
   compressive advantage visible so far. Whether it wins on OOD
   robustness, physical fidelity, or latent interpretability is what B6-B7
   tests before the decision gate.
+
+### B6 — §5.1–5.5 evaluation vs the PCA baseline (2026-08-30)
+
+`scripts/i2b_evaluate.py` reloads all 25 checkpoints and scores them
+against PCA (refit once at k=32, truncated per k) on the val and OOD
+splits, standardised space. Full numbers in `results/i2b_evaluation.json`.
+The `assess_model` accept/stop gate is B7; this entry is the metric
+tables.
+
+- **5.1 reconstruction — conv-AE loses to PCA at every k, on both
+  splits.** relative-L2:
+
+  | k | val PCA | val AE (μ±σ/5) | OOD PCA | OOD AE |
+  |---|---|---|---|---|
+  | 2 | 0.938 | 0.955 ± 0.013 | 0.525 | 0.770 ± 0.136 |
+  | 4 | 0.875 | 0.895 ± 0.007 | 0.453 | 0.630 ± 0.044 |
+  | 8 | 0.824 | 0.843 ± 0.007 | 0.435 | 0.548 ± 0.018 |
+  | 16 | 0.729 | 0.769 ± 0.005 | 0.393 | 0.519 ± 0.040 |
+  | 32 | 0.647 | 0.688 ± 0.008 | 0.349 | 0.455 ± 0.013 |
+
+  PCA is the optimal linear subspace in closed form; the fixed, untuned
+  conv-AE (early-stopping at epoch 1–2, §B5) never exploits nonlinearity
+  enough to catch it.
+
+- **5.2 robustness — worse on both counts.** OOD-degradation ratio
+  (OOD relL2 / val relL2, lower better) at k=32: **PCA 0.54 vs AE
+  0.66 ± 0.02**. `latent_stability` (Procrustes relL2 of the latent
+  across the 5 seeds, 0 = identical): **AE max 0.38 at k=32, 0.65–2.2 at
+  smaller k; PCA is exactly 0.** The AE latent is not reproducible across
+  seeds — this alone matches a protocol §6 stop criterion.
+
+- **5.3 physical fidelity — tie on val, AE worse on OOD.** k=32 val:
+  RMS-profile relL2 0.243 (AE) vs 0.244 (PCA), x-spectrum relL2 0.347 vs
+  0.354 — a wash, except the AE's **log-spectrum correlation is 0.80 vs
+  PCA's 1.00** (it distorts spectral shape). k=32 OOD: RMS-profile relL2
+  **0.257 (AE) vs 0.129 (PCA)**, x-spectrum relL2 **0.356 vs 0.070** —
+  PCA reconstructs unseen-condition physics far better. POD
+  energy-fraction L1 is comparable throughout.
+
+- **5.4 latent interpretation — comparable, no AE edge.** Max |corr| of
+  any latent axis vs (Pb_Pc, Thw_Tc, per-snapshot RMS, spectral-peak k)
+  at k=32 val: AE ≈ (0.66, 0.66, 0.69, 0.63) vs PCA ≈ (0.61, 0.61, 0.77,
+  0.48). The AE is marginally higher on the operating-point variables and
+  peak-k, lower on snapshot RMS — within the noise of an unstable latent.
+
+- **Direction: negative.** The conv-AE is not more compressive, not more
+  OOD-robust, not more physically faithful, and not more interpretable
+  than PCA/POD at matched latent dim; its latent is seed-unstable while
+  PCA's is exact. B7 runs `assess_model` per seed to formalise the
+  accept/stop decision.
