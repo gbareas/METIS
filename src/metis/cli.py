@@ -1,0 +1,273 @@
+"""`metis` — one user-facing command over the framework (milestone I7).
+
+    metis cases list
+    metis case validate case01
+    metis analyze physics case01
+    metis dataset build --feature-set compact --out artifacts/datasets/compact_v1
+    metis benchmark regime-v1
+    metis report regime-v1 --from results/regime_v1.json
+
+Every subcommand wraps a `metis.*` library call; `scripts/*.py` are thin
+shims over this. Data-root resolution follows `metis.config`
+(--data-root > --config's data.root > $METIS_DATA_ROOT).
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from metis import __version__
+from metis.config import add_data_root_args, resolve_data_root
+
+
+def _die(msg: str) -> int:
+    print(f"metis: error: {msg}", file=sys.stderr)
+    return 2
+
+
+def _registry(args):
+    from metis.data.registry import CaseRegistry
+
+    return CaseRegistry(resolve_data_root(cli_value=args.data_root, config_path=args.config))
+
+
+# --------------------------------------------------------------------- #
+# cases
+# --------------------------------------------------------------------- #
+def _cmd_cases_list(args) -> int:
+    reg = _registry(args)
+    ids = reg.case_ids()
+    if not ids:
+        print(f"no cases found under {reg.processed_root}")
+        return 0
+    print(f"{'case':10s} {'Pb_Pc':>7s} {'Thw_Tc':>7s} {'Tcw_Tc':>7s}  raw slices")
+    for cid in ids:
+        d = reg[cid]
+        print(f"{cid:10s} {d.Pb_Pc:7.3g} {d.Thw_Tc:7.3g} {d.Tcw_Tc:7.3g}  "
+              f"{'y' if d.has_raw else '-'}   {','.join(d.available_slices()) or '-'}")
+    return 0
+
+
+def _cmd_case_validate(args) -> int:
+    from metis.data.validation import validate_case
+
+    reg = _registry(args)
+    if args.case not in reg:
+        return _die(f"unknown case {args.case!r}; known: {reg.case_ids() or 'none'}")
+    slices = args.slices.split(",") if args.slices else None
+    report = validate_case(reg[args.case])
+    if slices:
+        from metis.data.validation import validate_slice_case
+
+        for sid in slices:
+            report.extend(validate_slice_case(reg[args.case].load_slice(sid)))
+    print(report.summary())
+    return 0 if report.ok else 1
+
+
+# --------------------------------------------------------------------- #
+# analyze
+# --------------------------------------------------------------------- #
+_ANALYSIS_OPTS = ("slice_id", "field", "axis", "feature_set", "energy_threshold")
+
+
+def _cmd_analyze(args) -> int:
+    from metis.analysis import run_analysis
+
+    reg = _registry(args)
+    if args.case not in reg:
+        return _die(f"unknown case {args.case!r}; known: {reg.case_ids() or 'none'}")
+    opts = {k: getattr(args, k) for k in _ANALYSIS_OPTS if getattr(args, k) is not None}
+    result = run_analysis(reg, args.kind.replace("-", "_"), args.case,
+                          validate=args.validate, **opts)
+    print(result.summary())
+    for k, v in result.outputs.items():
+        if not isinstance(v, (list, dict)):
+            print(f"  {k}: {v}")
+    if result.validation and not result.validation["ok"]:
+        for i in result.validation["issues"]:
+            print(f"  ! {i['severity']} {i['check']}: {i['message']}")
+    if args.out:
+        result.save(args.out)
+        print(f"  wrote {args.out}/")
+    return 0
+
+
+# --------------------------------------------------------------------- #
+# dataset build
+# --------------------------------------------------------------------- #
+def _cmd_dataset_build(args) -> int:
+    from metis.data.datasets import build_feature_dataset
+    from metis.features.regime import ALL_CASE_IDS
+
+    reg = _registry(args)
+    case_ids = args.cases.split(",") if args.cases else list(ALL_CASE_IDS)
+    ds = build_feature_dataset(reg, case_ids, args.feature_set,
+                               out_dir=args.out, rebuild=args.rebuild)
+    p = ds.provenance
+    print(f"{args.feature_set}: {p['n_cases']} cases x {p['n_features']} features -> {args.out}\n"
+          f"  fingerprint {p['fingerprint']}  code {p['code_version'][:12]}")
+    return 0
+
+
+# --------------------------------------------------------------------- #
+# benchmark
+# --------------------------------------------------------------------- #
+def _cmd_benchmark(args) -> int:
+    from metis import tracking
+    from metis.evaluation.benchmark import load_config, run_regime_v1_from_registry
+
+    reg = _registry(args)
+    config = load_config(args.benchmark_config)
+    with tracking.run("regime-v1", params={"benchmark": config, "data_root": str(reg.data_root)},
+                      tags={"kind": "benchmark"}, enabled=args.track) as run:
+        result = run_regime_v1_from_registry(reg, config)
+        print(result.summary())
+        payload = {
+            "name": result.name, "passed": result.passed,
+            "checks": [{"name": c.name, "passed": c.passed, "detail": c.detail}
+                       for c in result.checks],
+            "blocks": result.blocks, "combined": result.combined,
+            "provenance": result.provenance,
+        }
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(payload, indent=2))
+        print(f"\nWrote {args.output}")
+
+        metrics = {"passed": float(result.passed)}
+        for b, ev in result.blocks.items():
+            for m in ("ari_vs_Pb_Pc", "ari_vs_Thw_Tc",
+                      "loco_accuracy_Pb_Pc", "loco_accuracy_Thw_Tc"):
+                metrics[f"{b}.{m}"] = float(ev[m])
+        for c in result.checks:
+            metrics[f"check.{c.name}"] = float(c.passed)
+        run.log_metrics(metrics)
+        run.log_dict(payload, "regime_v1.json")
+        if run.active:
+            print(f"MLflow run: {run.run_id}")
+    return 0 if result.passed else 1
+
+
+# --------------------------------------------------------------------- #
+# report
+# --------------------------------------------------------------------- #
+def _cmd_report(args) -> int:
+    from metis.reporting.generators import GENERATORS, physics_report
+
+    reports_dir = Path("reports")
+    if args.kind == "physics":
+        if not args.target:
+            return _die("`metis report physics` needs a case id")
+        from metis.analysis import run_analysis
+
+        reg = _registry(args)
+        report = physics_report(run_analysis(reg, "physics", args.target))
+        out = args.out or reports_dir / f"physics-{args.target}"
+    else:
+        if args.run_id:
+            import mlflow
+
+            name = {"regime-v1": "regime_v1.json", "representation": "representation_study.json"}
+            local = mlflow.artifacts.download_artifacts(
+                run_id=args.run_id, artifact_path=name[args.kind])
+            data = json.loads(Path(local).read_text())
+        elif args.from_json:
+            data = json.loads(args.from_json.read_text())
+        else:
+            return _die("give --from <json> or --run-id <id>")
+        report = GENERATORS[args.kind](data)
+        out = args.out or reports_dir / args.kind
+
+    written = report.write(out)
+    print(f"Wrote {written}/summary.md ({len(report.metrics)} metrics, "
+          f"{len(report.figures)} figure(s))")
+    return 0
+
+
+# --------------------------------------------------------------------- #
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="metis", description=__doc__.split("\n\n")[0])
+    parser.add_argument("--version", action="version", version=f"metis {__version__}")
+    sub = parser.add_subparsers(dest="command", metavar="<command>")
+
+    # cases
+    p_cases = sub.add_parser("cases", help="inspect the DNS case registry").add_subparsers(
+        dest="cases_command", metavar="<subcommand>")
+    pc = p_cases.add_parser("list", help="list registered cases")
+    add_data_root_args(pc)
+    pc.set_defaults(func=_cmd_cases_list)
+
+    # case validate
+    p_case = sub.add_parser("case", help="operate on one case").add_subparsers(
+        dest="case_command", metavar="<subcommand>")
+    pv = p_case.add_parser("validate", help="validate a case's data")
+    pv.add_argument("case")
+    pv.add_argument("--slices", default=None, help="comma-separated slice ids to also check")
+    add_data_root_args(pv)
+    pv.set_defaults(func=_cmd_case_validate)
+
+    # analyze
+    pa = sub.add_parser("analyze", help="run a standard analysis on a case")
+    pa.add_argument("kind", choices=["physics", "spectra", "pod", "regime-features"])
+    pa.add_argument("case")
+    pa.add_argument("--slice", dest="slice_id", default=None)
+    pa.add_argument("--field", default=None)
+    pa.add_argument("--axis", default=None, choices=["x", "z"])
+    pa.add_argument("--feature-set", dest="feature_set", default=None)
+    pa.add_argument("--energy-threshold", dest="energy_threshold", type=float, default=None)
+    pa.add_argument("--out", default=None, help="directory for outputs.json + arrays.npz")
+    pa.add_argument("--no-validate", dest="validate", action="store_false")
+    add_data_root_args(pa)
+    pa.set_defaults(func=_cmd_analyze)
+
+    # dataset build
+    p_ds = sub.add_parser("dataset", help="feature dataset artifacts").add_subparsers(
+        dest="dataset_command", metavar="<subcommand>")
+    pb = p_ds.add_parser("build", help="build (and cache) a Level-1 feature dataset")
+    pb.add_argument("--feature-set", dest="feature_set", default="compact",
+                    choices=["compact", "rich", "bulk", "mean_profile", "rms_profile", "pod"])
+    pb.add_argument("--cases", default=None, help="comma-separated (default: regime train+OOD)")
+    pb.add_argument("--out", required=True)
+    pb.add_argument("--rebuild", action="store_true")
+    add_data_root_args(pb)
+    pb.set_defaults(func=_cmd_dataset_build)
+
+    # benchmark
+    pbm = sub.add_parser("benchmark", help="run a frozen benchmark")
+    pbm.add_argument("name", choices=["regime-v1"])
+    pbm.add_argument("--benchmark-config", dest="benchmark_config", default=None)
+    pbm.add_argument("--output", type=Path,
+                     default=Path("results") / "regime_v1.json")
+    pbm.add_argument("--no-track", dest="track", action="store_false")
+    add_data_root_args(pbm)
+    pbm.set_defaults(func=_cmd_benchmark)
+
+    # report
+    pr = sub.add_parser("report", help="build a report from an experiment result")
+    pr.add_argument("kind", choices=["regime-v1", "representation", "physics"])
+    pr.add_argument("target", nargs="?", help="case id (physics only)")
+    pr.add_argument("--from", dest="from_json", type=Path, default=None)
+    pr.add_argument("--run-id", dest="run_id", default=None)
+    pr.add_argument("--out", type=Path, default=None)
+    add_data_root_args(pr)
+    pr.set_defaults(func=_cmd_report)
+
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if not getattr(args, "func", None):
+        parser.print_help()
+        return 1
+    try:
+        return args.func(args) or 0
+    except (KeyError, RuntimeError, FileNotFoundError) as exc:
+        return _die(str(exc))
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -43,6 +43,9 @@ demo = ["streamlit>=1.30"]
 # summary.md / metrics.json path works without it.
 report = ["matplotlib>=3.7"]
 
+[project.scripts]
+metis = "metis.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

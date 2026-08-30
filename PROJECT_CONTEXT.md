@@ -355,12 +355,27 @@ eval).
   `tests/unit/test_reporting.py` (5 tests, text/JSON path runs in CI;
   figure assertions guard on `has_matplotlib()`). Smoke-tested all three
   report kinds on real artifacts + the `--run-id` MLflow-artifact path.
-- **Next (Stage 3): I7 — user-facing `metis` CLI.** One entry point
-  (`argparse`/`typer`) wrapping what exists: `metis cases list`,
-  `metis case validate <id>`, `metis analyze <kind> <case>`,
-  `metis dataset build`, `metis benchmark regime-v1`, `metis report
-  <kind>`. The `scripts/*.py` become thin shims. Priority: discoverable
-  help + meaningful errors, not the library choice.
+- **I7 — user-facing `metis` CLI: DONE (2026-08-30).** `metis.cli`
+  (argparse subcommands, `[project.scripts] metis = "metis.cli:main"` —
+  installed by `[dev]`, no extra needed): `metis cases list`,
+  `metis case validate <id> [--slices]`, `metis analyze <kind> <case>
+  [...]`, `metis dataset build --feature-set --out [--cases --rebuild]`,
+  `metis benchmark regime-v1 [--no-track]`, `metis report <kind>
+  [--from|--run-id]` / `metis report physics <case>`, `metis --version`.
+  Every subcommand wraps a `metis.*` call; `KeyError`/`RuntimeError`/
+  `FileNotFoundError` become `metis: error: ...` on stderr + exit 2.
+  `scripts/{analyze,report,benchmark_regime_v1,build_feature_dataset}.py`
+  are now 11-line shims that forward argv to the CLI (the regime
+  exploratory scripts + `representation_study.py` stay standalone).
+  README quickstart rewritten around `metis ...`.
+  `tests/unit/test_cli.py` (9 tests, CI-safe — mock_dns raw HDF5 only).
+- **Next: I8 — model / dataset registry** (`metis.registry`, currently an
+  empty package): a directory-backed `artifacts/registry.json` tracking
+  validated datasets and models — `{model_id, run_id, dataset_id,
+  status: experimental|validated|deprecated, created_at, git_commit,
+  metrics}`. "Validated" = approved for reuse under a documented scope,
+  not deployed. Then I6-style docs cleanup + expanded regression tests
+  (Stage 3 tail), then P1-P3 packaging.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

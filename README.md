@@ -84,21 +84,25 @@ same layout the ingestion layer expects, so the pipeline runs and tests
 pass without needing the group's (multi-GB, access-restricted) real DNS
 output.
 
-With access to the group's DNS data (the standard `raw/`, `processed/`,
-`processed_slices/` layout under one root), run the regime-discovery
-reference task end-to-end. Point the scripts at that root via
-`--data-root`, the `METIS_DATA_ROOT` environment variable, or `data.root`
-in `configs/default.yaml` (resolution order: flag > config > env):
+`pip install -e ".[dev]"` also installs a `metis` command. Point it at
+the group's DNS data (the standard `raw/` `processed/` `processed_slices/`
+layout under one root) via `--data-root`, `$METIS_DATA_ROOT`, or
+`data.root` in `configs/default.yaml` (resolution order: flag > config >
+env):
 
 ```bash
 export METIS_DATA_ROOT=/path/to/dns_data
-python scripts/run_regime_discovery.py   # compact vs. rich feature sets
-python scripts/run_regime_ablation.py    # per-block ablation
-python scripts/run_regime_blockwise.py   # MFA block-wise combination
+metis cases list                          # the registered DNS cases
+metis case validate case01                # structural + numerical checks
+metis analyze physics case01              # bulk groups, wall Re_tau, profiles
+metis analyze spectra case01 --slice s3_center --field u
+metis dataset build --feature-set compact --out artifacts/datasets/compact_v1
+metis benchmark regime-v1                 # the frozen reference benchmark
+metis report regime-v1 --from results/regime_v1.json
 ```
 
-Each writes its results to `results/` (override with `--output`); see
-`FINDINGS.md` for the interpreted findings.
+The regime-discovery exploratory trail (`scripts/run_regime_*.py`,
+FINDINGS.md §1-4) still runs standalone; results land in `results/`.
 
 ## Layout
 
