@@ -382,13 +382,26 @@ eval).
   set-status`, and `metis dataset build --register <id> --scope ...`
   records the built dataset with its fingerprint/shape as metrics.
   `tests/unit/test_artifact_registry.py` (9) + 3 CLI tests.
-- **Next: docs cleanup + Stage 3 tail** (`METIS_detailed_next_steps.md`
-  §31, §33 items 16-18): restructure `docs/` for a new student
-  (getting_started / architecture / data_layout / adding_an_analysis /
-  adding_a_model / reproducibility), trim the README to
-  what/why/install/one-example/where-to-read-more, expand
-  integration/regression tests, then P1-P3 packaging (semver, clean
-  install, CLI smoke in CI, dependency groups).
+- **Docs cleanup: DONE (2026-08-30).** New `docs/README.md` (index) +
+  six student-facing guides: `getting_started.md` (install → mock data →
+  tests → first analysis → where to add code), `architecture.md` (the
+  layer pipeline + full `src/metis/` module map + design rules),
+  `data_layout.md` (data root, `metadata.json` schema, the `[z,y,x]`
+  axis convention, `CaseRegistry` usage), `adding_an_analysis.md`,
+  `adding_a_model.md`, `reproducibility.md`. README trimmed from 149
+  lines to what/what-it-does/install/one-example/router-pointer/
+  where-to-read-more; the stale Layout tree (deleted `models/*` subdirs)
+  and Status section are gone — module map now lives in
+  `docs/architecture.md`. The router docs
+  (`docs/router_agent.md`, `docs/agent_implementation_plan.md`) stayed
+  put (11 inbound refs from source docstrings). All relative links
+  verified.
+- **Next: Stage 3 tail then P1-P3** (`METIS_detailed_next_steps.md` §24,
+  §33 item 17, §23-25): expand integration/regression tests (a full
+  ingest→validate→preprocess→dataset→train→evaluate→artifact integration
+  test; more regression pins), then packaging — semver, a clean-install
+  check, a `metis --help` / CLI smoke job in CI, and a deliberate
+  dependency-group pass.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`
