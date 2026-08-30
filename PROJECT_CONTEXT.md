@@ -249,13 +249,29 @@ eval).
   `tests/unit/test_feature_dataset.py` (8 tests). Real-data smoke: first
   build 11×14 in 7.4s, cached re-run 0.001s, identical X — the
   acceptance criterion (no raw re-read when unchanged).
-- **Next: R6 — standard analysis API**: a thin common
-  `run_analysis(case, analysis, config)` / `metis analyze <kind> <case>`
-  layer over the trusted physics functions (physics summary, spectra,
-  POD, regime feature extraction) returning a standard result object
-  (name, inputs, config, outputs, validation metadata, artifact writer).
-  Do NOT force one generic class hierarchy — a thin execute/result
-  protocol is enough.
+- **R6 — standard analysis API: DONE (2026-08-30).** New `metis.analysis`
+  (single module, function-dispatch — not a class hierarchy):
+  `run_analysis(registry, analysis, case, *, validate=True, **options)`
+  over `ANALYSES = {physics, spectra, pod, regime_features}`, each a thin
+  runner adapting an existing trusted function. One `AnalysisResult`
+  (analysis, case_ids, resolved config, JSON-safe outputs, `arrays`,
+  validation summary, provenance) with `save`/`load`
+  (outputs.json + arrays.npz) and `summary()`. Validation runs by default
+  (`validate_dns_case` / `validate_slice_case` / `validate_case`).
+  `scripts/analyze.py` CLI (`analyze <kind> <case> [--slice --field
+  --axis --feature-set --energy-threshold --out --no-validate]`).
+  `metis.config.git_commit()` factored out (also used by R5).
+  `tests/unit/test_analysis.py` (11 tests). Real case01 smoke: pod
+  energy_captured = 0.9900003143 (exact Pub 4 match), spectra Parseval
+  rel-err 4e-11, physics/regime clean.
+- **Next: R7 — freeze regime discovery as `regime-v1` benchmark**
+  (consolidation, not new research): a frozen benchmark config
+  (case01-09 train / case10,15 OOD; `bulk` pressure diagnostic,
+  `rms_profile` thermal diagnostic, MFA sanity check; expected metric
+  ranges), regression tests on reduced/cached features asserting the
+  specialists stay best and deterministic outputs don't drift, and one
+  `metis benchmark regime-v1` command reproducing the current
+  results/*.json.
 
 Out of scope until a deliberate decision (both docs agree): live
 HPC/Slurm solver connection, physical-units → `(Pb_Pc, Thw_Tc, Tcw_Tc)`

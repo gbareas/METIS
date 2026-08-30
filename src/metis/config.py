@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import subprocess
 from pathlib import Path
 
 import yaml
@@ -84,3 +85,15 @@ def add_data_root_args(parser: argparse.ArgumentParser) -> None:
 def data_root_from_args(args: argparse.Namespace) -> Path:
     """Resolve the data root from a parser populated by `add_data_root_args`."""
     return resolve_data_root(cli_value=args.data_root, config_path=args.config)
+
+
+def git_commit() -> str:
+    """Best-effort HEAD commit of the metis repo, for run provenance.
+    Returns 'unknown' if git isn't available or this isn't a checkout."""
+    try:
+        return subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=REPO_ROOT, capture_output=True, text=True, check=True, timeout=5,
+        ).stdout.strip()
+    except Exception:  # noqa: BLE001 - provenance is best-effort
+        return "unknown"

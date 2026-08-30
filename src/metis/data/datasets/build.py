@@ -13,10 +13,10 @@ from __future__ import annotations
 
 import hashlib
 import json
-import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
+from metis.config import git_commit
 from metis.data.datasets.feature_dataset import FeatureDataset
 from metis.data.registry import CaseRegistry
 from metis.features import regime
@@ -45,17 +45,6 @@ def _build_matrix(feature_set: str, case_ids, data_root):
         X, names = build_feature_matrix_block(tuple(case_ids), data_root, feature_set)
         return X, list(names)
     raise ValueError(f"unknown feature_set {feature_set!r}, expected one of {FEATURE_SETS}")
-
-
-def _git_commit() -> str:
-    try:
-        return subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            cwd=Path(regime.__file__).resolve().parents[3],
-            capture_output=True, text=True, check=True, timeout=5,
-        ).stdout.strip()
-    except Exception:  # noqa: BLE001 - provenance is best-effort
-        return "unknown"
 
 
 def _feature_code_hash() -> str:
@@ -104,7 +93,7 @@ def build_feature_dataset(
         provenance={
             "fingerprint": fp,
             "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-            "code_version": _git_commit(),
+            "code_version": git_commit(),
             "data_root": str(registry.data_root),
             "n_cases": len(case_ids),
             "n_features": int(X.shape[1]),
