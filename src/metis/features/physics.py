@@ -8,10 +8,12 @@ them reusable across cases without reimplementing the physics, operating on
 `DNSCase` instead of a raw h5py handle so downstream code never has to know
 the RHEA file layout.
 
-Grid convention (RHEA): datasets are (Nx+2, Ny+2, Nz+2) with one ghost
-layer per side; y varies along axis 1. Ghosts are wall-mirror cells, so
-wall values are the average of the ghost and first interior cell, and wall
-gradients are centred at the wall face: (q[1]-q[0])/(y[1]-y[0]).
+Grid convention (RHEA): datasets are (Nz+2, Ny+2, Nx+2) — [z, y, x] axis
+order — with one ghost layer per side; y varies along axis 1, and x/z
+(axes 2 and 0) are the homogeneous directions averaged out for a
+wall-normal profile. Ghosts are wall-mirror cells, so wall values are the
+average of the ghost and first interior cell, and wall gradients are
+centred at the wall face: (q[1]-q[0])/(y[1]-y[0]).
 
 Bulk velocity is mass-flux-weighted, U_b = <avg_rhou> / <avg_rho>, and bulk
 temperature is density-weighted via avg_rhoT, matching the campaign's

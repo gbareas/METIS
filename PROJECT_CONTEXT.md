@@ -206,12 +206,19 @@ eval).
   field-name sets). New `metis.testing.corrupt` supplies the deliberately
   corrupted fixtures; `tests/unit/test_validation.py` (14 tests) asserts
   each failure by its `check` slug. Smoke-checked on real case01/10/15
-  and slices s3_center/s2_max_u — clean except a `coordinate_degenerate`
-  **warning** that surfaced a real latent bug: **`HDF5Reader` extracts
-  `coordinates['x']`/`['z']` along the wrong mesh axis** (they come back
-  constant for real RHEA data; only `y` is right). Nothing downstream
-  uses those two today; fix the reader separately (own change + physics
-  re-check), it's not an R-milestone blocker.
+  and slices s3_center/s2_max_u.
+- **R3 follow-up — RHEA axis order: FIXED (2026-08-30).** Smoke-testing
+  surfaced that `HDF5Reader` extracted `coordinates['x']`/`['z']` along
+  the wrong mesh axis (constant for real data). RHEA writes arrays as
+  **`[z, y, x]`** (shape `(Nz+2, Ny+2, Nx+2)`), per the group. Fixed the
+  reader's coordinate extraction, made `mock_dns.generate` build in the
+  same order, and corrected the `[z,y,x]` shape check in
+  `validate_dns_case` + docstrings in `hdf5_reader`/`physics`. Physics
+  code needed no change — `wall_normal_profiles` averages axes 0 and 2
+  (both homogeneous) and only reads `coordinates['y']` (axis 1, always
+  correct), which is why the Pub 4 cross-checks always passed. Real
+  case01/10/15 now validate with 0 warnings; box is ~1.27mm(x) x
+  0.35mm(y=2·DELTA) x 0.42mm(z), a minimal flow unit as expected.
 - **Next: R4 — preprocessing layer** (`metis.data.preprocessing`, empty):
   reusable transforms (coordinate normalization, variable selection,
   scaling, sensor extraction) with strict fit-on-train / apply-to-OOD

@@ -49,14 +49,15 @@ def validate_dns_case(case: DNSCase) -> ValidationReport:
     shape = next(iter(shapes))
 
     if c.expect(len(shape) == 3, "field_ndim", f"expected 3-D fields, got shape {shape}"):
-        expected = tuple(grid[k] + 2 for k in ("Nx", "Ny", "Nz"))
+        # RHEA arrays are [z, y, x] with a ghost layer per side.
+        expected = tuple(grid[k] + 2 for k in ("Nz", "Ny", "Nx"))
         c.expect(
             shape == expected, "grid_matches_metadata",
             f"field shape {shape} != metadata grid + ghost cells {expected} "
-            f"(grid={grid})",
+            f"([z,y,x] of grid={grid})",
         )
 
-    for axis, name in enumerate(("x", "y", "z")):
+    for axis, name in enumerate(("z", "y", "x")):
         coord = case.coordinates.get(name)
         if coord is None:
             c.error("coordinates_present", f"missing {name} coordinate")

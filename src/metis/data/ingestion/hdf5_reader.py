@@ -10,14 +10,15 @@ Real RHEA layout (verified against the group's data/raw/case*/*.h5 files):
 
     One HDF5 file = one snapshot/iteration (a case directory holds several,
     one per iteration checkpointed). Flat layout, no groups — every variable
-    is a root-level dataset shaped (Nx+2, Ny+2, Nz+2), i.e. one ghost cell
-    per side. Variable families present: instantaneous (u, v, w, T, P, rho,
-    mu, kappa, c_p, c_v, sos, E), running time-average (avg_*), rms
-    fluctuation (rmsf_*), Favre stresses (favre_*), an immersed-boundary
-    mask (tag_IBM), and coordinates x/y/z as full 3D meshgrid arrays
-    (constant along the other two axes — x varies along axis 0, y along
-    axis 1, z along axis 2). Root attrs carry only Iteration/Time/
-    AveragingTime — no case-level physics metadata.
+    is a root-level dataset shaped (Nz+2, Ny+2, Nx+2): RHEA writes arrays in
+    [z, y, x] axis order, with one ghost cell per side. Variable families
+    present: instantaneous (u, v, w, T, P, rho, mu, kappa, c_p, c_v, sos,
+    E), running time-average (avg_*), rms fluctuation (rmsf_*), Favre
+    stresses (favre_*), an immersed-boundary mask (tag_IBM), and
+    coordinates x/y/z as full 3D meshgrid arrays (constant along the other
+    two axes — z varies along axis 0, y along axis 1, x along axis 2).
+    Root attrs carry only Iteration/Time/AveragingTime — no case-level
+    physics metadata.
 
     Case-level physics metadata (Pb_Pc, Thw_Tc, Tcw_Tc, grid, snapshot
     timesteps) lives in a companion JSON file, not in the HDF5 file itself:
@@ -97,10 +98,13 @@ class HDF5Reader:
 
         with h5py.File(path, "r") as f:
             metadata = self._read_metadata(f, case_meta)
+            # RHEA arrays are [z, y, x]: z along axis 0, y along axis 1,
+            # x along axis 2. Each coord dataset is a full meshgrid but
+            # constant along the other two axes.
             coordinates = {
-                "x": np.asarray(f["x"][:, 1, 1]),
+                "z": np.asarray(f["z"][:, 1, 1]),
                 "y": np.asarray(f["y"][1, :, 1]),
-                "z": np.asarray(f["z"][1, 1, :]),
+                "x": np.asarray(f["x"][1, 1, :]),
             }
             fields = {
                 name: np.asarray(f[name])

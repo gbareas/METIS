@@ -4,9 +4,10 @@ This is NOT DNS data — it exists so the ingestion layer (and everything
 built on top of it) can run and be tested end-to-end without needing the
 real (multi-GB, group-internal) RHEA output. The schema mirrors the real
 solver's snapshot files as closely as practical: flat HDF5 layout (no
-groups), ghost cells, instantaneous/avg_/rmsf_/favre_ field families, 3D
-coordinate arrays, and a companion metadata.json carrying the case-level
-physics parameters that RHEA itself doesn't write into the HDF5 file.
+groups), [z, y, x] axis order, ghost cells, instantaneous/avg_/rmsf_/
+favre_ field families, 3D coordinate arrays, and a companion metadata.json
+carrying the case-level physics parameters that RHEA itself doesn't write
+into the HDF5 file.
 """
 from __future__ import annotations
 
@@ -51,11 +52,12 @@ def generate(
     x1d = _with_ghosts(np.linspace(0, 1, nx))
     y1d = _with_ghosts(np.tanh(np.linspace(-2, 2, ny)))  # wall-clustered, like a channel mesh
     z1d = _with_ghosts(np.linspace(0, 1, nz))
-    shape = (nx + 2, ny + 2, nz + 2)
+    # RHEA writes arrays in [z, y, x] axis order (see hdf5_reader).
+    shape = (nz + 2, ny + 2, nx + 2)
 
-    x = np.tile(x1d[:, None, None], (1, ny + 2, nz + 2))
-    y = np.tile(y1d[None, :, None], (nx + 2, 1, nz + 2))
-    z = np.tile(z1d[None, None, :], (nx + 2, ny + 2, 1))
+    z = np.tile(z1d[:, None, None], (1, ny + 2, nx + 2))
+    y = np.tile(y1d[None, :, None], (nz + 2, 1, nx + 2))
+    x = np.tile(x1d[None, None, :], (nz + 2, ny + 2, 1))
 
     instantaneous = {
         "rho": rng.normal(500.0, 50.0, shape),
