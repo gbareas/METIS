@@ -1,0 +1,69 @@
+# Virtual-sensor forecasting — frozen selection (Phase C, C1).
+# Full rationale: docs/virtual_sensor_protocol.md. Changing any value
+# here is an experiment change and needs a FINDINGS.md entry.
+
+name: virtual_sensors_v1
+question: >
+  Can a multivariate model forecast physically-placed virtual-probe
+  signals from a transcritical channel, sample-step, and hold skill
+  across operating conditions and on off-grid thermal forcing?
+
+data:
+  product: processed_slices          # metis.data.ingestion.slice_reader
+  grid: [96, 96]
+  snapshots_per_case: 500
+  step_iterations: 2500              # uniform solver-iteration spacing
+  physical_dt: null                  # not available -> sample-step only (§35)
+
+# 5 physically-motivated wall-normal stations, each an existing XZ slice.
+probes:
+  cw_buffer:     {slice_id: s5_y_plus_10_cw, region: "cold-wall buffer (y+~10)"}
+  centre:        {slice_id: s3_center,       region: "channel centre"}
+  hw_buffer:     {slice_id: s8_y_plus_10_hw, region: "hot-wall buffer (y+~10)"}
+  pseudoboiling: {slice_id: s1_max_cp_f,     region: "plane of max cp (Widom line)"}
+  max_u:         {slice_id: s2_max_u,        region: "plane of max mean u"}
+
+# Per probe x field, aggregated over the two homogeneous directions.
+channels:
+  fields: [u, T, cp]
+  aggregates:
+    pmf: plane_mean_fluctuation       # <f'>_xz(t)
+    rms: plane_rms_fluctuation        # sqrt(<f'^2>_xz)(t)
+  id_format: "{probe}.{field}_{aggregate}"   # -> 30 channels
+  static_context: [Pb_Pc, Thw_Tc, Tcw_Tc, y_loc]   # covariates, not targets
+
+task:
+  kind: forecasting                  # task 1 (§32); regime detection is task 2, deferred
+  context_length: 32                 # L steps
+  horizons: [1, 4, 8, 16]            # H steps (1 step = 2500 iterations)
+  window_stride: 1
+  windows_span_cases: false
+  targets: all_channels              # multivariate
+
+splits:
+  primary:
+    train_cases: [case01, case02, case03, case04, case05, case06, case07, case08, case09]
+    train_steps: [0, 400]
+    val_steps:   [400, 500]          # chronological hold-out, same cases
+    ood_cases: [case10, case15]
+    ood_steps: [0, 500]
+  secondary:                         # pressure hold-out, robustness only
+    train_cases: [case01, case02, case03, case04, case05, case06]
+    train_steps: [0, 400]
+    val_steps:   [400, 500]
+    ood_cases: [case07, case08, case09]
+    ood_steps: [0, 500]
+  standardize: per_channel_train_only
+
+baselines: [persistence, ar_linear, lagged_linear_regression]
+models: [xgboost, lstm]              # temporal CNN only if it earns its place
+
+evaluation:
+  metrics: [relative_l2, rmse, mae, r2, skill_vs_persistence]
+  per: [horizon, channel]
+  robustness: [ood_degradation_ratio, regime_band_skill]
+  gate: assess_model                 # ML up AND no physical/regime regression (§17)
+
+persistence:
+  format: parquet                    # long-form channel table (C3)
+  out_dir: artifacts/datasets/virtual_sensors_v1

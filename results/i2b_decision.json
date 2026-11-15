@@ -1,0 +1,357 @@
+{
+  "evaluation": "results/i2b_evaluation.json",
+  "headline_latent_dim": 32,
+  "ml_metrics": [
+    "val_relative_l2",
+    "ood_relative_l2",
+    "ood_degradation_ratio"
+  ],
+  "physical_metrics": [
+    "val_mean_profile_rel_l2_x",
+    "val_mean_profile_rel_l2_z",
+    "val_rms_profile_rel_l2_x",
+    "val_rms_profile_rel_l2_z",
+    "val_spectrum_rel_l2_x",
+    "val_spectrum_rel_l2_z",
+    "val_spectrum_log_corr_x",
+    "val_spectrum_log_corr_z",
+    "val_energy_fraction_l1",
+    "ood_mean_profile_rel_l2_x",
+    "ood_mean_profile_rel_l2_z",
+    "ood_rms_profile_rel_l2_x",
+    "ood_rms_profile_rel_l2_z",
+    "ood_spectrum_rel_l2_x",
+    "ood_spectrum_rel_l2_z",
+    "ood_spectrum_log_corr_x",
+    "ood_spectrum_log_corr_z",
+    "ood_energy_fraction_l1"
+  ],
+  "gate_rule": "is_better = an ML metric improves AND no physical diagnostic regresses",
+  "headline": {
+    "n_seeds": 5,
+    "n_is_better": 0,
+    "latent_stability_max_rel_l2": 0.37943628082804354,
+    "latent_stability_poor": true,
+    "per_seed": [
+      {
+        "seed": 0,
+        "ml_deltas": {
+          "val_relative_l2": -0.04460631693555628,
+          "ood_relative_l2": -0.08997611490710294,
+          "ood_degradation_ratio": -0.09531302294956079
+        },
+        "physical_deltas": {
+          "val_mean_profile_rel_l2_x": -0.24959550919628326,
+          "val_mean_profile_rel_l2_z": -0.07696960091363686,
+          "val_rms_profile_rel_l2_x": -0.0059172190164260285,
+          "val_rms_profile_rel_l2_z": -0.011376470300769465,
+          "val_spectrum_rel_l2_x": -0.005837354639961212,
+          "val_spectrum_rel_l2_z": -0.0020819579655531606,
+          "val_spectrum_log_corr_x": -0.19455892565476374,
+          "val_spectrum_log_corr_z": -0.2666672595706785,
+          "val_energy_fraction_l1": 0.014551486952878445,
+          "ood_mean_profile_rel_l2_x": -0.0684785537877755,
+          "ood_mean_profile_rel_l2_z": -0.11795376280692839,
+          "ood_rms_profile_rel_l2_x": -0.08823423837644759,
+          "ood_rms_profile_rel_l2_z": -0.11853028433901716,
+          "ood_spectrum_rel_l2_x": -0.22763830976407545,
+          "ood_spectrum_rel_l2_z": -0.2225308472311126,
+          "ood_spectrum_log_corr_x": -0.18337839016858526,
+          "ood_spectrum_log_corr_z": -0.29006533092978215,
+          "ood_energy_fraction_l1": 0.02947307475743778
+        },
+        "ml_improved": [],
+        "ml_regressed": [
+          "val_relative_l2",
+          "ood_relative_l2",
+          "ood_degradation_ratio"
+        ],
+        "physical_improved": [
+          "val_energy_fraction_l1",
+          "ood_energy_fraction_l1"
+        ],
+        "physical_regressed": [
+          "val_mean_profile_rel_l2_x",
+          "val_mean_profile_rel_l2_z",
+          "val_rms_profile_rel_l2_x",
+          "val_rms_profile_rel_l2_z",
+          "val_spectrum_rel_l2_x",
+          "val_spectrum_rel_l2_z",
+          "val_spectrum_log_corr_x",
+          "val_spectrum_log_corr_z",
+          "ood_mean_profile_rel_l2_x",
+          "ood_mean_profile_rel_l2_z",
+          "ood_rms_profile_rel_l2_x",
+          "ood_rms_profile_rel_l2_z",
+          "ood_spectrum_rel_l2_x",
+          "ood_spectrum_rel_l2_z",
+          "ood_spectrum_log_corr_x",
+          "ood_spectrum_log_corr_z"
+        ],
+        "is_better": false,
+        "reason": "no ML metric improved"
+      },
+      {
+        "seed": 1,
+        "ml_deltas": {
+          "val_relative_l2": -0.03442360529592714,
+          "ood_relative_l2": -0.11230605964383689,
+          "ood_degradation_ratio": -0.13753852115554255
+        },
+        "physical_deltas": {
+          "val_mean_profile_rel_l2_x": -0.150403008845019,
+          "val_mean_profile_rel_l2_z": 0.03880450009141517,
+          "val_rms_profile_rel_l2_x": 0.012744694012500224,
+          "val_rms_profile_rel_l2_z": 0.009941631454874506,
+          "val_spectrum_rel_l2_x": 0.021217449392057552,
+          "val_spectrum_rel_l2_z": 0.01077276233772756,
+          "val_spectrum_log_corr_x": -0.20768929377954892,
+          "val_spectrum_log_corr_z": -0.27017137420896764,
+          "val_energy_fraction_l1": -0.01778150112866153,
+          "ood_mean_profile_rel_l2_x": -0.12195349767339698,
+          "ood_mean_profile_rel_l2_z": -0.16245861895110503,
+          "ood_rms_profile_rel_l2_x": -0.16855605784617292,
+          "ood_rms_profile_rel_l2_z": -0.1895835861779458,
+          "ood_spectrum_rel_l2_x": -0.3517424550730231,
+          "ood_spectrum_rel_l2_z": -0.347914462639175,
+          "ood_spectrum_log_corr_x": -0.17394850302492781,
+          "ood_spectrum_log_corr_z": -0.2648570339189028,
+          "ood_energy_fraction_l1": 0.02943856779661616
+        },
+        "ml_improved": [],
+        "ml_regressed": [
+          "val_relative_l2",
+          "ood_relative_l2",
+          "ood_degradation_ratio"
+        ],
+        "physical_improved": [
+          "val_mean_profile_rel_l2_z",
+          "val_rms_profile_rel_l2_x",
+          "val_rms_profile_rel_l2_z",
+          "val_spectrum_rel_l2_x",
+          "val_spectrum_rel_l2_z",
+          "ood_energy_fraction_l1"
+        ],
+        "physical_regressed": [
+          "val_mean_profile_rel_l2_x",
+          "val_spectrum_log_corr_x",
+          "val_spectrum_log_corr_z",
+          "val_energy_fraction_l1",
+          "ood_mean_profile_rel_l2_x",
+          "ood_mean_profile_rel_l2_z",
+          "ood_rms_profile_rel_l2_x",
+          "ood_rms_profile_rel_l2_z",
+          "ood_spectrum_rel_l2_x",
+          "ood_spectrum_rel_l2_z",
+          "ood_spectrum_log_corr_x",
+          "ood_spectrum_log_corr_z"
+        ],
+        "is_better": false,
+        "reason": "no ML metric improved"
+      },
+      {
+        "seed": 2,
+        "ml_deltas": {
+          "val_relative_l2": -0.04370151001234168,
+          "ood_relative_l2": -0.11852705735299857,
+          "ood_degradation_ratio": -0.13746181209400143
+        },
+        "physical_deltas": {
+          "val_mean_profile_rel_l2_x": -0.23855672719376642,
+          "val_mean_profile_rel_l2_z": -0.04730308059225902,
+          "val_rms_profile_rel_l2_x": -0.008387553084033078,
+          "val_rms_profile_rel_l2_z": -0.009903671280657389,
+          "val_spectrum_rel_l2_x": -0.009174974576781791,
+          "val_spectrum_rel_l2_z": -0.007960607245921736,
+          "val_spectrum_log_corr_x": -0.2111127051873336,
+          "val_spectrum_log_corr_z": -0.30394553853999573,
+          "val_energy_fraction_l1": -0.0060811263606817545,
+          "ood_mean_profile_rel_l2_x": -0.11249164834924384,
+          "ood_mean_profile_rel_l2_z": -0.1709836182985296,
+          "ood_rms_profile_rel_l2_x": -0.1396054829847382,
+          "ood_rms_profile_rel_l2_z": -0.17346904288889498,
+          "ood_spectrum_rel_l2_x": -0.33305908726641026,
+          "ood_spectrum_rel_l2_z": -0.3337661285309394,
+          "ood_spectrum_log_corr_x": -0.1968721493553124,
+          "ood_spectrum_log_corr_z": -0.3177410524487875,
+          "ood_energy_fraction_l1": 0.025941638030932593
+        },
+        "ml_improved": [],
+        "ml_regressed": [
+          "val_relative_l2",
+          "ood_relative_l2",
+          "ood_degradation_ratio"
+        ],
+        "physical_improved": [
+          "ood_energy_fraction_l1"
+        ],
+        "physical_regressed": [
+          "val_mean_profile_rel_l2_x",
+          "val_mean_profile_rel_l2_z",
+          "val_rms_profile_rel_l2_x",
+          "val_rms_profile_rel_l2_z",
+          "val_spectrum_rel_l2_x",
+          "val_spectrum_rel_l2_z",
+          "val_spectrum_log_corr_x",
+          "val_spectrum_log_corr_z",
+          "val_energy_fraction_l1",
+          "ood_mean_profile_rel_l2_x",
+          "ood_mean_profile_rel_l2_z",
+          "ood_rms_profile_rel_l2_x",
+          "ood_rms_profile_rel_l2_z",
+          "ood_spectrum_rel_l2_x",
+          "ood_spectrum_rel_l2_z",
+          "ood_spectrum_log_corr_x",
+          "ood_spectrum_log_corr_z"
+        ],
+        "is_better": false,
+        "reason": "no ML metric improved"
+      },
+      {
+        "seed": 3,
+        "ml_deltas": {
+          "val_relative_l2": -0.028729631097387243,
+          "ood_relative_l2": -0.0923635112504767,
+          "ood_degradation_ratio": -0.11373443423475182
+        },
+        "physical_deltas": {
+          "val_mean_profile_rel_l2_x": -0.15892370014860568,
+          "val_mean_profile_rel_l2_z": -0.009034227965393382,
+          "val_rms_profile_rel_l2_x": -0.023034683227932035,
+          "val_rms_profile_rel_l2_z": -0.026664306155804368,
+          "val_spectrum_rel_l2_x": -0.02981641003190294,
+          "val_spectrum_rel_l2_z": -0.02950150745181518,
+          "val_spectrum_log_corr_x": -0.19331111694068548,
+          "val_spectrum_log_corr_z": -0.2711189982400769,
+          "val_energy_fraction_l1": 0.02369984081698495,
+          "ood_mean_profile_rel_l2_x": -0.07832732394021556,
+          "ood_mean_profile_rel_l2_z": -0.09341158828439027,
+          "ood_rms_profile_rel_l2_x": -0.09312157785067132,
+          "ood_rms_profile_rel_l2_z": -0.12183656509168228,
+          "ood_spectrum_rel_l2_x": -0.1542295464270309,
+          "ood_spectrum_rel_l2_z": -0.14493901247291513,
+          "ood_spectrum_log_corr_x": -0.20639739159464632,
+          "ood_spectrum_log_corr_z": -0.2652214305890297,
+          "ood_energy_fraction_l1": 0.010523694361068356
+        },
+        "ml_improved": [],
+        "ml_regressed": [
+          "val_relative_l2",
+          "ood_relative_l2",
+          "ood_degradation_ratio"
+        ],
+        "physical_improved": [
+          "val_energy_fraction_l1",
+          "ood_energy_fraction_l1"
+        ],
+        "physical_regressed": [
+          "val_mean_profile_rel_l2_x",
+          "val_mean_profile_rel_l2_z",
+          "val_rms_profile_rel_l2_x",
+          "val_rms_profile_rel_l2_z",
+          "val_spectrum_rel_l2_x",
+          "val_spectrum_rel_l2_z",
+          "val_spectrum_log_corr_x",
+          "val_spectrum_log_corr_z",
+          "ood_mean_profile_rel_l2_x",
+          "ood_mean_profile_rel_l2_z",
+          "ood_rms_profile_rel_l2_x",
+          "ood_rms_profile_rel_l2_z",
+          "ood_spectrum_rel_l2_x",
+          "ood_spectrum_rel_l2_z",
+          "ood_spectrum_log_corr_x",
+          "ood_spectrum_log_corr_z"
+        ],
+        "is_better": false,
+        "reason": "no ML metric improved"
+      },
+      {
+        "seed": 4,
+        "ml_deltas": {
+          "val_relative_l2": -0.05227015986767125,
+          "ood_relative_l2": -0.11948687260467444,
+          "ood_degradation_ratio": -0.13055191595229543
+        },
+        "physical_deltas": {
+          "val_mean_profile_rel_l2_x": -0.22268872440384768,
+          "val_mean_profile_rel_l2_z": -0.15734905447707687,
+          "val_rms_profile_rel_l2_x": 0.03341503025194775,
+          "val_rms_profile_rel_l2_z": 0.027319102413478236,
+          "val_spectrum_rel_l2_x": 0.05746061997799712,
+          "val_spectrum_rel_l2_z": 0.041644312295017305,
+          "val_spectrum_log_corr_x": -0.2124834243633862,
+          "val_spectrum_log_corr_z": -0.2761725006921715,
+          "val_energy_fraction_l1": -0.005415259352930302,
+          "ood_mean_profile_rel_l2_x": -0.15215085919646232,
+          "ood_mean_profile_rel_l2_z": -0.19433996376228274,
+          "ood_rms_profile_rel_l2_x": -0.15134433736435735,
+          "ood_rms_profile_rel_l2_z": -0.17288950979720163,
+          "ood_spectrum_rel_l2_x": -0.3612287661946556,
+          "ood_spectrum_rel_l2_z": -0.3581111775603418,
+          "ood_spectrum_log_corr_x": -0.23007637573812956,
+          "ood_spectrum_log_corr_z": -0.29544010011348887,
+          "ood_energy_fraction_l1": 0.03630128438310801
+        },
+        "ml_improved": [],
+        "ml_regressed": [
+          "val_relative_l2",
+          "ood_relative_l2",
+          "ood_degradation_ratio"
+        ],
+        "physical_improved": [
+          "val_rms_profile_rel_l2_x",
+          "val_rms_profile_rel_l2_z",
+          "val_spectrum_rel_l2_x",
+          "val_spectrum_rel_l2_z",
+          "ood_energy_fraction_l1"
+        ],
+        "physical_regressed": [
+          "val_mean_profile_rel_l2_x",
+          "val_mean_profile_rel_l2_z",
+          "val_spectrum_log_corr_x",
+          "val_spectrum_log_corr_z",
+          "val_energy_fraction_l1",
+          "ood_mean_profile_rel_l2_x",
+          "ood_mean_profile_rel_l2_z",
+          "ood_rms_profile_rel_l2_x",
+          "ood_rms_profile_rel_l2_z",
+          "ood_spectrum_rel_l2_x",
+          "ood_spectrum_rel_l2_z",
+          "ood_spectrum_log_corr_x",
+          "ood_spectrum_log_corr_z"
+        ],
+        "is_better": false,
+        "reason": "no ML metric improved"
+      }
+    ]
+  },
+  "by_latent_dim": {
+    "2": {
+      "n_is_better": 0,
+      "latent_stability_max_rel_l2": 0.866544249188613
+    },
+    "4": {
+      "n_is_better": 0,
+      "latent_stability_max_rel_l2": 2.1582909437398707
+    },
+    "8": {
+      "n_is_better": 0,
+      "latent_stability_max_rel_l2": 0.6452477843675667
+    },
+    "16": {
+      "n_is_better": 0,
+      "latent_stability_max_rel_l2": 1.0979904102841165
+    },
+    "32": {
+      "n_is_better": 0,
+      "latent_stability_max_rel_l2": 0.37943628082804354
+    }
+  },
+  "positive": false,
+  "negative_reasons": [
+    "no seed reaches assess_model.is_better=True",
+    "latent_stability is poor (AE Procrustes relL2 0.38 across seeds; PCA is exact)"
+  ],
+  "decision": "NEGATIVE \u2014 linear PCA/POD is sufficient for centre-plane u' structure across the tested thermodynamic conditions; STOP (no VAE / U-Net / operator escalation)",
+  "register_model": false
+}

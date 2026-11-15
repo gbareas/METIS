@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "metis"
+version = "0.1.0"
+description = "Reusable ML analysis & physical-discovery framework for high-pressure transcritical DNS"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "Guillem Barea" }]
+keywords = ["DNS", "turbulence", "transcritical", "surrogate", "scientific-ml"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "numpy>=1.26",
+    "h5py>=3.10",
+    "pyyaml>=6.0",
+    "scipy>=1.11",
+]
+
+[project.urls]
+Repository = "https://github.com/gbareas/METIS"
+Documentation = "https://github.com/gbareas/METIS/tree/main/docs"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.4"]
+# Pulled in once we reach Phase 3/4 (training, experiment tracking) —
+# deliberately not installed on day one to keep the environment light.
+ml = ["torch>=2.2", "scikit-learn>=1.4", "mlflow>=2.10"]
+# Track C/D (router-agent module, docs/agent_implementation_plan.md)
+# — wraps pub5_neural_operators' trained checkpoint directly, decoupled
+# from Track A/B, so it gets its own extra rather than sharing `ml`
+# (no scikit-learn/mlflow needed here).
+#
+# `neuralop_bench` is NOT listed here on purpose: it must be an *editable*
+# install of the local `pub5_neural_operators` checkout (its data.py walks
+# `Path(__file__).resolve().parents[3]` to find pub4's case_descriptors,
+# which only resolves if __file__ still points into the real src/ tree — a
+# packaged wheel copy breaks it), and its path is machine-specific. Install
+# it separately after this extra:
+#     pip install -e path/to/pub5_neural_operators
+router = [
+    "torch>=2.2",
+    "anthropic>=0.68",
+]
+# M4 demo front end only — kept separate from `router` so the router's own
+# logic/tests don't pull in a UI framework.
+demo = ["streamlit>=1.30"]
+# Reporting layer (metis.reporting) — matplotlib for figures only; the
+# summary.md / metrics.json path works without it.
+report = ["matplotlib>=3.7"]
+
+[project.scripts]
+metis = "metis.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+# Pin first-party resolution to the src/ layout explicitly. Without this,
+# ruff's isort only recognises `metis` as first-party when src/metis.egg-info
+# happens to exist (i.e. after `pip install -e .`), so a clean CI checkout
+# sorts `import metis...` as third-party and fails I001. See CI history
+# 2026-08-29.
+src = ["src"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["metis"]

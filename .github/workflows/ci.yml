@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check src tests
+      - name: Test
+        run: pytest -q
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build wheel + sdist
+        run: |
+          pip install build
+          python -m build
+      - name: Install the built wheel in a clean venv
+        run: |
+          python -m venv /tmp/wheel-env
+          /tmp/wheel-env/bin/pip install dist/*.whl
+      - name: Smoke-test the CLI
+        run: |
+          /tmp/wheel-env/bin/metis --version
+          /tmp/wheel-env/bin/metis --help
+          /tmp/wheel-env/bin/metis cases list --config /dev/null || true
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: metis:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Run the one-command demo
+        run: |
+          mkdir -p demo_output
+          docker run --rm -v "$PWD/demo_output:/out" --user "$(id -u):$(id -g)" metis:ci
+          test -f demo_output/summary.png
+          test -f demo_output/reports/regime-v1/summary.md
+      - name: Upload demo outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: metis-demo-output
+          path: demo_output/

@@ -1,0 +1,2126 @@
+{
+  "manifest": "results/i2b_training.json",
+  "dataset": "artifacts/datasets/i2b_representation_v1_primary_u_s3_center",
+  "headline_latent_dim": 32,
+  "n": {
+    "train": 3600,
+    "val": 900,
+    "ood": 1000
+  },
+  "latent_dims": [
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "physical_space": "standardised (global train mean/std)",
+  "notes": [
+    "mean_profile_rel_l2 is noisy: a fluctuation field has ~zero mean profile.",
+    "spectrum dx=1.0 (index wavenumbers); relative comparison only."
+  ],
+  "per_latent_dim": {
+    "2": {
+      "compression_ratio": 4608.0,
+      "pca": {
+        "val": {
+          "mae": 0.7067125964280007,
+          "rmse": 0.9133333065995554,
+          "nrmse": 0.9375957455279617,
+          "relative_l2": 0.9375957455279464,
+          "r2": 0.11742215414767498,
+          "reconstructed_variance": 0.11742209460544428,
+          "mean_profile_rel_l2_x": 1.0331488612975377,
+          "rms_profile_rel_l2_x": 0.6477656879601569,
+          "spectrum_rel_l2_x": 0.8746972782839069,
+          "spectrum_log_corr_x": 0.995897156364892,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 1.0040279139138304,
+          "rms_profile_rel_l2_z": 0.6344383085132991,
+          "spectrum_rel_l2_z": 0.8365426670939156,
+          "spectrum_log_corr_z": 0.9570081302376966,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.9195361267011203
+        },
+        "ood": {
+          "mae": 0.7579194956881969,
+          "rmse": 0.9687912183994991,
+          "nrmse": 0.5246657382356525,
+          "relative_l2": 0.5246657382356417,
+          "r2": 0.5967844109191346,
+          "reconstructed_variance": 0.5967844116076282,
+          "mean_profile_rel_l2_x": 0.2585517779816816,
+          "rms_profile_rel_l2_x": 0.2598561790055176,
+          "spectrum_rel_l2_x": 0.2401250008190596,
+          "spectrum_log_corr_x": 0.9959553494166071,
+          "spectrum_peak_rel_shift_x": 0.5,
+          "mean_profile_rel_l2_z": 0.12195516454131192,
+          "rms_profile_rel_l2_z": 0.1721740631243724,
+          "spectrum_rel_l2_z": 0.18824929386138703,
+          "spectrum_log_corr_z": 0.9725182301574038,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.3221740981436734
+        },
+        "ood_degradation_ratio": 0.5595863043727978,
+        "latent_physical_correlation": {
+          "val": {
+            "Pb_Pc": 0.6091004667358519,
+            "Thw_Tc": 0.5901730685319974,
+            "snapshot_rms": 0.6732782895741278,
+            "peak_wavenumber": 0.35190917207871014
+          },
+          "ood": {
+            "Thw_Tc": 0.3223378054841241,
+            "snapshot_rms": 0.14555331791478615,
+            "peak_wavenumber": 0.4541834935194805
+          }
+        }
+      },
+      "ae": {
+        "per_seed": [
+          {
+            "seed": 0,
+            "val": {
+              "mae": 0.7085946554395972,
+              "rmse": 0.9204984390448446,
+              "nrmse": 0.9449512176741155,
+              "relative_l2": 0.9449512176741083,
+              "r2": 0.10352012674734656,
+              "reconstructed_variance": 0.10352009534835815,
+              "mean_profile_rel_l2_x": 1.3013764528141294,
+              "rms_profile_rel_l2_x": 0.7052211368630465,
+              "spectrum_rel_l2_x": 0.8969126393414081,
+              "spectrum_log_corr_x": 0.7148262467461814,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 1.1837648470764572,
+              "rms_profile_rel_l2_z": 0.6930653283594255,
+              "spectrum_rel_l2_z": 0.8877546269861132,
+              "spectrum_log_corr_z": 0.6484637884136056,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.8884674974758701
+            },
+            "ood": {
+              "mae": 1.2923982972273194,
+              "rmse": 1.6321230174511352,
+              "nrmse": 0.8839046138930643,
+              "relative_l2": 0.8839046138930512,
+              "r2": -0.14441279984248645,
+              "reconstructed_variance": -0.14441275596618652,
+              "mean_profile_rel_l2_x": 0.9635320509382944,
+              "rms_profile_rel_l2_x": 0.5317768587478557,
+              "spectrum_rel_l2_x": 0.8284665451120033,
+              "spectrum_log_corr_x": 0.6717951546782636,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.963202683985178,
+              "rms_profile_rel_l2_z": 0.5153956404161406,
+              "spectrum_rel_l2_z": 0.8178343667682735,
+              "spectrum_log_corr_z": 0.6764536924972223,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.31996216674591155
+            },
+            "ood_degradation_ratio": 0.9353970843793222,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.599586701984636,
+                "Thw_Tc": 0.3995247693986631,
+                "snapshot_rms": 0.6171965064926822,
+                "peak_wavenumber": 0.7242322370988127
+              },
+              "ood": {
+                "Thw_Tc": 0.16183140396928009,
+                "snapshot_rms": 0.3282490232516841,
+                "peak_wavenumber": 0.003182023190446381
+              }
+            }
+          },
+          {
+            "seed": 1,
+            "val": {
+              "mae": 0.7141697639891742,
+              "rmse": 0.9209703719748525,
+              "nrmse": 0.9454356873678764,
+              "relative_l2": 0.9454356873678678,
+              "r2": 0.10260065353599379,
+              "reconstructed_variance": 0.1026005744934082,
+              "mean_profile_rel_l2_x": 0.8936374712390348,
+              "rms_profile_rel_l2_x": 0.6615684833900205,
+              "spectrum_rel_l2_x": 0.8971135728662686,
+              "spectrum_log_corr_x": 0.7170668381886428,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 1.0753936495866603,
+              "rms_profile_rel_l2_z": 0.6500665536633528,
+              "spectrum_rel_l2_z": 0.848120477598449,
+              "spectrum_log_corr_z": 0.6163254062970994,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.7884305647659272
+            },
+            "ood": {
+              "mae": 0.8825843791810639,
+              "rmse": 1.1285772810764485,
+              "nrmse": 0.611200660251842,
+              "relative_l2": 0.6112006602518422,
+              "r2": 0.45280825837770566,
+              "reconstructed_variance": 0.4528082609176636,
+              "mean_profile_rel_l2_x": 0.30149914360873337,
+              "rms_profile_rel_l2_x": 0.41958175208581067,
+              "spectrum_rel_l2_x": 0.5513463301046568,
+              "spectrum_log_corr_x": 0.7463648072800932,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.276458478588784,
+              "rms_profile_rel_l2_z": 0.38933029730494373,
+              "spectrum_rel_l2_z": 0.5036426414938637,
+              "spectrum_log_corr_z": 0.596233906508819,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.2685792136851406
+            },
+            "ood_degradation_ratio": 0.6464751314322079,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.655153669455904,
+                "Thw_Tc": 0.5310798481490265,
+                "snapshot_rms": 0.6343010158080904,
+                "peak_wavenumber": 0.3536976111030269
+              },
+              "ood": {
+                "Thw_Tc": 0.15516016801306717,
+                "snapshot_rms": 0.11228988487200305,
+                "peak_wavenumber": 0.2931900071888077
+              }
+            }
+          },
+          {
+            "seed": 2,
+            "val": {
+              "mae": 0.7117515842610574,
+              "rmse": 0.9200117415219646,
+              "nrmse": 0.9444515911702818,
+              "relative_l2": 0.9444515911702742,
+              "r2": 0.10446787237789867,
+              "reconstructed_variance": 0.10446786880493164,
+              "mean_profile_rel_l2_x": 0.7940981158140559,
+              "rms_profile_rel_l2_x": 0.6023467982893108,
+              "spectrum_rel_l2_x": 0.8444024710455402,
+              "spectrum_log_corr_x": 0.731527906912954,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 1.0262307388544554,
+              "rms_profile_rel_l2_z": 0.5924728126050754,
+              "spectrum_rel_l2_z": 0.8161227024105984,
+              "spectrum_log_corr_z": 0.6503383365749619,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.8203906542486336
+            },
+            "ood": {
+              "mae": 0.8539585844867522,
+              "rmse": 1.0991998890924561,
+              "nrmse": 0.5952908225489537,
+              "relative_l2": 0.5952908225489539,
+              "r2": 0.4809248008970014,
+              "reconstructed_variance": 0.4809247851371765,
+              "mean_profile_rel_l2_x": 0.2814882058323033,
+              "rms_profile_rel_l2_x": 0.34513932488944454,
+              "spectrum_rel_l2_x": 0.44681674622071615,
+              "spectrum_log_corr_x": 0.7328744477518524,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.22932537876299913,
+              "rms_profile_rel_l2_z": 0.31441672383716235,
+              "spectrum_rel_l2_z": 0.402973448260177,
+              "spectrum_log_corr_z": 0.6185258634998156,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.2710392738517554
+            },
+            "ood_degradation_ratio": 0.6303031601771419,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6719959311966772,
+                "Thw_Tc": 0.5924757416646971,
+                "snapshot_rms": 0.5758496137839423,
+                "peak_wavenumber": 0.4870599034623037
+              },
+              "ood": {
+                "Thw_Tc": 0.19432497450894667,
+                "snapshot_rms": 0.18481886225783734,
+                "peak_wavenumber": 0.3383080737569436
+              }
+            }
+          },
+          {
+            "seed": 3,
+            "val": {
+              "mae": 0.7209154754704069,
+              "rmse": 0.9429815536072258,
+              "nrmse": 0.9680315897656467,
+              "relative_l2": 0.9680315897656389,
+              "r2": 0.059192381762675494,
+              "reconstructed_variance": 0.05919235944747925,
+              "mean_profile_rel_l2_x": 1.9105373499043636,
+              "rms_profile_rel_l2_x": 0.7390708732241952,
+              "spectrum_rel_l2_x": 0.920578008162135,
+              "spectrum_log_corr_x": 0.6491198509210465,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 1.882183829654414,
+              "rms_profile_rel_l2_z": 0.7268043247222306,
+              "spectrum_rel_l2_z": 0.896468167519497,
+              "spectrum_log_corr_z": 0.6295168263099502,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.8775806208552162
+            },
+            "ood": {
+              "mae": 1.2801178269909521,
+              "rmse": 1.6130458007919473,
+              "nrmse": 0.8735730153278852,
+              "relative_l2": 0.8735730153278725,
+              "r2": -0.11781600926027602,
+              "reconstructed_variance": -0.11781597137451172,
+              "mean_profile_rel_l2_x": 0.8911244441160806,
+              "rms_profile_rel_l2_x": 0.6443541746719531,
+              "spectrum_rel_l2_x": 0.8958180287742405,
+              "spectrum_log_corr_x": 0.6238814299727332,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.8910757232563281,
+              "rms_profile_rel_l2_z": 0.6078710492280861,
+              "spectrum_rel_l2_z": 0.8788703239327686,
+              "spectrum_log_corr_z": 0.6615691616725455,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.30672835413867394
+            },
+            "ood_degradation_ratio": 0.9024220124256122,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.4537456610818763,
+                "Thw_Tc": 0.5636929303977182,
+                "snapshot_rms": 0.5878877232266552,
+                "peak_wavenumber": 0.30048889478991764
+              },
+              "ood": {
+                "Thw_Tc": 0.17957611963075634,
+                "snapshot_rms": 0.34053439234321276,
+                "peak_wavenumber": 0.10424079286373984
+              }
+            }
+          },
+          {
+            "seed": 4,
+            "val": {
+              "mae": 0.7223956451305774,
+              "rmse": 0.9481162555072339,
+              "nrmse": 0.9733026935578932,
+              "relative_l2": 0.9733026935578831,
+              "r2": 0.04891875798445333,
+              "reconstructed_variance": 0.04891866445541382,
+              "mean_profile_rel_l2_x": 1.5657328858101651,
+              "rms_profile_rel_l2_x": 0.692708154262382,
+              "spectrum_rel_l2_x": 0.8809155838351338,
+              "spectrum_log_corr_x": 0.715164218800867,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 1.4014411454132438,
+              "rms_profile_rel_l2_z": 0.6762456369894746,
+              "spectrum_rel_l2_z": 0.8560454675991954,
+              "spectrum_log_corr_z": 0.6770434942098638,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.7399166910188922
+            },
+            "ood": {
+              "mae": 1.2817801865286937,
+              "rmse": 1.6316885278750142,
+              "nrmse": 0.8836693085043679,
+              "relative_l2": 0.883669308504355,
+              "r2": -0.14380356972667796,
+              "reconstructed_variance": -0.14380359649658203,
+              "mean_profile_rel_l2_x": 0.7948107601899713,
+              "rms_profile_rel_l2_x": 0.7347605915298361,
+              "spectrum_rel_l2_x": 0.9457536447993066,
+              "spectrum_log_corr_x": 0.7205742729718436,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.774364880883388,
+              "rms_profile_rel_l2_z": 0.6976169974101228,
+              "spectrum_rel_l2_z": 0.9195170386808841,
+              "spectrum_log_corr_z": 0.7037967898610091,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.20552099125649045
+            },
+            "ood_degradation_ratio": 0.9079080067826838,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6852387725900149,
+                "Thw_Tc": 0.5268794336054922,
+                "snapshot_rms": 0.3571642448040971,
+                "peak_wavenumber": 0.10920005878074043
+              },
+              "ood": {
+                "Thw_Tc": 0.18661128133558302,
+                "snapshot_rms": 0.3015672862938555,
+                "peak_wavenumber": 0.21522174691636659
+              }
+            }
+          }
+        ],
+        "val_mean": {
+          "mae": 0.7155654248581627,
+          "rmse": 0.9305156723312245,
+          "nrmse": 0.9552345559071627,
+          "relative_l2": 0.9552345559071546,
+          "r2": 0.08373995848167357,
+          "reconstructed_variance": 0.08373991250991822,
+          "mean_profile_rel_l2_x": 1.2930764551163498,
+          "rms_profile_rel_l2_x": 0.680183089205791,
+          "spectrum_rel_l2_x": 0.8879844550500972,
+          "spectrum_log_corr_x": 0.7055410123139383,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 1.313802842117046,
+          "rms_profile_rel_l2_z": 0.6677309312679117,
+          "spectrum_rel_l2_z": 0.8609022884227706,
+          "spectrum_log_corr_z": 0.6443375703610961,
+          "spectrum_peak_rel_shift_z": 5.000000000000001,
+          "energy_fraction_l1": 0.8229572056729078
+        },
+        "val_std": {
+          "mae": 0.005298298333832124,
+          "rmse": 0.012385225134617574,
+          "nrmse": 0.012714235109696655,
+          "relative_l2": 0.012714235109695979,
+          "r2": 0.024461098977284015,
+          "reconstructed_variance": 0.024461112211721477,
+          "mean_profile_rel_l2_x": 0.4157401257244016,
+          "rms_profile_rel_l2_x": 0.04616609995455216,
+          "spectrum_rel_l2_x": 0.025198219148723878,
+          "spectrum_log_corr_x": 0.028880209443384867,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.31214866874956454,
+          "rms_profile_rel_l2_z": 0.045121640849042854,
+          "spectrum_rel_l2_z": 0.028907281304633003,
+          "spectrum_log_corr_z": 0.02062546055315886,
+          "spectrum_peak_rel_shift_z": 9.000000000000002,
+          "energy_fraction_l1": 0.05544315829897301
+        },
+        "ood_mean": {
+          "mae": 1.1181678548829563,
+          "rmse": 1.4209269032574003,
+          "nrmse": 0.7695276841052227,
+          "relative_l2": 0.7695276841052149,
+          "r2": 0.10554013608905333,
+          "reconstructed_variance": 0.10554014444351197,
+          "mean_profile_rel_l2_x": 0.6464909209370766,
+          "rms_profile_rel_l2_x": 0.5351225403849801,
+          "spectrum_rel_l2_x": 0.7336402590021847,
+          "spectrum_log_corr_x": 0.6990980225309572,
+          "spectrum_peak_rel_shift_x": 14.000000000000004,
+          "mean_profile_rel_l2_z": 0.6268854290953354,
+          "rms_profile_rel_l2_z": 0.5049261416392911,
+          "spectrum_rel_l2_z": 0.7045675638271934,
+          "spectrum_log_corr_z": 0.6513158828078823,
+          "spectrum_peak_rel_shift_z": 18.500000000000004,
+          "energy_fraction_l1": 0.2743659999355944
+        },
+        "ood_std": {
+          "mae": 0.20428369888903344,
+          "rmse": 0.25096234979961207,
+          "nrmse": 0.13591302648727188,
+          "relative_l2": 0.13591302648726547,
+          "r2": 0.2953118747381795,
+          "reconstructed_variance": 0.2953118626912073,
+          "mean_profile_rel_l2_x": 0.29482392099334526,
+          "rms_profile_rel_l2_x": 0.14229644472744407,
+          "spectrum_rel_l2_x": 0.19788104809563548,
+          "spectrum_log_corr_x": 0.04525308290774251,
+          "spectrum_peak_rel_shift_x": 11.022703842524303,
+          "mean_profile_rel_l2_z": 0.31161162925243546,
+          "rms_profile_rel_l2_z": 0.13963757932553558,
+          "spectrum_rel_l2_z": 0.2101161262388482,
+          "spectrum_log_corr_z": 0.038988445180096414,
+          "spectrum_peak_rel_shift_z": 9.000000000000002,
+          "energy_fraction_l1": 0.03977567502615406
+        },
+        "ood_degradation_ratio_mean": 0.8045010790393936,
+        "ood_degradation_ratio_std": 0.13618544795063348,
+        "latent_stability": {
+          "mean_rel_l2": 0.7259456278931888,
+          "max_rel_l2": 0.866544249188613,
+          "n": 5
+        }
+      }
+    },
+    "4": {
+      "compression_ratio": 2304.0,
+      "pca": {
+        "val": {
+          "mae": 0.6597832111369911,
+          "rmse": 0.8518757290931637,
+          "nrmse": 0.8745055649946551,
+          "relative_l2": 0.8745055649946406,
+          "r2": 0.2322020986253568,
+          "reconstructed_variance": 0.23220204682664014,
+          "mean_profile_rel_l2_x": 0.8100095169159575,
+          "rms_profile_rel_l2_x": 0.519041729090747,
+          "spectrum_rel_l2_x": 0.7180258499030386,
+          "spectrum_log_corr_x": 0.996286878470768,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.7586251167104202,
+          "rms_profile_rel_l2_z": 0.50723771134938,
+          "spectrum_rel_l2_z": 0.6866150441047026,
+          "spectrum_log_corr_z": 0.9565388817749517,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.6045016696065347
+        },
+        "ood": {
+          "mae": 0.6493664431330319,
+          "rmse": 0.836287394526901,
+          "nrmse": 0.45290598726886,
+          "relative_l2": 0.45290598726885073,
+          "r2": 0.699539055073898,
+          "reconstructed_variance": 0.6995390555869374,
+          "mean_profile_rel_l2_x": 0.15184679132553305,
+          "rms_profile_rel_l2_x": 0.200370587454748,
+          "spectrum_rel_l2_x": 0.12421245488727752,
+          "spectrum_log_corr_x": 0.9971772794476869,
+          "spectrum_peak_rel_shift_x": 0.5,
+          "mean_profile_rel_l2_z": 0.07649944084682664,
+          "rms_profile_rel_l2_z": 0.14918418512992826,
+          "spectrum_rel_l2_z": 0.09368888277378129,
+          "spectrum_log_corr_z": 0.9772656010835015,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.2899764421880054
+        },
+        "ood_degradation_ratio": 0.5178994913218492,
+        "latent_physical_correlation": {
+          "val": {
+            "Pb_Pc": 0.6091004667358519,
+            "Thw_Tc": 0.5901730685319974,
+            "snapshot_rms": 0.6732782895741278,
+            "peak_wavenumber": 0.428763092359126
+          },
+          "ood": {
+            "Thw_Tc": 0.3223378054841241,
+            "snapshot_rms": 0.1846721562334412,
+            "peak_wavenumber": 0.4541834935194805
+          }
+        }
+      },
+      "ae": {
+        "per_seed": [
+          {
+            "seed": 0,
+            "val": {
+              "mae": 0.6731865799940701,
+              "rmse": 0.8734161961432707,
+              "nrmse": 0.8966182484114666,
+              "relative_l2": 0.8966182484114608,
+              "r2": 0.19288222291839696,
+              "reconstructed_variance": 0.19288218021392822,
+              "mean_profile_rel_l2_x": 1.1374810476776587,
+              "rms_profile_rel_l2_x": 0.53395572646803,
+              "spectrum_rel_l2_x": 0.7292621642254442,
+              "spectrum_log_corr_x": 0.6953471926054408,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.8660678981522129,
+              "rms_profile_rel_l2_z": 0.5253248359659206,
+              "spectrum_rel_l2_z": 0.7112544851679236,
+              "spectrum_log_corr_z": 0.6000154027384077,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.6057004384937781
+            },
+            "ood": {
+              "mae": 0.8956247232521687,
+              "rmse": 1.1691866245197002,
+              "nrmse": 0.6331933566680195,
+              "relative_l2": 0.6331933566680191,
+              "r2": 0.4127208206310289,
+              "reconstructed_variance": 0.41272079944610596,
+              "mean_profile_rel_l2_x": 0.4162600494220272,
+              "rms_profile_rel_l2_x": 0.3997406963725034,
+              "spectrum_rel_l2_x": 0.5860581180383297,
+              "spectrum_log_corr_x": 0.6540566191564554,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.36727173680213404,
+              "rms_profile_rel_l2_z": 0.3400541793994066,
+              "spectrum_rel_l2_z": 0.522765506701187,
+              "spectrum_log_corr_z": 0.5979966945236543,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.20402710449765746
+            },
+            "ood_degradation_ratio": 0.7062017283162018,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.5681060695075726,
+                "Thw_Tc": 0.5776859843044365,
+                "snapshot_rms": 0.3542150467033585,
+                "peak_wavenumber": 0.5688102929560801
+              },
+              "ood": {
+                "Thw_Tc": 0.6194584860390139,
+                "snapshot_rms": 0.6678284683083163,
+                "peak_wavenumber": 0.7209625389003222
+              }
+            }
+          },
+          {
+            "seed": 1,
+            "val": {
+              "mae": 0.6741801446152516,
+              "rmse": 0.8764806577407599,
+              "nrmse": 0.8997641165577155,
+              "relative_l2": 0.8997641165577088,
+              "r2": 0.1872085922086696,
+              "reconstructed_variance": 0.18720847368240356,
+              "mean_profile_rel_l2_x": 0.6998448616934958,
+              "rms_profile_rel_l2_x": 0.5272331504373743,
+              "spectrum_rel_l2_x": 0.7371176634760745,
+              "spectrum_log_corr_x": 0.6768765527496874,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.6058044080270801,
+              "rms_profile_rel_l2_z": 0.5119627870898382,
+              "spectrum_rel_l2_z": 0.6876268857319295,
+              "spectrum_log_corr_z": 0.6571264008227575,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.5844293468318816
+            },
+            "ood": {
+              "mae": 0.8467098599502323,
+              "rmse": 1.0954972410330546,
+              "nrmse": 0.5932855890779876,
+              "relative_l2": 0.5932855890779879,
+              "r2": 0.4844159143052733,
+              "reconstructed_variance": 0.4844159483909607,
+              "mean_profile_rel_l2_x": 0.30824411550973874,
+              "rms_profile_rel_l2_x": 0.3877284788379004,
+              "spectrum_rel_l2_x": 0.46618421698005313,
+              "spectrum_log_corr_x": 0.7048652196363124,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.24268513023912855,
+              "rms_profile_rel_l2_z": 0.30193192584718015,
+              "spectrum_rel_l2_z": 0.3945742460426535,
+              "spectrum_log_corr_z": 0.5622099344936305,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.24913325124589847
+            },
+            "ood_degradation_ratio": 0.659379028525568,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.7913637849455027,
+                "Thw_Tc": 0.6349082848452112,
+                "snapshot_rms": 0.49735638828176626,
+                "peak_wavenumber": 0.5793984390998854
+              },
+              "ood": {
+                "Thw_Tc": 0.26153480419665615,
+                "snapshot_rms": 0.2765034889444837,
+                "peak_wavenumber": 0.3782366581969961
+              }
+            }
+          },
+          {
+            "seed": 2,
+            "val": {
+              "mae": 0.6789210602145324,
+              "rmse": 0.8800996327553097,
+              "nrmse": 0.9034792286118755,
+              "relative_l2": 0.9034792286118691,
+              "r2": 0.18048272914147245,
+              "reconstructed_variance": 0.1804826855659485,
+              "mean_profile_rel_l2_x": 1.0986514973224537,
+              "rms_profile_rel_l2_x": 0.3995838203680061,
+              "spectrum_rel_l2_x": 0.5864873182155433,
+              "spectrum_log_corr_x": 0.8357614059228234,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.7150051567141407,
+              "rms_profile_rel_l2_z": 0.3865503785103527,
+              "spectrum_rel_l2_z": 0.5303471304155867,
+              "spectrum_log_corr_z": 0.7184497963717354,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.3516784016830753
+            },
+            "ood": {
+              "mae": 0.989587383379739,
+              "rmse": 1.2900599907502923,
+              "nrmse": 0.6986544309655058,
+              "relative_l2": 0.6986544309655033,
+              "r2": 0.28501531327747476,
+              "reconstructed_variance": 0.2850152850151062,
+              "mean_profile_rel_l2_x": 0.3165808786553227,
+              "rms_profile_rel_l2_x": 0.2324644084790923,
+              "spectrum_rel_l2_x": 0.4907306451927894,
+              "spectrum_log_corr_x": 0.8238620684451544,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.3568653973513498,
+              "rms_profile_rel_l2_z": 0.2540810786269364,
+              "spectrum_rel_l2_z": 0.5186641846513107,
+              "spectrum_log_corr_z": 0.694927914930733,
+              "spectrum_peak_rel_shift_z": 0.0,
+              "energy_fraction_l1": 0.2029229104495347
+            },
+            "ood_degradation_ratio": 0.7732932964479279,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6235652820826647,
+                "Thw_Tc": 0.6358558251523376,
+                "snapshot_rms": 0.575224147452598,
+                "peak_wavenumber": 0.6161940207113159
+              },
+              "ood": {
+                "Thw_Tc": 0.19242693566103777,
+                "snapshot_rms": 0.3003674579357266,
+                "peak_wavenumber": 0.31204021992003417
+              }
+            }
+          },
+          {
+            "seed": 3,
+            "val": {
+              "mae": 0.6688552170248775,
+              "rmse": 0.8607870569187779,
+              "nrmse": 0.8836536197036291,
+              "relative_l2": 0.8836536197036241,
+              "r2": 0.21605447148476387,
+              "reconstructed_variance": 0.21605437994003296,
+              "mean_profile_rel_l2_x": 0.8273473328101372,
+              "rms_profile_rel_l2_x": 0.48924888043559456,
+              "spectrum_rel_l2_x": 0.7221638455469793,
+              "spectrum_log_corr_x": 0.7396833934696615,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.7659919880250116,
+              "rms_profile_rel_l2_z": 0.4874334302152381,
+              "spectrum_rel_l2_z": 0.6669658055397472,
+              "spectrum_log_corr_z": 0.5570457075329787,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.5617116038453399
+            },
+            "ood": {
+              "mae": 0.8165000786244602,
+              "rmse": 1.0564806111042901,
+              "nrmse": 0.5721554543737721,
+              "relative_l2": 0.5721554543737731,
+              "r2": 0.5204874372870617,
+              "reconstructed_variance": 0.5204874575138092,
+              "mean_profile_rel_l2_x": 0.24543310407234992,
+              "rms_profile_rel_l2_x": 0.28727716528293995,
+              "spectrum_rel_l2_x": 0.33741054676370485,
+              "spectrum_log_corr_x": 0.6733822826471192,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.19544472576621771,
+              "rms_profile_rel_l2_z": 0.27622717328309065,
+              "spectrum_rel_l2_z": 0.29623098424709754,
+              "spectrum_log_corr_z": 0.5211663388515685,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.2506066116377177
+            },
+            "ood_degradation_ratio": 0.6474883841540456,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.5205457205582315,
+                "Thw_Tc": 0.6192769130006869,
+                "snapshot_rms": 0.5782726700883412,
+                "peak_wavenumber": 0.5678593199626613
+              },
+              "ood": {
+                "Thw_Tc": 0.303312192167734,
+                "snapshot_rms": 0.2994100096398455,
+                "peak_wavenumber": 0.4310328780090909
+              }
+            }
+          },
+          {
+            "seed": 4,
+            "val": {
+              "mae": 0.6725624608283675,
+              "rmse": 0.8691251278122866,
+              "nrmse": 0.8922131890735129,
+              "relative_l2": 0.8922131890735079,
+              "r2": 0.2007934335468844,
+              "reconstructed_variance": 0.20079344511032104,
+              "mean_profile_rel_l2_x": 1.1412427409811026,
+              "rms_profile_rel_l2_x": 0.5312050163276989,
+              "spectrum_rel_l2_x": 0.741851535345927,
+              "spectrum_log_corr_x": 0.6948925034544334,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.8214033139273313,
+              "rms_profile_rel_l2_z": 0.5113882329948852,
+              "spectrum_rel_l2_z": 0.7012682355979295,
+              "spectrum_log_corr_z": 0.6229551475576253,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.5796176352029009
+            },
+            "ood": {
+              "mae": 0.9426953855979423,
+              "rmse": 1.2012470376668307,
+              "nrmse": 0.6505562311579106,
+              "relative_l2": 0.6505562311579102,
+              "r2": 0.3800715226276542,
+              "reconstructed_variance": 0.38007158041000366,
+              "mean_profile_rel_l2_x": 0.2923579540703954,
+              "rms_profile_rel_l2_x": 0.5655462668044776,
+              "spectrum_rel_l2_x": 0.6721322084048513,
+              "spectrum_log_corr_x": 0.7411116552038827,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.2853227309530442,
+              "rms_profile_rel_l2_z": 0.5549312453451165,
+              "spectrum_rel_l2_z": 0.657203248136785,
+              "spectrum_log_corr_z": 0.5870315498363227,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.2134481495346342
+            },
+            "ood_degradation_ratio": 0.7291488616453438,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6222851764131275,
+                "Thw_Tc": 0.5942223570211937,
+                "snapshot_rms": 0.48709574070117073,
+                "peak_wavenumber": 0.8019996988233412
+              },
+              "ood": {
+                "Thw_Tc": 0.43557124944541575,
+                "snapshot_rms": 0.6623710545097788,
+                "peak_wavenumber": 0.3638795254175137
+              }
+            }
+          }
+        ],
+        "val_mean": {
+          "mae": 0.6735410925354197,
+          "rmse": 0.8719817342740811,
+          "nrmse": 0.8951456804716399,
+          "relative_l2": 0.8951456804716342,
+          "r2": 0.19548428986003746,
+          "reconstructed_variance": 0.19548423290252687,
+          "mean_profile_rel_l2_x": 0.9809134960969695,
+          "rms_profile_rel_l2_x": 0.49624531880734074,
+          "spectrum_rel_l2_x": 0.7033765053619936,
+          "spectrum_log_corr_x": 0.7285122096404094,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.7548545529691554,
+          "rms_profile_rel_l2_z": 0.484531932955247,
+          "spectrum_rel_l2_z": 0.6594925084906234,
+          "spectrum_log_corr_z": 0.631118491004701,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.5366274852113951
+        },
+        "val_std": {
+          "mae": 0.003237074860096863,
+          "rmse": 0.0066585174105296165,
+          "nrmse": 0.006835399027415098,
+          "relative_l2": 0.006835399027414509,
+          "r2": 0.012260702481833944,
+          "reconstructed_variance": 0.012260701242321441,
+          "mean_profile_rel_l2_x": 0.18257231206167698,
+          "rms_profile_rel_l2_x": 0.05098410818325403,
+          "spectrum_rel_l2_x": 0.058830106647741465,
+          "spectrum_log_corr_x": 0.057486745451222405,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.09024977371787762,
+          "rms_profile_rel_l2_z": 0.05049074617035887,
+          "spectrum_rel_l2_z": 0.06625773258204692,
+          "spectrum_log_corr_z": 0.05444995463248576,
+          "spectrum_peak_rel_shift_z": 0.0,
+          "energy_fraction_l1": 0.0935303377000573
+        },
+        "ood_mean": {
+          "mae": 0.8982234861609084,
+          "rmse": 1.1624943010148336,
+          "nrmse": 0.6295690124486392,
+          "relative_l2": 0.6295690124486387,
+          "r2": 0.41654220162569855,
+          "reconstructed_variance": 0.41654221415519715,
+          "mean_profile_rel_l2_x": 0.3157752203459668,
+          "rms_profile_rel_l2_x": 0.3745514031553827,
+          "spectrum_rel_l2_x": 0.5105031470759457,
+          "spectrum_log_corr_x": 0.7194555690177848,
+          "spectrum_peak_rel_shift_x": 9.500000000000002,
+          "mean_profile_rel_l2_z": 0.28951794422237487,
+          "rms_profile_rel_l2_z": 0.34544512050034604,
+          "spectrum_rel_l2_z": 0.47788763395580675,
+          "spectrum_log_corr_z": 0.5926664865271818,
+          "spectrum_peak_rel_shift_z": 13.900000000000002,
+          "energy_fraction_l1": 0.22402760547308853
+        },
+        "ood_std": {
+          "mae": 0.062712413680145,
+          "rmse": 0.08191101938597407,
+          "nrmse": 0.04436033754184485,
+          "relative_l2": 0.0443603375418437,
+          "r2": 0.0825293749248796,
+          "reconstructed_variance": 0.08252938972410441,
+          "mean_profile_rel_l2_x": 0.05594809948779819,
+          "rms_profile_rel_l2_x": 0.11409879965101573,
+          "spectrum_rel_l2_x": 0.11326841994272456,
+          "spectrum_log_corr_x": 0.059970579197817495,
+          "spectrum_peak_rel_shift_x": 11.022703842524303,
+          "mean_profile_rel_l2_z": 0.06579059874200884,
+          "rms_profile_rel_l2_z": 0.10857753839701263,
+          "spectrum_rel_l2_z": 0.12310247684497273,
+          "spectrum_log_corr_z": 0.057545522931566465,
+          "spectrum_peak_rel_shift_z": 11.146299834474222,
+          "energy_fraction_l1": 0.021420037804020506
+        },
+        "ood_degradation_ratio_mean": 0.7031022598178174,
+        "ood_degradation_ratio_std": 0.04608565485251282,
+        "latent_stability": {
+          "mean_rel_l2": 1.0121933919412598,
+          "max_rel_l2": 2.1582909437398707,
+          "n": 5
+        }
+      }
+    },
+    "8": {
+      "compression_ratio": 1152.0,
+      "pca": {
+        "val": {
+          "mae": 0.624481108051055,
+          "rmse": 0.8022145200136025,
+          "nrmse": 0.8235251200526795,
+          "relative_l2": 0.8235251200526662,
+          "r2": 0.3191123330532799,
+          "reconstructed_variance": 0.3191122871178753,
+          "mean_profile_rel_l2_x": 0.7669646385814267,
+          "rms_profile_rel_l2_x": 0.44373004237299307,
+          "spectrum_rel_l2_x": 0.6354717716700414,
+          "spectrum_log_corr_x": 0.9967350838114792,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.8386703385575114,
+          "rms_profile_rel_l2_z": 0.43327528390886794,
+          "spectrum_rel_l2_z": 0.5753774750086855,
+          "spectrum_log_corr_z": 0.9592976958892562,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.44215181163682765
+        },
+        "ood": {
+          "mae": 0.6262686813070087,
+          "rmse": 0.8033549589192884,
+          "nrmse": 0.4350708538450545,
+          "relative_l2": 0.4350708538450457,
+          "r2": 0.7227370210302707,
+          "reconstructed_variance": 0.7227370215036995,
+          "mean_profile_rel_l2_x": 0.1448610559736747,
+          "rms_profile_rel_l2_x": 0.1900920781358705,
+          "spectrum_rel_l2_x": 0.11181898758643036,
+          "spectrum_log_corr_x": 0.9973588919417333,
+          "spectrum_peak_rel_shift_x": 0.5,
+          "mean_profile_rel_l2_z": 0.10993215001238393,
+          "rms_profile_rel_l2_z": 0.13713463711924861,
+          "spectrum_rel_l2_z": 0.08566950496105998,
+          "spectrum_log_corr_z": 0.9751255925147698,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.24616553870908234
+        },
+        "ood_degradation_ratio": 0.528303075706084,
+        "latent_physical_correlation": {
+          "val": {
+            "Pb_Pc": 0.6091004667358519,
+            "Thw_Tc": 0.5901730685319974,
+            "snapshot_rms": 0.6732782895741278,
+            "peak_wavenumber": 0.428763092359126
+          },
+          "ood": {
+            "Thw_Tc": 0.3223378054841241,
+            "snapshot_rms": 0.2600702353296109,
+            "peak_wavenumber": 0.4541834935194805
+          }
+        }
+      },
+      "ae": {
+        "per_seed": [
+          {
+            "seed": 0,
+            "val": {
+              "mae": 0.6374429894652522,
+              "rmse": 0.8247225754527783,
+              "nrmse": 0.8466310955682876,
+              "relative_l2": 0.8466310955682832,
+              "r2": 0.28036844789974324,
+              "reconstructed_variance": 0.2803683876991272,
+              "mean_profile_rel_l2_x": 0.9026613657112227,
+              "rms_profile_rel_l2_x": 0.4396594845327117,
+              "spectrum_rel_l2_x": 0.6308811094190878,
+              "spectrum_log_corr_x": 0.7173337595858728,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.7783576712557636,
+              "rms_profile_rel_l2_z": 0.4332868935689025,
+              "spectrum_rel_l2_z": 0.5842742657415289,
+              "spectrum_log_corr_z": 0.6303998333602564,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.42396781505244446
+            },
+            "ood": {
+              "mae": 0.7423817711995341,
+              "rmse": 0.9585653938241179,
+              "nrmse": 0.5191277650397619,
+              "relative_l2": 0.5191277650397634,
+              "r2": 0.605251562674879,
+              "reconstructed_variance": 0.6052515208721161,
+              "mean_profile_rel_l2_x": 0.219125275571211,
+              "rms_profile_rel_l2_x": 0.2766319419227313,
+              "spectrum_rel_l2_x": 0.2659996430740953,
+              "spectrum_log_corr_x": 0.6499820536027796,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.17482001387374652,
+              "rms_profile_rel_l2_z": 0.24411582392131462,
+              "spectrum_rel_l2_z": 0.22701271560499048,
+              "spectrum_log_corr_z": 0.5988989121921542,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.22012414792897533
+            },
+            "ood_degradation_ratio": 0.6131687907013502,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6300757632834706,
+                "Thw_Tc": 0.5979832760470793,
+                "snapshot_rms": 0.6836227605213917,
+                "peak_wavenumber": 0.6048232662778411
+              },
+              "ood": {
+                "Thw_Tc": 0.5209134904554046,
+                "snapshot_rms": 0.4125911926769344,
+                "peak_wavenumber": 0.630074790875355
+              }
+            }
+          },
+          {
+            "seed": 1,
+            "val": {
+              "mae": 0.6334062914762186,
+              "rmse": 0.8191145356481687,
+              "nrmse": 0.8408740797849371,
+              "relative_l2": 0.8408740797849312,
+              "r2": 0.2901220334878295,
+              "reconstructed_variance": 0.29012203216552734,
+              "mean_profile_rel_l2_x": 0.8777628217731951,
+              "rms_profile_rel_l2_x": 0.4280918575451686,
+              "spectrum_rel_l2_x": 0.6148679537544138,
+              "spectrum_log_corr_x": 0.730853845263827,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.5699181332569795,
+              "rms_profile_rel_l2_z": 0.4203598969768314,
+              "spectrum_rel_l2_z": 0.5694856296318006,
+              "spectrum_log_corr_z": 0.6555098260712795,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.43191233411720586
+            },
+            "ood": {
+              "mae": 0.8134960432711622,
+              "rmse": 1.0463507772059706,
+              "nrmse": 0.5666694665989792,
+              "relative_l2": 0.5666694665989791,
+              "r2": 0.5296387564590193,
+              "reconstructed_variance": 0.5296387672424316,
+              "mean_profile_rel_l2_x": 0.30356083070323386,
+              "rms_profile_rel_l2_x": 0.3001444415940134,
+              "spectrum_rel_l2_x": 0.38751382837316595,
+              "spectrum_log_corr_x": 0.6910394220495457,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.2254012479530703,
+              "rms_profile_rel_l2_z": 0.2553054672011337,
+              "spectrum_rel_l2_z": 0.3257203819722129,
+              "spectrum_log_corr_z": 0.6648125041717798,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.23352151026640122
+            },
+            "ood_degradation_ratio": 0.6739052614678229,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.44087182889425114,
+                "Thw_Tc": 0.6164021826622625,
+                "snapshot_rms": 0.6460689803287331,
+                "peak_wavenumber": 0.4764125806490664
+              },
+              "ood": {
+                "Thw_Tc": 0.3601197607136261,
+                "snapshot_rms": 0.39438352213339073,
+                "peak_wavenumber": 0.46271543038195173
+              }
+            }
+          },
+          {
+            "seed": 2,
+            "val": {
+              "mae": 0.6343021858229174,
+              "rmse": 0.8288750376077374,
+              "nrmse": 0.8508938666966622,
+              "relative_l2": 0.8508938666966571,
+              "r2": 0.2731035427134879,
+              "reconstructed_variance": 0.2731034755706787,
+              "mean_profile_rel_l2_x": 1.2981813881415734,
+              "rms_profile_rel_l2_x": 0.49448987318573656,
+              "spectrum_rel_l2_x": 0.7019002159691088,
+              "spectrum_log_corr_x": 0.7476035567115296,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 1.0191182196535433,
+              "rms_profile_rel_l2_z": 0.4921667065412121,
+              "spectrum_rel_l2_z": 0.6487452945311011,
+              "spectrum_log_corr_z": 0.6267495671446175,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.4438652893847512
+            },
+            "ood": {
+              "mae": 0.8104542252941301,
+              "rmse": 1.0471138739483397,
+              "nrmse": 0.5670827349152855,
+              "relative_l2": 0.5670827349152857,
+              "r2": 0.5289524435636452,
+              "reconstructed_variance": 0.5289524495601654,
+              "mean_profile_rel_l2_x": 0.29428504816415924,
+              "rms_profile_rel_l2_x": 0.39297299163998417,
+              "spectrum_rel_l2_x": 0.4795648122161406,
+              "spectrum_log_corr_x": 0.6900155993068217,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.25679564381475484,
+              "rms_profile_rel_l2_z": 0.3501129939339005,
+              "spectrum_rel_l2_z": 0.4371343814224728,
+              "spectrum_log_corr_z": 0.4829079612555087,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.2137129132844346
+            },
+            "ood_degradation_ratio": 0.6664553090702323,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.7273313345722464,
+                "Thw_Tc": 0.4162748221160085,
+                "snapshot_rms": 0.6166020235902528,
+                "peak_wavenumber": 0.45250980778319105
+              },
+              "ood": {
+                "Thw_Tc": 0.4293326079419308,
+                "snapshot_rms": 0.25973419667201425,
+                "peak_wavenumber": 0.5037033382663276
+              }
+            }
+          },
+          {
+            "seed": 3,
+            "val": {
+              "mae": 0.6248592677882662,
+              "rmse": 0.8099340871981446,
+              "nrmse": 0.8314497553388832,
+              "relative_l2": 0.8314497553388783,
+              "r2": 0.3059451626915509,
+              "reconstructed_variance": 0.30594509840011597,
+              "mean_profile_rel_l2_x": 1.1646687597645478,
+              "rms_profile_rel_l2_x": 0.4473969504136339,
+              "spectrum_rel_l2_x": 0.6323968257158928,
+              "spectrum_log_corr_x": 0.6968840329205402,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.7959742035868412,
+              "rms_profile_rel_l2_z": 0.4381071988888198,
+              "spectrum_rel_l2_z": 0.575516717705851,
+              "spectrum_log_corr_z": 0.6480010861596837,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.40262299590908013
+            },
+            "ood": {
+              "mae": 0.7725409433640753,
+              "rmse": 0.9972159362023764,
+              "nrmse": 0.5400596386622322,
+              "relative_l2": 0.5400596386622332,
+              "r2": 0.5727762892614867,
+              "reconstructed_variance": 0.5727762877941132,
+              "mean_profile_rel_l2_x": 0.23315146525893735,
+              "rms_profile_rel_l2_x": 0.2884436801503869,
+              "spectrum_rel_l2_x": 0.30743241108174335,
+              "spectrum_log_corr_x": 0.710494572317031,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.20458864188368153,
+              "rms_profile_rel_l2_z": 0.25537432522761133,
+              "spectrum_rel_l2_z": 0.2715208197395369,
+              "spectrum_log_corr_z": 0.5722398959262196,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.21069284390065543
+            },
+            "ood_degradation_ratio": 0.6495397168553116,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6818958870598664,
+                "Thw_Tc": 0.5769634912399229,
+                "snapshot_rms": 0.49686436325901917,
+                "peak_wavenumber": 0.5559335919808427
+              },
+              "ood": {
+                "Thw_Tc": 0.4387167067455881,
+                "snapshot_rms": 0.567708932100149,
+                "peak_wavenumber": 0.44483512746568177
+              }
+            }
+          },
+          {
+            "seed": 4,
+            "val": {
+              "mae": 0.6351352831049196,
+              "rmse": 0.8234558496798183,
+              "nrmse": 0.845330719586271,
+              "relative_l2": 0.845330719586267,
+              "r2": 0.28257737438614206,
+              "reconstructed_variance": 0.2825773358345032,
+              "mean_profile_rel_l2_x": 1.0240680430943598,
+              "rms_profile_rel_l2_x": 0.44771634401028876,
+              "spectrum_rel_l2_x": 0.6265249401375066,
+              "spectrum_log_corr_x": 0.6766912100579235,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.6370081477634666,
+              "rms_profile_rel_l2_z": 0.4350989513806483,
+              "spectrum_rel_l2_z": 0.5885755168437896,
+              "spectrum_log_corr_z": 0.6501591979079411,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.4210871340721862
+            },
+            "ood": {
+              "mae": 0.7861496853594031,
+              "rmse": 1.0104318943015287,
+              "nrmse": 0.5472169706868127,
+              "relative_l2": 0.5472169706868137,
+              "r2": 0.5613773847835706,
+              "reconstructed_variance": 0.5613773763179779,
+              "mean_profile_rel_l2_x": 0.2401093731458708,
+              "rms_profile_rel_l2_x": 0.3023292624304166,
+              "spectrum_rel_l2_x": 0.3243906686089216,
+              "spectrum_log_corr_x": 0.7258949362883331,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.17675345015849195,
+              "rms_profile_rel_l2_z": 0.23898024565734993,
+              "spectrum_rel_l2_z": 0.27615697996366045,
+              "spectrum_log_corr_z": 0.6703862930495386,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.22144680024666252
+            },
+            "ood_degradation_ratio": 0.6473406892803327,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.7125621237444266,
+                "Thw_Tc": 0.5373916729520593,
+                "snapshot_rms": 0.5114897242067703,
+                "peak_wavenumber": 0.39989701823692314
+              },
+              "ood": {
+                "Thw_Tc": 0.4002378507842276,
+                "snapshot_rms": 0.41575405713276686,
+                "peak_wavenumber": 0.4609772081734291
+              }
+            }
+          }
+        ],
+        "val_mean": {
+          "mae": 0.6330292035315148,
+          "rmse": 0.8212204171173294,
+          "nrmse": 0.8430359033950081,
+          "relative_l2": 0.8430359033950033,
+          "r2": 0.2864233122357507,
+          "reconstructed_variance": 0.2864232659339905,
+          "mean_profile_rel_l2_x": 1.0534684756969797,
+          "rms_profile_rel_l2_x": 0.45147090193750794,
+          "spectrum_rel_l2_x": 0.641314208999202,
+          "spectrum_log_corr_x": 0.7138732809079386,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.760075275103319,
+          "rms_profile_rel_l2_z": 0.44380392947128283,
+          "spectrum_rel_l2_z": 0.5933194848908142,
+          "spectrum_log_corr_z": 0.6421639021287555,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.4246911137071335
+        },
+        "val_std": {
+          "mae": 0.004299479194494344,
+          "rmse": 0.006444710488563521,
+          "nrmse": 0.006615912385516345,
+          "relative_l2": 0.0066159123855164675,
+          "r2": 0.011168277076755525,
+          "reconstructed_variance": 0.011168279711421676,
+          "mean_profile_rel_l2_x": 0.15920399453159795,
+          "rms_profile_rel_l2_x": 0.022660163156133444,
+          "spectrum_rel_l2_x": 0.030910064451448865,
+          "spectrum_log_corr_x": 0.02493666747656582,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.15493965446162766,
+          "rms_profile_rel_l2_z": 0.024929573973801168,
+          "spectrum_rel_l2_z": 0.02850029042841746,
+          "spectrum_log_corr_z": 0.011420211862136513,
+          "spectrum_peak_rel_shift_z": 0.0,
+          "energy_fraction_l1": 0.013566935471422742
+        },
+        "ood_mean": {
+          "mae": 0.785004533697661,
+          "rmse": 1.0119355750964667,
+          "nrmse": 0.5480313151806143,
+          "relative_l2": 0.5480313151806151,
+          "r2": 0.5595992873485202,
+          "reconstructed_variance": 0.5595992803573608,
+          "mean_profile_rel_l2_x": 0.25804639856868244,
+          "rms_profile_rel_l2_x": 0.3121044635475064,
+          "spectrum_rel_l2_x": 0.35298027267081333,
+          "spectrum_log_corr_x": 0.6934853167129023,
+          "spectrum_peak_rel_shift_x": 23.000000000000004,
+          "mean_profile_rel_l2_z": 0.20767179953674902,
+          "rms_profile_rel_l2_z": 0.268777771188262,
+          "spectrum_rel_l2_z": 0.30750905574057474,
+          "spectrum_log_corr_z": 0.5978491133190402,
+          "spectrum_peak_rel_shift_z": 23.000000000000004,
+          "energy_fraction_l1": 0.21989964312542581
+        },
+        "ood_std": {
+          "mae": 0.02620231004868036,
+          "rmse": 0.03313374087089637,
+          "nrmse": 0.017944153791213432,
+          "relative_l2": 0.017944153791212857,
+          "r2": 0.02862791538876624,
+          "reconstructed_variance": 0.028627898275186813,
+          "mean_profile_rel_l2_x": 0.034179384599298986,
+          "rms_profile_rel_l2_x": 0.041464317139528535,
+          "spectrum_rel_l2_x": 0.07439598806675571,
+          "spectrum_log_corr_x": 0.025496091692812792,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.030893932829713526,
+          "rms_profile_rel_l2_z": 0.04116473725942474,
+          "spectrum_rel_l2_z": 0.07196130074208601,
+          "spectrum_log_corr_z": 0.06872283563502019,
+          "spectrum_peak_rel_shift_z": 0.0,
+          "energy_fraction_l1": 0.007887206603882512
+        },
+        "ood_degradation_ratio_mean": 0.65008195347501,
+        "ood_degradation_ratio_std": 0.021004889492970375,
+        "latent_stability": {
+          "mean_rel_l2": 0.4952309474842648,
+          "max_rel_l2": 0.6452477843675667,
+          "n": 5
+        }
+      }
+    },
+    "16": {
+      "compression_ratio": 576.0,
+      "pca": {
+        "val": {
+          "mae": 0.5500895026075164,
+          "rmse": 0.71020160844789,
+          "nrmse": 0.7290679117210913,
+          "relative_l2": 0.7290679117210792,
+          "r2": 0.46634850052473076,
+          "reconstructed_variance": 0.4663484645224667,
+          "mean_profile_rel_l2_x": 0.38941242175011154,
+          "rms_profile_rel_l2_x": 0.32739671496947315,
+          "spectrum_rel_l2_x": 0.46908075408786726,
+          "spectrum_log_corr_x": 0.997724335934185,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.392155003749466,
+          "rms_profile_rel_l2_z": 0.3149358824356841,
+          "spectrum_rel_l2_z": 0.4241698779643503,
+          "spectrum_log_corr_z": 0.9647752826359888,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.31797564301077413
+        },
+        "ood": {
+          "mae": 0.5672091056397764,
+          "rmse": 0.725025481849087,
+          "nrmse": 0.39265016285185556,
+          "relative_l2": 0.3926501628518475,
+          "r2": 0.7741690462658934,
+          "reconstructed_variance": 0.7741690466515015,
+          "mean_profile_rel_l2_x": 0.13064633572317796,
+          "rms_profile_rel_l2_x": 0.16102071874306506,
+          "spectrum_rel_l2_x": 0.09371174973444658,
+          "spectrum_log_corr_x": 0.997518504961742,
+          "spectrum_peak_rel_shift_x": 0.5,
+          "mean_profile_rel_l2_z": 0.041825924846864475,
+          "rms_profile_rel_l2_z": 0.10909969340531947,
+          "spectrum_rel_l2_z": 0.06486834595808881,
+          "spectrum_log_corr_z": 0.9783329945863886,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.17469816095968332
+        },
+        "ood_degradation_ratio": 0.5385645925973277,
+        "latent_physical_correlation": {
+          "val": {
+            "Pb_Pc": 0.6091004667358519,
+            "Thw_Tc": 0.5901730685319974,
+            "snapshot_rms": 0.6732782895741278,
+            "peak_wavenumber": 0.4798732649418723
+          },
+          "ood": {
+            "Thw_Tc": 0.6713952595273599,
+            "snapshot_rms": 0.6695228951202383,
+            "peak_wavenumber": 0.6801023986452374
+          }
+        }
+      },
+      "ae": {
+        "per_seed": [
+          {
+            "seed": 0,
+            "val": {
+              "mae": 0.5722089852876747,
+              "rmse": 0.7410854795125699,
+              "nrmse": 0.7607722040166243,
+              "relative_l2": 0.7607722040166199,
+              "r2": 0.4189265412719042,
+              "reconstructed_variance": 0.418926477432251,
+              "mean_profile_rel_l2_x": 0.7391369869328535,
+              "rms_profile_rel_l2_x": 0.33330729101453155,
+              "spectrum_rel_l2_x": 0.4748888379040613,
+              "spectrum_log_corr_x": 0.723525199336844,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.5155124068179784,
+              "rms_profile_rel_l2_z": 0.32826312339078817,
+              "spectrum_rel_l2_z": 0.4236103259193012,
+              "spectrum_log_corr_z": 0.6616924511884814,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.3484183069055203
+            },
+            "ood": {
+              "mae": 0.6782268360094307,
+              "rmse": 0.8832617389236275,
+              "nrmse": 0.47834576068233153,
+              "relative_l2": 0.4783457606823331,
+              "r2": 0.6648372357267402,
+              "reconstructed_variance": 0.6648372411727905,
+              "mean_profile_rel_l2_x": 0.17674964264914214,
+              "rms_profile_rel_l2_x": 0.16103216015833038,
+              "spectrum_rel_l2_x": 0.04387199139483507,
+              "spectrum_log_corr_x": 0.7215045077848824,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.13676687667056187,
+              "rms_profile_rel_l2_z": 0.14082043795956264,
+              "spectrum_rel_l2_z": 0.05158910211502151,
+              "spectrum_log_corr_z": 0.6603823274618374,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.20197193910308686
+            },
+            "ood_degradation_ratio": 0.6287634565995304,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.5773030131182094,
+                "Thw_Tc": 0.4704991534455915,
+                "snapshot_rms": 0.5468681732652653,
+                "peak_wavenumber": 0.638690114829852
+              },
+              "ood": {
+                "Thw_Tc": 0.36773804148487327,
+                "snapshot_rms": 0.3906653186139122,
+                "peak_wavenumber": 0.43434800901243537
+              }
+            }
+          },
+          {
+            "seed": 1,
+            "val": {
+              "mae": 0.5742048019047751,
+              "rmse": 0.7477989389350911,
+              "nrmse": 0.7676640045749173,
+              "relative_l2": 0.767664004574913,
+              "r2": 0.4083510199738499,
+              "reconstructed_variance": 0.40835094451904297,
+              "mean_profile_rel_l2_x": 1.1514801581032796,
+              "rms_profile_rel_l2_x": 0.275331675749647,
+              "spectrum_rel_l2_x": 0.40374215542938585,
+              "spectrum_log_corr_x": 0.7849227664449103,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.5629207254452526,
+              "rms_profile_rel_l2_z": 0.279904568627647,
+              "spectrum_rel_l2_z": 0.35851382843802326,
+              "spectrum_log_corr_z": 0.697052530280873,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.2590823959716535
+            },
+            "ood": {
+              "mae": 0.7642687999018782,
+              "rmse": 0.9896044655077783,
+              "nrmse": 0.5359375142919909,
+              "relative_l2": 0.535937514291991,
+              "r2": 0.5792731583813973,
+              "reconstructed_variance": 0.579273134469986,
+              "mean_profile_rel_l2_x": 0.24332921775869934,
+              "rms_profile_rel_l2_x": 0.3495357205349286,
+              "spectrum_rel_l2_x": 0.4953410045812906,
+              "spectrum_log_corr_x": 0.7789532637025444,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.23241030855355066,
+              "rms_profile_rel_l2_z": 0.3298664026919304,
+              "spectrum_rel_l2_z": 0.46444481989938863,
+              "spectrum_log_corr_z": 0.6999566681522487,
+              "spectrum_peak_rel_shift_z": 0.0,
+              "energy_fraction_l1": 0.11494075989961174
+            },
+            "ood_degradation_ratio": 0.6981407374815777,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.7327653374856783,
+                "Thw_Tc": 0.48455088238192534,
+                "snapshot_rms": 0.5570621692433785,
+                "peak_wavenumber": 0.5420843585126448
+              },
+              "ood": {
+                "Thw_Tc": 0.4475903049860894,
+                "snapshot_rms": 0.4678292989220566,
+                "peak_wavenumber": 0.4231000279654665
+              }
+            }
+          },
+          {
+            "seed": 2,
+            "val": {
+              "mae": 0.5762912520786301,
+              "rmse": 0.7526710877619183,
+              "nrmse": 0.7726655806464391,
+              "relative_l2": 0.7726655806464358,
+              "r2": 0.4006163408532084,
+              "reconstructed_variance": 0.40061628818511963,
+              "mean_profile_rel_l2_x": 0.7407043769606821,
+              "rms_profile_rel_l2_x": 0.38643742159040867,
+              "spectrum_rel_l2_x": 0.5609492113338738,
+              "spectrum_log_corr_x": 0.7641185985779637,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.5235996107715847,
+              "rms_profile_rel_l2_z": 0.3812713292863101,
+              "spectrum_rel_l2_z": 0.503463103160828,
+              "spectrum_log_corr_z": 0.600041961965694,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.3434194473426103
+            },
+            "ood": {
+              "mae": 0.6737939241279924,
+              "rmse": 0.8708149532937993,
+              "nrmse": 0.47160498738968826,
+              "relative_l2": 0.4716049873896905,
+              "r2": 0.6742168011070386,
+              "reconstructed_variance": 0.6742168068885803,
+              "mean_profile_rel_l2_x": 0.18463071311017895,
+              "rms_profile_rel_l2_x": 0.27460261730216695,
+              "spectrum_rel_l2_x": 0.3110230145857411,
+              "spectrum_log_corr_x": 0.7484633774734212,
+              "spectrum_peak_rel_shift_x": 23.000000000000004,
+              "mean_profile_rel_l2_z": 0.16600722570180385,
+              "rms_profile_rel_l2_z": 0.2523419300219314,
+              "spectrum_rel_l2_z": 0.27949765856210174,
+              "spectrum_log_corr_z": 0.6262528067922826,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.19009000755298328
+            },
+            "ood_degradation_ratio": 0.6103610659027043,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.699597590502309,
+                "Thw_Tc": 0.5917288970810319,
+                "snapshot_rms": 0.5750493412772208,
+                "peak_wavenumber": 0.5070271773312269
+              },
+              "ood": {
+                "Thw_Tc": 0.6281112559773077,
+                "snapshot_rms": 0.639904226921061,
+                "peak_wavenumber": 0.6401164810971725
+              }
+            }
+          },
+          {
+            "seed": 3,
+            "val": {
+              "mae": 0.5775572978397823,
+              "rmse": 0.7561409795981605,
+              "nrmse": 0.7762276491701586,
+              "relative_l2": 0.7762276491701557,
+              "r2": 0.39507716035768536,
+              "reconstructed_variance": 0.3950771689414978,
+              "mean_profile_rel_l2_x": 0.8082190219930111,
+              "rms_profile_rel_l2_x": 0.2548116817053327,
+              "spectrum_rel_l2_x": 0.3779450350857439,
+              "spectrum_log_corr_x": 0.7950398163175697,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.5199782928579648,
+              "rms_profile_rel_l2_z": 0.2552810733261802,
+              "spectrum_rel_l2_z": 0.34416877897874726,
+              "spectrum_log_corr_z": 0.6877493890255355,
+              "spectrum_peak_rel_shift_z": 0.0,
+              "energy_fraction_l1": 0.2667123025060643
+            },
+            "ood": {
+              "mae": 0.7479928691172307,
+              "rmse": 0.9722697401150306,
+              "nrmse": 0.5265495921860044,
+              "relative_l2": 0.5265495921860052,
+              "r2": 0.5938836574465458,
+              "reconstructed_variance": 0.5938836932182312,
+              "mean_profile_rel_l2_x": 0.23504108490320946,
+              "rms_profile_rel_l2_x": 0.3029242035483368,
+              "spectrum_rel_l2_x": 0.46437796757071287,
+              "spectrum_log_corr_x": 0.7873010246486446,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.25626186980090176,
+              "rms_profile_rel_l2_z": 0.2933712535230029,
+              "spectrum_rel_l2_z": 0.4422387166202711,
+              "spectrum_log_corr_z": 0.6785143672385183,
+              "spectrum_peak_rel_shift_z": 0.0,
+              "energy_fraction_l1": 0.120945578686184
+            },
+            "ood_degradation_ratio": 0.6783442882367373,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6103859969222172,
+                "Thw_Tc": 0.5738519457867505,
+                "snapshot_rms": 0.5900103141861862,
+                "peak_wavenumber": 0.7734654855252692
+              },
+              "ood": {
+                "Thw_Tc": 0.5443201453941346,
+                "snapshot_rms": 0.6253233465600933,
+                "peak_wavenumber": 0.5992478732001332
+              }
+            }
+          },
+          {
+            "seed": 4,
+            "val": {
+              "mae": 0.5760550381542137,
+              "rmse": 0.7497757138689587,
+              "nrmse": 0.7696932919713894,
+              "relative_l2": 0.7696932919713868,
+              "r2": 0.40521888739246836,
+              "reconstructed_variance": 0.40521883964538574,
+              "mean_profile_rel_l2_x": 0.9750175710841991,
+              "rms_profile_rel_l2_x": 0.24136068136477226,
+              "spectrum_rel_l2_x": 0.3481098041111529,
+              "spectrum_log_corr_x": 0.7863350940014637,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.7211044573375975,
+              "rms_profile_rel_l2_z": 0.2400668086591156,
+              "spectrum_rel_l2_z": 0.32115125112054277,
+              "spectrum_log_corr_z": 0.7155746643307016,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.2755570708324716
+            },
+            "ood": {
+              "mae": 0.8314491279164988,
+              "rmse": 1.071132602931173,
+              "nrmse": 0.5800904954460624,
+              "relative_l2": 0.5800904954460634,
+              "r2": 0.5070947948466686,
+              "reconstructed_variance": 0.5070948004722595,
+              "mean_profile_rel_l2_x": 0.38478134186954577,
+              "rms_profile_rel_l2_x": 0.3919152715546969,
+              "spectrum_rel_l2_x": 0.6291013368398334,
+              "spectrum_log_corr_x": 0.7759051557660961,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.38592969415622896,
+              "rms_profile_rel_l2_z": 0.38354458668655805,
+              "spectrum_rel_l2_z": 0.6122982660654164,
+              "spectrum_log_corr_z": 0.7117369814688603,
+              "spectrum_peak_rel_shift_z": 0.0,
+              "energy_fraction_l1": 0.10912382570275585
+            },
+            "ood_degradation_ratio": 0.7536644810302285,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6767838908202388,
+                "Thw_Tc": 0.5591435100196095,
+                "snapshot_rms": 0.5614007405654939,
+                "peak_wavenumber": 0.6185127275571776
+              },
+              "ood": {
+                "Thw_Tc": 0.3838385300979839,
+                "snapshot_rms": 0.6470978701871273,
+                "peak_wavenumber": 0.4366582391947014
+              }
+            }
+          }
+        ],
+        "val_mean": {
+          "mae": 0.5752634750530151,
+          "rmse": 0.7494944399353397,
+          "nrmse": 0.7694045460759058,
+          "relative_l2": 0.7694045460759023,
+          "r2": 0.4056379899698233,
+          "reconstructed_variance": 0.40563794374465945,
+          "mean_profile_rel_l2_x": 0.8829116230148051,
+          "rms_profile_rel_l2_x": 0.29824975028493844,
+          "spectrum_rel_l2_x": 0.4331270087728435,
+          "spectrum_log_corr_x": 0.7707882949357503,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.5686230986460756,
+          "rms_profile_rel_l2_z": 0.2969573806580082,
+          "spectrum_rel_l2_z": 0.39018145752348854,
+          "spectrum_log_corr_z": 0.6724221993582571,
+          "spectrum_peak_rel_shift_z": 0.4,
+          "energy_fraction_l1": 0.29863790471166396
+        },
+        "val_std": {
+          "mae": 0.001865219413153687,
+          "rmse": 0.005058300800918101,
+          "nrmse": 0.005192673119738589,
+          "relative_l2": 0.005192673119739114,
+          "r2": 0.008010865826215529,
+          "reconstructed_variance": 0.008010844375168445,
+          "mean_profile_rel_l2_x": 0.15942747264353624,
+          "rms_profile_rel_l2_x": 0.05413791026115408,
+          "spectrum_rel_l2_x": 0.07644476535963222,
+          "spectrum_log_corr_x": 0.025721226994302567,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.07809898717082135,
+          "rms_profile_rel_l2_z": 0.05167812232399302,
+          "spectrum_rel_l2_z": 0.06608387881369844,
+          "spectrum_log_corr_z": 0.04014408409328312,
+          "spectrum_peak_rel_shift_z": 0.2,
+          "energy_fraction_l1": 0.038987388328585094
+        },
+        "ood_mean": {
+          "mae": 0.7391463114146062,
+          "rmse": 0.9574167001542817,
+          "nrmse": 0.5185056699992154,
+          "relative_l2": 0.5185056699992167,
+          "r2": 0.6038611295016783,
+          "reconstructed_variance": 0.6038611352443695,
+          "mean_profile_rel_l2_x": 0.24490640005815517,
+          "rms_profile_rel_l2_x": 0.29600199461969195,
+          "spectrum_rel_l2_x": 0.38874306299448264,
+          "spectrum_log_corr_x": 0.7624254658751177,
+          "spectrum_peak_rel_shift_x": 9.500000000000002,
+          "mean_profile_rel_l2_z": 0.2354751949766094,
+          "rms_profile_rel_l2_z": 0.2799889221765971,
+          "spectrum_rel_l2_z": 0.3700137126524399,
+          "spectrum_log_corr_z": 0.6753686302227495,
+          "spectrum_peak_rel_shift_z": 9.200000000000001,
+          "energy_fraction_l1": 0.14741442218892434
+        },
+        "ood_std": {
+          "mae": 0.05867082401477311,
+          "rmse": 0.07373844643508248,
+          "nrmse": 0.039934338483298394,
+          "relative_l2": 0.03993433848329791,
+          "r2": 0.061214128846859193,
+          "reconstructed_variance": 0.06121413023705577,
+          "mean_profile_rel_l2_x": 0.07475735858283586,
+          "rms_profile_rel_l2_x": 0.07847027850509464,
+          "spectrum_rel_l2_x": 0.19991614326895313,
+          "spectrum_log_corr_x": 0.024261608720099366,
+          "spectrum_peak_rel_shift_x": 11.022703842524303,
+          "mean_profile_rel_l2_z": 0.08677230728798282,
+          "rms_profile_rel_l2_z": 0.08188143706773733,
+          "spectrum_rel_l2_z": 0.1910093603363746,
+          "spectrum_log_corr_z": 0.030245917491952143,
+          "spectrum_peak_rel_shift_z": 11.26765281680262,
+          "energy_fraction_l1": 0.040047562812544964
+        },
+        "ood_degradation_ratio_mean": 0.6738548058501557,
+        "ood_degradation_ratio_std": 0.05107686554480553,
+        "latent_stability": {
+          "mean_rel_l2": 0.7499853618345502,
+          "max_rel_l2": 1.0979904102841165,
+          "n": 5
+        }
+      }
+    },
+    "32": {
+      "compression_ratio": 288.0,
+      "pca": {
+        "val": {
+          "mae": 0.4874694084279805,
+          "rmse": 0.6305431050954509,
+          "nrmse": 0.6472933029351248,
+          "relative_l2": 0.6472933029351141,
+          "r2": 0.5793469974645908,
+          "reconstructed_variance": 0.5793469690856572,
+          "mean_profile_rel_l2_x": 0.3847093900488635,
+          "rms_profile_rel_l2_x": 0.24434325810450044,
+          "spectrum_rel_l2_x": 0.35409030601374836,
+          "spectrum_log_corr_x": 0.9984339889195777,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.34741436009386567,
+          "rms_profile_rel_l2_z": 0.23731327474640376,
+          "spectrum_rel_l2_z": 0.31734209349288933,
+          "spectrum_log_corr_z": 0.9691246368820963,
+          "spectrum_peak_rel_shift_z": 0.5,
+          "energy_fraction_l1": 0.21270222520953042
+        },
+        "ood": {
+          "mae": 0.5047752056950873,
+          "rmse": 0.6438566851354515,
+          "nrmse": 0.34869178891054897,
+          "relative_l2": 0.3486917889105418,
+          "r2": 0.8219035158387221,
+          "reconstructed_variance": 0.8219035161428232,
+          "mean_profile_rel_l2_x": 0.10250960507331237,
+          "rms_profile_rel_l2_x": 0.12862263196887194,
+          "spectrum_rel_l2_x": 0.06992818370054567,
+          "spectrum_log_corr_x": 0.997670230070195,
+          "spectrum_peak_rel_shift_x": 0.5,
+          "mean_profile_rel_l2_z": 0.04334436300542256,
+          "rms_profile_rel_l2_z": 0.0894316640669422,
+          "spectrum_rel_l2_z": 0.04805008991574926,
+          "spectrum_log_corr_z": 0.9782532732121093,
+          "spectrum_peak_rel_shift_z": 0.0,
+          "energy_fraction_l1": 0.13490747825791588
+        },
+        "ood_degradation_ratio": 0.5386921003653506,
+        "latent_physical_correlation": {
+          "val": {
+            "Pb_Pc": 0.6091004667358519,
+            "Thw_Tc": 0.605986289151642,
+            "snapshot_rms": 0.7714762376399498,
+            "peak_wavenumber": 0.4798732649418723
+          },
+          "ood": {
+            "Thw_Tc": 0.6713952595273599,
+            "snapshot_rms": 0.6695228951202383,
+            "peak_wavenumber": 0.6801023986452374
+          }
+        }
+      },
+      "ae": {
+        "per_seed": [
+          {
+            "seed": 0,
+            "val": {
+              "mae": 0.5178788647526822,
+              "rmse": 0.6739951313405468,
+              "nrmse": 0.6918996198706722,
+              "relative_l2": 0.6918996198706704,
+              "r2": 0.519373237506634,
+              "reconstructed_variance": 0.519373208284378,
+              "mean_profile_rel_l2_x": 0.6343048992451468,
+              "rms_profile_rel_l2_x": 0.25026047712092647,
+              "spectrum_rel_l2_x": 0.35992766065370957,
+              "spectrum_log_corr_x": 0.803875063264814,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.42438396100750253,
+              "rms_profile_rel_l2_z": 0.24868974504717323,
+              "spectrum_rel_l2_z": 0.3194240514584425,
+              "spectrum_log_corr_z": 0.7024573773114178,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.19815073825665197
+            },
+            "ood": {
+              "mae": 0.6298532403155513,
+              "rmse": 0.8099968838090396,
+              "nrmse": 0.4386679038176421,
+              "relative_l2": 0.43866790381764476,
+              "r2": 0.7181333956368735,
+              "reconstructed_variance": 0.7181333899497986,
+              "mean_profile_rel_l2_x": 0.17098815886108787,
+              "rms_profile_rel_l2_x": 0.21685687034531953,
+              "spectrum_rel_l2_x": 0.2975664934646211,
+              "spectrum_log_corr_x": 0.8142918399016097,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.16129812581235095,
+              "rms_profile_rel_l2_z": 0.20796194840595936,
+              "spectrum_rel_l2_z": 0.2705809371468619,
+              "spectrum_log_corr_z": 0.6881879422823272,
+              "spectrum_peak_rel_shift_z": 0.0,
+              "energy_fraction_l1": 0.1054344035004781
+            },
+            "ood_degradation_ratio": 0.6340051233149114,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6606835706114134,
+                "Thw_Tc": 0.6639770513492291,
+                "snapshot_rms": 0.6856265349700632,
+                "peak_wavenumber": 0.6330398849194743
+              },
+              "ood": {
+                "Thw_Tc": 0.5041824523402686,
+                "snapshot_rms": 0.5569324211283803,
+                "peak_wavenumber": 0.6021375553809826
+              }
+            }
+          },
+          {
+            "seed": 1,
+            "val": {
+              "mae": 0.5062027566029426,
+              "rmse": 0.6640759207038393,
+              "nrmse": 0.6817169082310426,
+              "relative_l2": 0.6817169082310413,
+              "r2": 0.5334159407714938,
+              "reconstructed_variance": 0.5334159135818481,
+              "mean_profile_rel_l2_x": 0.5351123988938825,
+              "rms_profile_rel_l2_x": 0.23159856409200022,
+              "spectrum_rel_l2_x": 0.3328728566216908,
+              "spectrum_log_corr_x": 0.7907446951400288,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.3086098600024505,
+              "rms_profile_rel_l2_z": 0.22737164329152926,
+              "spectrum_rel_l2_z": 0.3065693311551618,
+              "spectrum_log_corr_z": 0.6989532626731286,
+              "spectrum_peak_rel_shift_z": 0.0,
+              "energy_fraction_l1": 0.23048372633819195
+            },
+            "ood": {
+              "mae": 0.6584445048892182,
+              "rmse": 0.8512289536618236,
+              "nrmse": 0.46099784855437703,
+              "relative_l2": 0.4609978485543787,
+              "r2": 0.688706751208189,
+              "reconstructed_variance": 0.6887067556381226,
+              "mean_profile_rel_l2_x": 0.22446310274670936,
+              "rms_profile_rel_l2_x": 0.29717868981504486,
+              "spectrum_rel_l2_x": 0.42167063877356875,
+              "spectrum_log_corr_x": 0.8237217270452671,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.20580298195652758,
+              "rms_profile_rel_l2_z": 0.279015250244888,
+              "spectrum_rel_l2_z": 0.3959645525549243,
+              "spectrum_log_corr_z": 0.7133962392932065,
+              "spectrum_peak_rel_shift_z": 0.0,
+              "energy_fraction_l1": 0.10546891046129972
+            },
+            "ood_degradation_ratio": 0.6762306215208932,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6742187344088436,
+                "Thw_Tc": 0.6620066976242875,
+                "snapshot_rms": 0.5937030094165693,
+                "peak_wavenumber": 0.5640616683882061
+              },
+              "ood": {
+                "Thw_Tc": 0.5074760764559748,
+                "snapshot_rms": 0.5287505282844477,
+                "peak_wavenumber": 0.6386005814487784
+              }
+            }
+          },
+          {
+            "seed": 2,
+            "val": {
+              "mae": 0.5168634012989868,
+              "rmse": 0.6731137383703296,
+              "nrmse": 0.6909948129474575,
+              "relative_l2": 0.6909948129474558,
+              "r2": 0.5206294604152399,
+              "reconstructed_variance": 0.5206294059753418,
+              "mean_profile_rel_l2_x": 0.6232661172426299,
+              "rms_profile_rel_l2_x": 0.2527308111885335,
+              "spectrum_rel_l2_x": 0.36326528059053015,
+              "spectrum_log_corr_x": 0.7873212837322441,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.3947174406861247,
+              "rms_profile_rel_l2_z": 0.24721694602706115,
+              "spectrum_rel_l2_z": 0.32530270073881107,
+              "spectrum_log_corr_z": 0.6651790983421005,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.21878335157021217
+            },
+            "ood": {
+              "mae": 0.6662822497171003,
+              "rmse": 0.8627159777060955,
+              "nrmse": 0.4672188462635381,
+              "relative_l2": 0.4672188462635404,
+              "r2": 0.6802484855464356,
+              "reconstructed_variance": 0.680248498916626,
+              "mean_profile_rel_l2_x": 0.21500125342255622,
+              "rms_profile_rel_l2_x": 0.26822811495361015,
+              "spectrum_rel_l2_x": 0.4029872709669559,
+              "spectrum_log_corr_x": 0.8007980807148826,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.21432798130395217,
+              "rms_profile_rel_l2_z": 0.26290070695583717,
+              "spectrum_rel_l2_z": 0.38181621844668867,
+              "spectrum_log_corr_z": 0.6605122207633218,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.10896584022698329
+            },
+            "ood_degradation_ratio": 0.6761539124593521,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.7715940872830487,
+                "Thw_Tc": 0.5349469107602,
+                "snapshot_rms": 0.5157031487053202,
+                "peak_wavenumber": 0.517927424814424
+              },
+              "ood": {
+                "Thw_Tc": 0.5596871083245859,
+                "snapshot_rms": 0.6163364881223253,
+                "peak_wavenumber": 0.5333462751502555
+              }
+            }
+          },
+          {
+            "seed": 3,
+            "val": {
+              "mae": 0.5044543619655346,
+              "rmse": 0.6585292911385392,
+              "nrmse": 0.6760229340325027,
+              "relative_l2": 0.6760229340325014,
+              "r2": 0.5411775866249086,
+              "reconstructed_variance": 0.5411775708198547,
+              "mean_profile_rel_l2_x": 0.5436330901974692,
+              "rms_profile_rel_l2_x": 0.2673779413324325,
+              "spectrum_rel_l2_x": 0.3839067160456513,
+              "spectrum_log_corr_x": 0.8051228719788922,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.35644858805925905,
+              "rms_profile_rel_l2_z": 0.26397758090220813,
+              "spectrum_rel_l2_z": 0.3468436009447045,
+              "spectrum_log_corr_z": 0.6980056386420194,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.18900238439254546
+            },
+            "ood": {
+              "mae": 0.6275226384381516,
+              "rmse": 0.8144051926497835,
+              "nrmse": 0.44105530016101596,
+              "relative_l2": 0.4410553001610185,
+              "r2": 0.715056997947807,
+              "reconstructed_variance": 0.715056985616684,
+              "mean_profile_rel_l2_x": 0.18083692901352794,
+              "rms_profile_rel_l2_x": 0.22174420981954326,
+              "spectrum_rel_l2_x": 0.22415773012757656,
+              "spectrum_log_corr_x": 0.7912728384755486,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.13675595128981283,
+              "rms_profile_rel_l2_z": 0.21126822915862448,
+              "spectrum_rel_l2_z": 0.19298910238866437,
+              "spectrum_log_corr_z": 0.7130318426230796,
+              "spectrum_peak_rel_shift_z": 23.000000000000004,
+              "energy_fraction_l1": 0.12438378389684752
+            },
+            "ood_degradation_ratio": 0.6524265346001025,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6935805859254621,
+                "Thw_Tc": 0.5425666631968789,
+                "snapshot_rms": 0.5853709607864362,
+                "peak_wavenumber": 0.7120013188310554
+              },
+              "ood": {
+                "Thw_Tc": 0.5855340774260608,
+                "snapshot_rms": 0.4289075707832195,
+                "peak_wavenumber": 0.6964790072511479
+              }
+            }
+          },
+          {
+            "seed": 4,
+            "val": {
+              "mae": 0.5178806790327873,
+              "rmse": 0.6814606547709102,
+              "nrmse": 0.699563462802787,
+              "relative_l2": 0.6995634628027854,
+              "r2": 0.5086669217029337,
+              "reconstructed_variance": 0.5086669027805328,
+              "mean_profile_rel_l2_x": 0.6073981144527112,
+              "rms_profile_rel_l2_x": 0.2109282278525527,
+              "spectrum_rel_l2_x": 0.29662968603575124,
+              "spectrum_log_corr_x": 0.7859505645561915,
+              "spectrum_peak_rel_shift_x": 0.0,
+              "mean_profile_rel_l2_z": 0.5047634145709425,
+              "rms_profile_rel_l2_z": 0.20999417233292553,
+              "spectrum_rel_l2_z": 0.275697781197872,
+              "spectrum_log_corr_z": 0.6929521361899248,
+              "spectrum_peak_rel_shift_z": 0.5,
+              "energy_fraction_l1": 0.21811748456246072
+            },
+            "ood": {
+              "mae": 0.6687108692983087,
+              "rmse": 0.8644882691277472,
+              "nrmse": 0.4681786615152141,
+              "relative_l2": 0.46817866151521625,
+              "r2": 0.678933394684652,
+              "reconstructed_variance": 0.6789333820343018,
+              "mean_profile_rel_l2_x": 0.2546604642697747,
+              "rms_profile_rel_l2_x": 0.2799669693332293,
+              "spectrum_rel_l2_x": 0.43115694989520126,
+              "spectrum_log_corr_x": 0.7675938543320654,
+              "spectrum_peak_rel_shift_x": 0.5,
+              "mean_profile_rel_l2_z": 0.2376843267677053,
+              "rms_profile_rel_l2_z": 0.26232117386414383,
+              "spectrum_rel_l2_z": 0.40616126747609105,
+              "spectrum_log_corr_z": 0.6828131730986204,
+              "spectrum_peak_rel_shift_z": 0.0,
+              "energy_fraction_l1": 0.09860619387480787
+            },
+            "ood_degradation_ratio": 0.6692440163176461,
+            "latent_physical_correlation": {
+              "val": {
+                "Pb_Pc": 0.6442308494500727,
+                "Thw_Tc": 0.5290415220704069,
+                "snapshot_rms": 0.7558489338751648,
+                "peak_wavenumber": 0.6165836944833883
+              },
+              "ood": {
+                "Thw_Tc": 0.4472724322338297,
+                "snapshot_rms": 0.5191710400275588,
+                "peak_wavenumber": 0.5224633051051895
+              }
+            }
+          }
+        ],
+        "val_mean": {
+          "mae": 0.5126560127305867,
+          "rmse": 0.670234947264833,
+          "nrmse": 0.6880395475768923,
+          "relative_l2": 0.6880395475768908,
+          "r2": 0.524652629404242,
+          "reconstructed_variance": 0.5246526002883911,
+          "mean_profile_rel_l2_x": 0.588742924006368,
+          "rms_profile_rel_l2_x": 0.24257920431728905,
+          "spectrum_rel_l2_x": 0.3473204399894666,
+          "spectrum_log_corr_x": 0.7946028957344341,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.3977846528652559,
+          "rms_profile_rel_l2_z": 0.23945001752017947,
+          "spectrum_rel_l2_z": 0.3147674930989984,
+          "spectrum_log_corr_z": 0.6915095026317182,
+          "spectrum_peak_rel_shift_z": 0.4,
+          "energy_fraction_l1": 0.21090753702401246
+        },
+        "val_std": {
+          "mae": 0.006019784542662929,
+          "rmse": 0.008042374339091692,
+          "nrmse": 0.008256017720792172,
+          "relative_l2": 0.008256017720792012,
+          "r2": 0.01139710976957341,
+          "reconstructed_variance": 0.011397112863970047,
+          "mean_profile_rel_l2_x": 0.04129622481434377,
+          "rms_profile_rel_l2_x": 0.019490475635176113,
+          "spectrum_rel_l2_x": 0.030099902830057555,
+          "spectrum_log_corr_x": 0.008239094742633922,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.06606390902156775,
+          "rms_profile_rel_l2_z": 0.01876610267672179,
+          "spectrum_rel_l2_z": 0.023474254312299814,
+          "spectrum_log_corr_z": 0.013511748134559177,
+          "spectrum_peak_rel_shift_z": 0.20000000000000004,
+          "energy_fraction_l1": 0.015098414571978726
+        },
+        "ood_mean": {
+          "mae": 0.650162700531666,
+          "rmse": 0.8405670553908978,
+          "nrmse": 0.4552237120623574,
+          "relative_l2": 0.45522371206235973,
+          "r2": 0.6962158050047915,
+          "reconstructed_variance": 0.6962158024311066,
+          "mean_profile_rel_l2_x": 0.20918998166273123,
+          "rms_profile_rel_l2_x": 0.25679497085334935,
+          "spectrum_rel_l2_x": 0.35550781664558473,
+          "spectrum_log_corr_x": 0.7995356680938748,
+          "spectrum_peak_rel_shift_x": 0.5,
+          "mean_profile_rel_l2_z": 0.19117387342606978,
+          "rms_profile_rel_l2_z": 0.24469346172589054,
+          "spectrum_rel_l2_z": 0.32950241560264604,
+          "spectrum_log_corr_z": 0.6915882836121112,
+          "spectrum_peak_rel_shift_z": 4.700000000000001,
+          "energy_fraction_l1": 0.10857182639208329
+        },
+        "ood_std": {
+          "mae": 0.017874614959894366,
+          "rmse": 0.023645099931010768,
+          "nrmse": 0.012805415217795452,
+          "relative_l2": 0.012805415217795213,
+          "r2": 0.017002318763689805,
+          "reconstructed_variance": 0.01700231423369578,
+          "mean_profile_rel_l2_x": 0.030324507433844627,
+          "rms_profile_rel_l2_x": 0.032006595495255544,
+          "spectrum_rel_l2_x": 0.08119686094457318,
+          "spectrum_log_corr_x": 0.01945691424322418,
+          "spectrum_peak_rel_shift_x": 0.0,
+          "mean_profile_rel_l2_z": 0.03678917325292139,
+          "rms_profile_rel_l2_z": 0.029280284917273015,
+          "spectrum_rel_l2_z": 0.08383096622954746,
+          "spectrum_log_corr_z": 0.01994843212841762,
+          "spectrum_peak_rel_shift_z": 9.152048950918044,
+          "energy_fraction_l1": 0.008590210569924563
+        },
+        "ood_degradation_ratio_mean": 0.661612041642581,
+        "ood_degradation_ratio_std": 0.01630908581821267,
+        "latent_stability": {
+          "mean_rel_l2": 0.2564416295998359,
+          "max_rel_l2": 0.37943628082804354,
+          "n": 5
+        }
+      }
+    }
+  }
+}

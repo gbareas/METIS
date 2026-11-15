@@ -1,0 +1,26 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# Data — never commit raw or mock DNS output.
+# Anchored to the repo root so it doesn't also swallow the src/metis/data/
+# Python package (unanchored `data/` matched that too — see CI history
+# 2026-08-29, ModuleNotFoundError: No module named 'metis.data').
+/data/
+*.h5
+*.hdf5
+
+# MLflow (added in Phase 3)
+mlruns/
+
+# Generated dataset / model / report artifacts (milestone R5+)
+/artifacts/
+/reports/
+/demo_output/
